@@ -3,7 +3,7 @@ name: Marketplace App Check
 on:
   pull_request:
     paths:
-      - "apps_v2.json"
+      - "apps.json"
 
 jobs:
   semgrep-check:
@@ -36,10 +36,10 @@ jobs:
       - name: Install semgrep
         run: uv tool install semgrep
 
-      - name: Get base apps_v2.json
-        run: git show ${{ github.event.pull_request.base.sha }}:apps_v2.json > /tmp/apps_before.json
+      - name: Get base apps.json
+        run: git show ${{ github.event.pull_request.base.sha }}:apps.json > /tmp/apps_before.json
 
       - name: Check changed marketplace apps
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: python3 scripts/check_marketplace_apps.py /tmp/apps_before.json apps_v2.json
+        run: python3 scripts/check_marketplace_apps.py /tmp/apps_before.json apps.json

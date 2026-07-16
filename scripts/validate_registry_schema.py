@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Validate the structural integrity of apps that are new or changed in
-apps_v2.json — catches malformed entries (e.g. a new app added
+apps.json — catches malformed entries (e.g. a new app added
 with no targets) early in CI, before any clone/scan work runs.
 
 Only apps that differ from the base revision are checked, so pre-existing
@@ -13,7 +13,7 @@ Checks per new/changed app:
   3. each target has "version", "target_type", and "target"
 
 Run:
-    python3 scripts/validate_registry_schema.py <old-apps_v2.json> <new-apps_v2.json>
+    python3 scripts/validate_registry_schema.py <old-apps.json> <new-apps.json>
 """
 
 from __future__ import annotations

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Validate a marketplace app against quality requirements before merging to apps_v2.json.
+Validate a marketplace app against quality requirements before merging to apps.json.
 
 Checks:
   1. Repository is public on GitHub

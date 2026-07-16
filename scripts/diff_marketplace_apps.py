@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Find targets in apps_v2.json that changed between two revisions,
+Find targets in apps.json that changed between two revisions,
 so only those need a fresh scan — not the whole registry.
 
 Only the targets that actually changed are emitted, so callers re-scan
