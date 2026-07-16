@@ -31,6 +31,11 @@ PILOT_BRANCHES = ["version-16", "version-15", "develop", "main", "master"]
 FRAPPE_KEY = "frappe"
 REQUEST_TIMEOUT = 10
 MAX_WORKERS = 8
+MAX_RETRIES = 2
+
+# Log lines are collected per app, not printed directly — worker threads
+# would otherwise interleave output into an unreadable mess.
+Log = list[str]
 
 
 class GitHubClient:
@@ -43,7 +48,7 @@ class GitHubClient:
             headers["Authorization"] = f"Bearer {self.token}"
         return headers
 
-    def fetch_raw(self, url: str) -> bytes | None:
+    def fetch_raw(self, url: str, log: Log, attempt: int = 1) -> bytes | None:
         req = Request(url, headers=self._headers())
         try:
             with urlopen(req, timeout=REQUEST_TIMEOUT) as resp:
@@ -52,28 +57,34 @@ class GitHubClient:
             if error.code == 404:
                 return None
             if error.code in (403, 429):
-                print("  rate limited — sleeping 60s")
+                log.append("rate limited — sleeping 60s")
                 time.sleep(60)
-                return self.fetch_raw(url)
-            print(f"  HTTP {error.code}: {url}")
+                return self.fetch_raw(url, log, attempt)
+            log.append(f"HTTP {error.code}: {url}")
             return None
-        except URLError as error:
-            print(f"  network error: {error.reason}")
+        except (URLError, OSError) as error:
+            # Covers DNS failures, timeouts, and transient connection drops
+            # (e.g. RemoteDisconnected) — retry a couple of times before
+            # giving up on this one URL, rather than crashing the whole run.
+            if attempt < MAX_RETRIES:
+                log.append(f"connection error ({error}) — retrying")
+                return self.fetch_raw(url, log, attempt + 1)
+            log.append(f"connection error, giving up: {error}")
             return None
 
-    def fetch_pyproject(self, repo_url: str, branch: str) -> dict | None:
+    def fetch_pyproject(self, repo_url: str, branch: str, log: Log) -> dict | None:
         owner_repo = repo_url.removeprefix("https://github.com/").rstrip("/")
         url = f"https://api.github.com/repos/{owner_repo}/contents/pyproject.toml?ref={branch}"
-        raw = self.fetch_raw(url)
+        raw = self.fetch_raw(url, log)
         if raw is None:
             return None
         try:
             return tomllib.loads(raw.decode())
         except tomllib.TOMLDecodeError as error:
-            print(f"  TOML parse error on {branch}: {error}")
+            log.append(f"TOML parse error on {branch}: {error}")
             return None
 
-    def repo_exists(self, repo_url: str) -> bool:
+    def repo_exists(self, repo_url: str, log: Log, attempt: int = 1) -> bool:
         owner_repo = repo_url.removeprefix("https://github.com/").rstrip("/")
         url = f"https://api.github.com/repos/{owner_repo}"
         req = Request(url, headers=self._headers())
@@ -84,18 +95,21 @@ class GitHubClient:
             if error.code == 404:
                 return False
             if error.code in (403, 429):
-                print("  rate limited — sleeping 60s")
+                log.append("rate limited — sleeping 60s")
                 time.sleep(60)
-                return self.repo_exists(repo_url)
+                return self.repo_exists(repo_url, log, attempt)
             return True  # assume exists on other errors
-        except URLError:
+        except (URLError, OSError) as error:
+            if attempt < MAX_RETRIES:
+                return self.repo_exists(repo_url, log, attempt + 1)
+            log.append(f"connection error checking repo, assuming it exists: {error}")
             return True
 
-    def fetch_dynamic_version(self, repo_url: str, branch: str, app_name: str) -> str | None:
+    def fetch_dynamic_version(self, repo_url: str, branch: str, app_name: str, log: Log) -> str | None:
         """Read __version__ from {app_name}/__init__.py for apps using dynamic versioning."""
         owner_repo = repo_url.removeprefix("https://github.com/").rstrip("/")
         url = f"https://api.github.com/repos/{owner_repo}/contents/{app_name}/__init__.py?ref={branch}"
-        raw = self.fetch_raw(url)
+        raw = self.fetch_raw(url, log)
         if raw is None:
             return None
         for line in raw.decode().splitlines():
@@ -137,47 +151,47 @@ def sort_key(target: dict) -> Version:
         return Version("0")
 
 
-def build_targets(repo_url: str, client: GitHubClient) -> list[dict]:
+def build_targets(repo_url: str, client: GitHubClient, log: Log) -> list[dict]:
     targets = []
 
     for branch in PILOT_BRANCHES:
-        print(f"    {branch} ... ", end="", flush=True)
-        toml = client.fetch_pyproject(repo_url, branch)
+        toml = client.fetch_pyproject(repo_url, branch, log)
         if toml is None:
-            print("not found")
+            log.append(f"{branch}: not found")
             continue
 
         dynamic_version = None
         if _is_dynamic_version(toml):
             app_name = toml.get("project", {}).get("name", "")
-            dynamic_version = client.fetch_dynamic_version(repo_url, branch, app_name)
+            dynamic_version = client.fetch_dynamic_version(repo_url, branch, app_name, log)
 
         target = parse_target(toml, branch, dynamic_version)
         if target is None:
-            print("no version field")
+            log.append(f"{branch}: no version field")
             continue
         if not target["frappe_core"]:
-            print("no frappe declared in [tool.bench.frappe-dependencies] — skipping")
+            log.append(f"{branch}: no frappe declared in [tool.bench.frappe-dependencies] — skipping")
             continue
         targets.append(target)
-        print(f"v{target['version']}")
+        log.append(f"{branch}: v{target['version']}")
 
     targets.sort(key=sort_key, reverse=True)
     return targets
 
 
-def refresh_app(app: dict, client: GitHubClient) -> dict | None:
+def refresh_app(app: dict, client: GitHubClient) -> tuple[dict | None, Log]:
+    log: Log = []
     repo = app.get("repo")
     if not repo:
-        return None
+        return None, log
 
-    if not client.repo_exists(repo):
-        print("  repo not found — skipping")
-        return None
+    if not client.repo_exists(repo, log):
+        log.append("repo not found — skipping")
+        return None, log
 
-    targets = build_targets(repo, client)
+    targets = build_targets(repo, client, log)
 
-    return {
+    refreshed = {
         "name": app["name"],
         "title": app["title"],
         "description": app.get("description"),
@@ -190,6 +204,7 @@ def refresh_app(app: dict, client: GitHubClient) -> dict | None:
         "stars": app.get("stars"),
         "targets": targets,
     }
+    return refreshed, log
 
 
 def main() -> None:
@@ -218,7 +233,14 @@ def main() -> None:
         for index, future in enumerate(as_completed(futures), 1):
             app = futures[future]
             print(f"[{index}/{len(to_process)}] {app['name']}")
-            refreshed = future.result()
+            try:
+                refreshed, log = future.result()
+            except Exception as error:
+                print(f"    unexpected error, skipping: {error}")
+                skipped += 1
+                continue
+            for line in log:
+                print(f"    {line}")
             if refreshed is None:
                 skipped += 1
             else:
