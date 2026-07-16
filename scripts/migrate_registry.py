@@ -156,6 +156,9 @@ def build_targets(repo_url: str, client: GitHubClient) -> list[dict]:
         if target is None:
             print("no version field")
             continue
+        if not target["frappe_core"]:
+            print("no frappe declared in [tool.bench.frappe-dependencies] — skipping")
+            continue
         targets.append(target)
         print(f"v{target['version']}")
 
