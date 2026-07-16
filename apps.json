@@ -4352,19 +4352,6 @@
     "targets": []
   },
   {
-    "name": "non_profit",
-    "title": "Frappe Non Profit",
-    "description": "A Non profit app built on top of Frappe Framework & ERPNext",
-    "repo": "https://github.com/frappe/non_profit",
-    "logo_url": "https://cloud.frappe.io/files/nonprofit (1).svg",
-    "website": "https://docs.erpnext.com/docs/v13/user/manual/en/non_profit/introduction",
-    "documentation": "https://docs.erpnext.com/docs/v13/user/manual/en/non_profit/introduction",
-    "categories": [],
-    "category": "Applications",
-    "stars": 61,
-    "targets": []
-  },
-  {
     "name": "role_permission_manager",
     "title": "Role Permission Manager",
     "description": "Centralized document to view, edit, and manage all user role permissions in one place for both native and custom roles.",
