@@ -19,6 +19,7 @@ import json
 import os
 import time
 import tomllib
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
@@ -29,6 +30,7 @@ REGISTRY = Path(__file__).parent.parent / "apps.json"
 PILOT_BRANCHES = ["version-16", "version-15", "develop", "main", "master"]
 FRAPPE_KEY = "frappe"
 REQUEST_TIMEOUT = 10
+MAX_WORKERS = 8
 
 
 class GitHubClient:
@@ -202,16 +204,22 @@ def main() -> None:
     process_names = {app["name"] for app in to_process}
 
     client = GitHubClient(token=token)
+    # refresh_app only reads GitHubClient/network state — safe to run
+    # concurrently. Every write (the dict below, the file at the end) stays
+    # on the main thread, so nothing needs a lock.
     refreshed_by_name: dict[str, dict] = {}
 
     skipped = 0
-    for index, app in enumerate(to_process, 1):
-        print(f"[{index}/{len(to_process)}] {app['name']}")
-        refreshed = refresh_app(app, client)
-        if refreshed is None:
-            skipped += 1
-        else:
-            refreshed_by_name[app["name"]] = refreshed
+    with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
+        futures = {executor.submit(refresh_app, app, client): app for app in to_process}
+        for index, future in enumerate(as_completed(futures), 1):
+            app = futures[future]
+            print(f"[{index}/{len(to_process)}] {app['name']}")
+            refreshed = future.result()
+            if refreshed is None:
+                skipped += 1
+            else:
+                refreshed_by_name[app["name"]] = refreshed
 
     # Apps outside --limit's scope are carried over untouched, in their
     # original position — input and output are the same file, so a

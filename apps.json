@@ -15,7 +15,7 @@
     "stars": 3184,
     "targets": [
       {
-        "version": "1.26.2",
+        "version": "1.27.0",
         "target_type": "branch",
         "target": "main",
         "frappe_core": ">=15.109.0,<17.0.0",
@@ -27,7 +27,7 @@
         "version": "1.22.2",
         "target_type": "branch",
         "target": "develop",
-        "frappe_core": ">=16.0.0-dev,<=17.0.0-dev",
+        "frappe_core": ">=16.0.0-dev,<18.0.0",
         "dependencies": {
           "telephony": ">=0.0.1,<1.0.0"
         }
@@ -116,6 +116,13 @@
       {
         "version": "0.0.1",
         "target_type": "branch",
+        "target": "develop",
+        "frappe_core": null,
+        "dependencies": {}
+      },
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
         "target": "main",
         "frappe_core": ">=15.0.0,<16.0.0-dev",
         "dependencies": {}
@@ -125,7 +132,7 @@
   {
     "name": "aql_quality_assurance",
     "title": "AQL Quality Assurance By HavaraTech",
-    "description": "The app extends ERPNext\u2019s Quality Inspection to support sampling, defect classification, and automated pass/fail lot disposition.",
+    "description": "The app extends ERPNext’s Quality Inspection to support sampling, defect classification, and automated pass/fail lot disposition.",
     "repo": "https://github.com/havaratech/aql_quality_assurance",
     "logo_url": "https://cloud.frappe.io/files/Havara App(jpg).webp",
     "website": "https://havaratech.com/aql-quality-assurance/",
@@ -149,7 +156,7 @@
   {
     "name": "easy_cash",
     "title": "Easy Cash",
-    "description": "Easy Cash \u2014 Simplified Cash In/Out for Non-Accounting Staff",
+    "description": "Easy Cash — Simplified Cash In/Out for Non-Accounting Staff",
     "repo": "https://github.com/ahmedyousef96/erpnext_easy_cash",
     "logo_url": "https://cloud.frappe.io/files/logo (2).webp",
     "website": "https://github.com/ahmedyousef96/erpnext_easy_cash?tab=readme-ov-file",
@@ -265,6 +272,20 @@
         "target": "version-16",
         "frappe_core": ">=16.0.0,<17.0.0",
         "dependencies": {}
+      },
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "version-15",
+        "frappe_core": ">=15.0.0,<16.0.0",
+        "dependencies": {}
+      },
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "develop",
+        "frappe_core": ">=16.0.0,<17.0.0",
+        "dependencies": {}
       }
     ]
   },
@@ -354,6 +375,13 @@
       {
         "version": "0.0.1",
         "target_type": "branch",
+        "target": "main",
+        "frappe_core": null,
+        "dependencies": {}
+      },
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
         "target": "master",
         "frappe_core": ">=15.0.0,<16.0.0",
         "dependencies": {}
@@ -385,7 +413,16 @@
         }
       },
       {
-        "version": "15.1.20",
+        "version": "16.4.0",
+        "target_type": "branch",
+        "target": "version-16",
+        "frappe_core": ">=16.0.0,<17.0.0",
+        "dependencies": {
+          "erpnext": ">=16.0.0,<17.0.0"
+        }
+      },
+      {
+        "version": "15.2.0",
         "target_type": "branch",
         "target": "version-15",
         "frappe_core": ">=15.0.0,<16.0.0",
@@ -411,6 +448,13 @@
     "category": "Compliance",
     "stars": null,
     "targets": [
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "version-16",
+        "frappe_core": ">=16.0.0,<17.0.0",
+        "dependencies": {}
+      },
       {
         "version": "0.0.1",
         "target_type": "branch",
@@ -452,6 +496,13 @@
       {
         "version": "1.0.0",
         "target_type": "branch",
+        "target": "version-15",
+        "frappe_core": ">=15.0.0,<17.0.0",
+        "dependencies": {}
+      },
+      {
+        "version": "1.0.0",
+        "target_type": "branch",
         "target": "main",
         "frappe_core": ">=16.0.0,<17.0.0",
         "dependencies": {}
@@ -473,10 +524,24 @@
     "stars": null,
     "targets": [
       {
+        "version": "1.0.0",
+        "target_type": "branch",
+        "target": "version-15",
+        "frappe_core": null,
+        "dependencies": {}
+      },
+      {
         "version": "0.0.1",
         "target_type": "branch",
         "target": "version-16",
         "frappe_core": ">=16.0.0,<17.0.0",
+        "dependencies": {}
+      },
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "develop",
+        "frappe_core": null,
         "dependencies": {}
       }
     ]
@@ -484,7 +549,7 @@
   {
     "name": "e_sign",
     "title": "Digital Signature",
-    "description": "DSC digital signing for Frappe & ERPNext \u2014 sign PDFs with a hardware DSC USB token, PAdES-compliant, with a rules engine and audit trail",
+    "description": "DSC digital signing for Frappe & ERPNext — sign PDFs with a hardware DSC USB token, PAdES-compliant, with a rules engine and audit trail",
     "repo": "https://github.com/Ranganathanfinstien/Frappe-DSC",
     "logo_url": "https://cloud.frappe.io/files/esign logo.webp",
     "website": "https://www.finstein.ai/",
@@ -499,13 +564,20 @@
         "target": "develop",
         "frappe_core": ">=15.0.0,<16.0.0",
         "dependencies": {}
+      },
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "main",
+        "frappe_core": null,
+        "dependencies": {}
       }
     ]
   },
   {
     "name": "report_builder",
     "title": "Report Builder",
-    "description": "Report Builder: a Frappe/ERPNext app to build table reports via drag-and-drop UI \u2014 columns, filters, joins, exports no code, no SQL.",
+    "description": "Report Builder: a Frappe/ERPNext app to build table reports via drag-and-drop UI — columns, filters, joins, exports no code, no SQL.",
     "repo": "https://github.com/PravinKumarJ-Finstein/reportStudio",
     "logo_url": "https://cloud.frappe.io/files/Report Studio Icon.webp",
     "website": "https://github.com/PravinKumarJ-Finstein/reportStudio",
@@ -520,13 +592,20 @@
         "target": "develop",
         "frappe_core": ">=15.0.0,<16.0.0",
         "dependencies": {}
+      },
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "main",
+        "frappe_core": ">=15.0.0,<16.0.0",
+        "dependencies": {}
       }
     ]
   },
   {
     "name": "fintheme_and_sounds",
     "title": "Fintheme and Sounds",
-    "description": "Customize Frappe & ERPNext Desk per user \u2014 live theme editor, WCAG-checked palettes, 17 themes, and a Sound Studio for Desk audio.",
+    "description": "Customize Frappe & ERPNext Desk per user — live theme editor, WCAG-checked palettes, 17 themes, and a Sound Studio for Desk audio.",
     "repo": "https://github.com/Darwin-DJR-Finstein/Fintheme-and-sounds",
     "logo_url": "https://cloud.frappe.io/files/ChatGPT Image May 15, 2026, 01_57_16 PM.webp",
     "website": "https://github.com/Darwin-DJR-Finstein/Fintheme-and-sounds.git",
@@ -537,6 +616,13 @@
     "category": "Utilities",
     "stars": null,
     "targets": [
+      {
+        "version": "1.0.0",
+        "target_type": "branch",
+        "target": "develop",
+        "frappe_core": ">=15.0.0,<16.0.0",
+        "dependencies": {}
+      },
       {
         "version": "1.0.0",
         "target_type": "branch",
@@ -563,6 +649,15 @@
       {
         "version": "0.0.1",
         "target_type": "branch",
+        "target": "develop",
+        "frappe_core": ">=15.0.0,<16.0.0",
+        "dependencies": {
+          "erpnext": ">=15.0.0,<16.0.0"
+        }
+      },
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
         "target": "main",
         "frappe_core": ">=15.0.0,<16.0.0",
         "dependencies": {
@@ -585,6 +680,16 @@
     "category": "Extensions",
     "stars": null,
     "targets": [
+      {
+        "version": "1.0.0",
+        "target_type": "branch",
+        "target": "develop",
+        "frappe_core": ">=15.0.0,<16.0.0",
+        "dependencies": {
+          "erpnext": ">=15.0.0,<16.0.0",
+          "hrms": ">=15.0.0,<16.0.0"
+        }
+      },
       {
         "version": "1.0.0",
         "target_type": "branch",
@@ -639,7 +744,7 @@
     "stars": null,
     "targets": [
       {
-        "version": "0.13.1",
+        "version": "0.13.5",
         "target_type": "branch",
         "target": "version-16",
         "frappe_core": ">=16.0.0,<17.0.0",
@@ -648,7 +753,7 @@
         }
       },
       {
-        "version": "0.13.1",
+        "version": "0.13.3",
         "target_type": "branch",
         "target": "main",
         "frappe_core": ">=16.0.0,<17.0.0",
@@ -660,6 +765,15 @@
         "version": "0.10.0",
         "target_type": "branch",
         "target": "version-15",
+        "frappe_core": ">=15.0.0,<16.0.0",
+        "dependencies": {
+          "erpnext": ">=15.0.0,<16.0.0"
+        }
+      },
+      {
+        "version": "0.1.1",
+        "target_type": "branch",
+        "target": "develop",
         "frappe_core": ">=15.0.0,<16.0.0",
         "dependencies": {
           "erpnext": ">=15.0.0,<16.0.0"
@@ -687,6 +801,13 @@
         "target_type": "branch",
         "target": "version-16",
         "frappe_core": ">=16.0.0,<=17.0.0",
+        "dependencies": {}
+      },
+      {
+        "version": "1.0.2",
+        "target_type": "branch",
+        "target": "develop",
+        "frappe_core": null,
         "dependencies": {}
       }
     ]
@@ -725,7 +846,7 @@
   {
     "name": "quickbooks_master_sync",
     "title": "Quickbooks to ERPNext Data Migrator",
-    "description": "A Frappe app for seamlessly syncing master data from QuickBooks Online into ERPNext\u2014built and maintained by Invento Software Limited.",
+    "description": "A Frappe app for seamlessly syncing master data from QuickBooks Online into ERPNext—built and maintained by Invento Software Limited.",
     "repo": "https://github.com/invento-software-limited/quickbooks_master_sync",
     "logo_url": "https://cloud.frappe.io/files/logo7faaa5.webp",
     "website": "https://github.com/invento-software-limited/quickbooks_master_sync",
@@ -737,7 +858,7 @@
     "stars": null,
     "targets": [
       {
-        "version": "2.0.1",
+        "version": "2.0.2",
         "target_type": "branch",
         "target": "version-16",
         "frappe_core": ">=16.0.0,<17.0.0",
@@ -747,6 +868,13 @@
         "version": "1.0.0",
         "target_type": "branch",
         "target": "version-15",
+        "frappe_core": ">=15.0.0,<16.0.0",
+        "dependencies": {}
+      },
+      {
+        "version": "1.0.0",
+        "target_type": "branch",
+        "target": "develop",
         "frappe_core": ">=15.0.0,<16.0.0",
         "dependencies": {}
       }
@@ -833,6 +961,15 @@
       {
         "version": "1.0.3",
         "target_type": "branch",
+        "target": "develop",
+        "frappe_core": ">=16.0.0,<17.0.0",
+        "dependencies": {
+          "erpnext": ">=16.0.0,<17.0.0"
+        }
+      },
+      {
+        "version": "1.0.3",
+        "target_type": "branch",
         "target": "master",
         "frappe_core": ">=16.0.0,<17.0.0",
         "dependencies": {
@@ -859,6 +996,13 @@
         "version": "0.0.1",
         "target_type": "branch",
         "target": "version-16",
+        "frappe_core": ">=16.0.0,<17.0.0",
+        "dependencies": {}
+      },
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "develop",
         "frappe_core": ">=16.0.0,<17.0.0",
         "dependencies": {}
       }
@@ -1060,14 +1204,22 @@
     ],
     "category": "Extensions",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "1.0.3",
+        "target_type": "branch",
+        "target": "main",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "saas_theme",
     "title": "Saas Theme by CommitStreet",
-    "description": "A modern, polished SaaS UI theme for Frappe Framework v16 \u2014 dual sidebar, slide-in editors, enhanced forms & dashboard.",
+    "description": "A modern, polished SaaS UI theme for Frappe Framework v16 — dual sidebar, slide-in editors, enhanced forms & dashboard.",
     "repo": "https://github.com/vineyrawat/saas_theme",
-    "logo_url": "https://cloud.frappe.io/files/Screenshot 2026-04-05 at 1.43.00\u202fAM 1 (3).webp",
+    "logo_url": "https://cloud.frappe.io/files/Screenshot 2026-04-05 at 1.43.00 AM 1 (3).webp",
     "website": "https://vinay-rawat.dev/",
     "documentation": "https://github.com/vineyrawat/saas_theme",
     "categories": [
@@ -1102,15 +1254,22 @@
       {
         "version": "1.0.1",
         "target_type": "branch",
-        "target": "develop",
-        "frappe_core": ">=15.0.0",
+        "target": "version-16",
+        "frappe_core": ">=16.0.0,<17.0.0",
         "dependencies": {}
       },
       {
-        "version": "1.0.0",
+        "version": "1.0.1",
         "target_type": "branch",
-        "target": "version-16",
-        "frappe_core": ">=16.0.0,<17.0.0",
+        "target": "version-15",
+        "frappe_core": ">=15.0.0,<16.0.0",
+        "dependencies": {}
+      },
+      {
+        "version": "1.0.1",
+        "target_type": "branch",
+        "target": "develop",
+        "frappe_core": ">=15.0.0",
         "dependencies": {}
       }
     ]
@@ -1192,10 +1351,24 @@
     "stars": null,
     "targets": [
       {
+        "version": "15.3.1",
+        "target_type": "branch",
+        "target": "version-15",
+        "frappe_core": null,
+        "dependencies": {}
+      },
+      {
         "version": "0.0.1",
         "target_type": "branch",
         "target": "version-16",
         "frappe_core": ">=16.0.0,<17.0.0",
+        "dependencies": {}
+      },
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "develop",
+        "frappe_core": null,
         "dependencies": {}
       }
     ]
@@ -1243,7 +1416,29 @@
     ],
     "category": "Utilities",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "version-16",
+        "frappe_core": null,
+        "dependencies": {}
+      },
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "version-15",
+        "frappe_core": null,
+        "dependencies": {}
+      },
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "main",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "wiki",
@@ -1265,6 +1460,13 @@
         "target_type": "branch",
         "target": "develop",
         "frappe_core": ">=16.0.0-dev,<=17.0.0-dev",
+        "dependencies": {}
+      },
+      {
+        "version": "2.0.0",
+        "target_type": "branch",
+        "target": "master",
+        "frappe_core": null,
         "dependencies": {}
       }
     ]
@@ -1290,6 +1492,13 @@
         "target_type": "branch",
         "target": "develop",
         "frappe_core": ">=16.0.0-dev,<=17.0.0-dev",
+        "dependencies": {}
+      },
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "main",
+        "frappe_core": null,
         "dependencies": {}
       }
     ]
@@ -1319,7 +1528,7 @@
         }
       },
       {
-        "version": "16.10.1",
+        "version": "16.13.0",
         "target_type": "branch",
         "target": "version-16",
         "frappe_core": ">=16.0.0,<17.0.0",
@@ -1328,7 +1537,7 @@
         }
       },
       {
-        "version": "15.62.0",
+        "version": "15.63.0",
         "target_type": "branch",
         "target": "version-15",
         "frappe_core": ">=15.0.0,<16.0.0",
@@ -1352,7 +1561,22 @@
     ],
     "category": "Developer Tools",
     "stars": 946,
-    "targets": []
+    "targets": [
+      {
+        "version": "3.3.1",
+        "target_type": "branch",
+        "target": "develop",
+        "frappe_core": null,
+        "dependencies": {}
+      },
+      {
+        "version": "2.2.14",
+        "target_type": "branch",
+        "target": "main",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "blog",
@@ -1398,7 +1622,22 @@
     ],
     "category": "Developer Tools",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "1.0.0",
+        "target_type": "branch",
+        "target": "develop",
+        "frappe_core": null,
+        "dependencies": {}
+      },
+      {
+        "version": "1.0.0",
+        "target_type": "branch",
+        "target": "main",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "webshop",
@@ -1414,7 +1653,29 @@
     ],
     "category": "Extensions",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "version-16",
+        "frappe_core": null,
+        "dependencies": {}
+      },
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "version-15",
+        "frappe_core": null,
+        "dependencies": {}
+      },
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "develop",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "builder",
@@ -1433,7 +1694,7 @@
     "stars": 2045,
     "targets": [
       {
-        "version": "1.27.1",
+        "version": "1.31.0",
         "target_type": "branch",
         "target": "master",
         "frappe_core": ">=15.0.0",
@@ -1470,6 +1731,13 @@
         "target_type": "branch",
         "target": "develop",
         "frappe_core": ">=15.0.0-dev,<=17.0.0-dev",
+        "dependencies": {}
+      },
+      {
+        "version": "0.3.0",
+        "target_type": "branch",
+        "target": "main",
+        "frappe_core": null,
         "dependencies": {}
       }
     ]
@@ -1529,6 +1797,22 @@
         "dependencies": {
           "erpnext": ">=17.0.0-dev,<18.0.0"
         }
+      },
+      {
+        "version": "16.2.0",
+        "target_type": "branch",
+        "target": "version-16",
+        "frappe_core": ">=16.0.0,<17.0.0",
+        "dependencies": {
+          "erpnext": ">=16.0.0,<17.0.0"
+        }
+      },
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "version-15",
+        "frappe_core": null,
+        "dependencies": {}
       }
     ]
   },
@@ -1547,7 +1831,7 @@
     "stars": 2981,
     "targets": [
       {
-        "version": "2.57.0",
+        "version": "2.59.0",
         "target_type": "branch",
         "target": "main",
         "frappe_core": ">=14.0.0,<=17.0.0-dev",
@@ -1590,7 +1874,7 @@
         "dependencies": {}
       },
       {
-        "version": "1.76.0",
+        "version": "1.78.2",
         "target_type": "branch",
         "target": "main",
         "frappe_core": ">=15.0.0,<17.0.0",
@@ -1622,14 +1906,14 @@
         "dependencies": {}
       },
       {
-        "version": "16.25.0",
+        "version": "16.28.0",
         "target_type": "branch",
         "target": "version-16",
-        "frappe_core": ">=16.0.0,<17.0.0",
+        "frappe_core": ">=16.21.0,<17.0.0",
         "dependencies": {}
       },
       {
-        "version": "15.114.0",
+        "version": "15.117.0",
         "target_type": "branch",
         "target": "version-15",
         "frappe_core": ">=15.40.4,<16.0.0",
@@ -1685,7 +1969,7 @@
     "stars": null,
     "targets": [
       {
-        "version": "15.18.0",
+        "version": "15.19.0",
         "target_type": "branch",
         "target": "version-15",
         "frappe_core": ">=15.0.0,<16.0.0",
@@ -1738,6 +2022,13 @@
         "dependencies": {
           "erpnext": ">=16.0.0,<17.0.0"
         }
+      },
+      {
+        "version": "16.3.1",
+        "target_type": "branch",
+        "target": "develop",
+        "frappe_core": null,
+        "dependencies": {}
       },
       {
         "version": "15.3.2",
@@ -1812,25 +2103,41 @@
     "stars": null,
     "targets": [
       {
-        "version": "16.6.0",
+        "version": "16.7.2",
         "target_type": "branch",
         "target": "version-16",
         "frappe_core": ">=16.0.0,<17.0.0",
-        "dependencies": {}
+        "dependencies": {
+          "erpnext": ">=16.0.0,<17.0.0",
+          "hrms": ">=16.0.0,<17.0.0"
+        }
       },
       {
         "version": "16.5.0",
         "target_type": "branch",
         "target": "develop",
         "frappe_core": ">=16.0.0,<17.0.0",
-        "dependencies": {}
+        "dependencies": {
+          "erpnext": ">=16.0.0,<17.0.0",
+          "hrms": ">=16.0.0,<17.0.0"
+        }
+      },
+      {
+        "version": "2.16.1",
+        "target_type": "branch",
+        "target": "version-15",
+        "frappe_core": ">=15.0.0,<16.0.0",
+        "dependencies": {
+          "erpnext": ">=15.0.0,<16.0.0",
+          "hrms": ">=15.0.0,<16.0.0"
+        }
       }
     ]
   },
   {
     "name": "erpnext_thailand",
     "title": "ERPNext Thailand",
-    "description": "Useful feature set for Thailand community, i.e., Thai Tax, Bill (\u0e43\u0e1a\u0e27\u0e32\u0e07\u0e1a\u0e34\u0e25), Get Address from Tax ID / zip code.",
+    "description": "Useful feature set for Thailand community, i.e., Thai Tax, Bill (ใบวางบิล), Get Address from Tax ID / zip code.",
     "repo": "https://github.com/ecosoft-frappe/erpnext_thailand",
     "logo_url": "https://cloud.frappe.io/files/ecosoft.webp",
     "website": "https://github.com/ecosoft-frappe/erpnext_thailand",
@@ -1840,7 +2147,15 @@
     ],
     "category": "Compliance",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "1.0.2",
+        "target_type": "branch",
+        "target": "main",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "erpnext_germany",
@@ -1879,7 +2194,7 @@
   {
     "name": "myinvois_erpgulf",
     "title": "Malaysia Compliance",
-    "description": "MyInvois app connects ERPNext with LHDN - Malaysia\u2019s MyInvois e-Invoicing platform, ensuring compliance with phase 1 & 2 e-Invoice mandates",
+    "description": "MyInvois app connects ERPNext with LHDN - Malaysia’s MyInvois e-Invoicing platform, ensuring compliance with phase 1 & 2 e-Invoice mandates",
     "repo": "https://github.com/ERPGulf/myinvois",
     "logo_url": "https://cloud.frappe.io/files/ERPGulf logo-big.webp",
     "website": "https://cloud.erpgulf.com/",
@@ -1950,6 +2265,15 @@
       {
         "version": "0.0.1",
         "target_type": "branch",
+        "target": "version-16",
+        "frappe_core": ">=14.0.0,<17.0.0",
+        "dependencies": {
+          "frappe_whatsapp": ">=1.0.0,<2.0.0"
+        }
+      },
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
         "target": "develop",
         "frappe_core": ">=14.0.0,<=17.0.0-dev",
         "dependencies": {}
@@ -1969,7 +2293,15 @@
     ],
     "category": "Compliance",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "0.1.0",
+        "target_type": "branch",
+        "target": "version-16",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "zatca_erpgulf",
@@ -1992,6 +2324,13 @@
         "target": "main",
         "frappe_core": ">=14.0.0,<17.0.0",
         "dependencies": {}
+      },
+      {
+        "version": "2.1.1",
+        "target_type": "branch",
+        "target": "develop",
+        "frappe_core": null,
+        "dependencies": {}
       }
     ]
   },
@@ -2009,7 +2348,36 @@
     ],
     "category": "Compliance",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "version-16",
+        "frappe_core": null,
+        "dependencies": {}
+      },
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "version-15",
+        "frappe_core": null,
+        "dependencies": {}
+      },
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "develop",
+        "frappe_core": null,
+        "dependencies": {}
+      },
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "main",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "klik_pos",
@@ -2024,7 +2392,22 @@
     ],
     "category": "Extensions",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "version-16",
+        "frappe_core": null,
+        "dependencies": {}
+      },
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "develop",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "eps",
@@ -2045,6 +2428,13 @@
         "target_type": "branch",
         "target": "version-16",
         "frappe_core": ">=16.0.0,<17.0.0",
+        "dependencies": {}
+      },
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "develop",
+        "frappe_core": null,
         "dependencies": {}
       }
     ]
@@ -2071,6 +2461,20 @@
         "dependencies": {
           "erpnext": ">=15.0.0,<17.0.0"
         }
+      },
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "version-16",
+        "frappe_core": null,
+        "dependencies": {}
+      },
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "develop",
+        "frappe_core": null,
+        "dependencies": {}
       }
     ]
   },
@@ -2088,6 +2492,13 @@
     "category": "Integrations",
     "stars": null,
     "targets": [
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "develop",
+        "frappe_core": null,
+        "dependencies": {}
+      },
       {
         "version": "0.0.1",
         "target_type": "branch",
@@ -2110,7 +2521,15 @@
     ],
     "category": "Utilities",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "main",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "clefincode_chat",
@@ -2148,6 +2567,13 @@
         "target": "version-16",
         "frappe_core": ">=16.0.0,<17.0.0",
         "dependencies": {}
+      },
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "develop",
+        "frappe_core": null,
+        "dependencies": {}
       }
     ]
   },
@@ -2166,7 +2592,7 @@
     "stars": null,
     "targets": [
       {
-        "version": "1.1.0",
+        "version": "1.1.2",
         "target_type": "branch",
         "target": "version-16",
         "frappe_core": ">=15.0.0,<=17.0.0",
@@ -2249,6 +2675,13 @@
       {
         "version": "0.0.1",
         "target_type": "branch",
+        "target": "version-15",
+        "frappe_core": null,
+        "dependencies": {}
+      },
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
         "target": "develop",
         "frappe_core": ">=16.0.0,<17.0.0",
         "dependencies": {
@@ -2270,7 +2703,22 @@
     ],
     "category": "Integrations",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "1.0.0",
+        "target_type": "branch",
+        "target": "develop",
+        "frappe_core": null,
+        "dependencies": {}
+      },
+      {
+        "version": "1.0.0",
+        "target_type": "branch",
+        "target": "master",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "ecommerce_integrations",
@@ -2401,7 +2849,15 @@
     "categories": [],
     "category": "Extensions",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "main",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "multi_cloud_storage",
@@ -2421,6 +2877,13 @@
         "target": "develop",
         "frappe_core": ">=16.0.0",
         "dependencies": {}
+      },
+      {
+        "version": "1.0.0",
+        "target_type": "branch",
+        "target": "main",
+        "frappe_core": ">=16.0.0",
+        "dependencies": {}
       }
     ]
   },
@@ -2437,7 +2900,22 @@
     ],
     "category": "Utilities",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "develop",
+        "frappe_core": null,
+        "dependencies": {}
+      },
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "main",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "utility_billing",
@@ -2458,6 +2936,13 @@
         "target_type": "branch",
         "target": "version-16",
         "frappe_core": ">=15.0.0,<17.0.0",
+        "dependencies": {}
+      },
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "version-15",
+        "frappe_core": null,
         "dependencies": {}
       },
       {
@@ -2485,7 +2970,7 @@
     "stars": null,
     "targets": [
       {
-        "version": "0.61.5",
+        "version": "0.61.7",
         "target_type": "branch",
         "target": "develop",
         "frappe_core": ">=15.0.0,<17.0.0",
@@ -2536,7 +3021,22 @@
     ],
     "category": "Utilities",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "0.1.0",
+        "target_type": "branch",
+        "target": "main",
+        "frappe_core": null,
+        "dependencies": {}
+      },
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "develop",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "preview_attachment",
@@ -2551,7 +3051,22 @@
     ],
     "category": "Integrations",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "version-15",
+        "frappe_core": null,
+        "dependencies": {}
+      },
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "develop",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "it_management",
@@ -2566,7 +3081,15 @@
     ],
     "category": "Utilities",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "develop",
+        "frappe_core": ">=13.0.0,<16.0.0",
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "singapore_compliance",
@@ -2582,7 +3105,29 @@
     ],
     "category": "Compliance",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "version-16",
+        "frappe_core": null,
+        "dependencies": {}
+      },
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "version-15",
+        "frappe_core": null,
+        "dependencies": {}
+      },
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "develop",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "erpnext_tse",
@@ -2597,7 +3142,29 @@
     ],
     "category": "Extensions",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "16.0.0-beta-2",
+        "target_type": "branch",
+        "target": "version-16",
+        "frappe_core": null,
+        "dependencies": {}
+      },
+      {
+        "version": "15.4.7",
+        "target_type": "branch",
+        "target": "version-15",
+        "frappe_core": null,
+        "dependencies": {}
+      },
+      {
+        "version": "15.0.0-dev",
+        "target_type": "branch",
+        "target": "develop",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "edocument_integration",
@@ -2613,7 +3180,29 @@
     ],
     "category": "Compliance",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "version-16",
+        "frappe_core": null,
+        "dependencies": {}
+      },
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "version-15",
+        "frappe_core": null,
+        "dependencies": {}
+      },
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "develop",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "otp_generation",
@@ -2628,7 +3217,15 @@
     ],
     "category": "Utilities",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "main",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "working_time",
@@ -2669,7 +3266,15 @@
     ],
     "category": "Extensions",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "1.0.1",
+        "target_type": "branch",
+        "target": "develop",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "pos_next",
@@ -2685,12 +3290,34 @@
     ],
     "category": "Extensions",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "1.17.0",
+        "target_type": "branch",
+        "target": "version-15",
+        "frappe_core": null,
+        "dependencies": {}
+      },
+      {
+        "version": "1.17.0",
+        "target_type": "branch",
+        "target": "develop",
+        "frappe_core": null,
+        "dependencies": {}
+      },
+      {
+        "version": "1.11.0",
+        "target_type": "branch",
+        "target": "version-16",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "pwa_frappe",
     "title": "PWA Frappe",
-    "description": "PWA for enabling your applications to be installed and run as native-like apps on both desktop and mobile devices. \ud83d\ude80",
+    "description": "PWA for enabling your applications to be installed and run as native-like apps on both desktop and mobile devices. 🚀",
     "repo": "https://github.com/omfsakib/pwa_frappe",
     "logo_url": "https://cloud.frappe.io/files/logo_pwa.webp",
     "website": "https://github.com/omfsakib/pwa_frappe",
@@ -2700,7 +3327,15 @@
     ],
     "category": "Utilities",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "1.0.2",
+        "target_type": "branch",
+        "target": "main",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "geo_extension",
@@ -2713,7 +3348,22 @@
     "categories": [],
     "category": "Extensions",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "1.4.0",
+        "target_type": "branch",
+        "target": "develop",
+        "frappe_core": null,
+        "dependencies": {}
+      },
+      {
+        "version": "1.4.0",
+        "target_type": "branch",
+        "target": "main",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "shortnr",
@@ -2728,7 +3378,22 @@
     ],
     "category": "Utilities",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "1.1.0",
+        "target_type": "branch",
+        "target": "main",
+        "frappe_core": null,
+        "dependencies": {}
+      },
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "develop",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "argentina_compliance",
@@ -2743,7 +3408,22 @@
     ],
     "category": "Extensions",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "15.0.1",
+        "target_type": "branch",
+        "target": "version-15",
+        "frappe_core": null,
+        "dependencies": {}
+      },
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "main",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "zkteco_checkins_sync",
@@ -2758,7 +3438,15 @@
     ],
     "category": "Utilities",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "main",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "exchange_rate_sync",
@@ -2773,7 +3461,15 @@
     ],
     "category": "Utilities",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "main",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "shift_allocation_from_excel",
@@ -2789,7 +3485,15 @@
     ],
     "category": "Utilities",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "0.0.2",
+        "target_type": "branch",
+        "target": "main",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "frappe_desk_theme",
@@ -2804,7 +3508,15 @@
     ],
     "category": "Utilities",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "1.1.0",
+        "target_type": "branch",
+        "target": "main",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "customer_statements",
@@ -2817,7 +3529,15 @@
     "categories": [],
     "category": "Extensions",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "develop",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "professional_tax",
@@ -2832,7 +3552,15 @@
     ],
     "category": "Integrations",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "main",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "fax",
@@ -2847,7 +3575,22 @@
     ],
     "category": "Integrations",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "version-15",
+        "frappe_core": null,
+        "dependencies": {}
+      },
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "develop",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "frappe_msg91_integration",
@@ -2868,6 +3611,13 @@
         "target_type": "branch",
         "target": "develop",
         "frappe_core": ">=16.0.0,<17.0.0",
+        "dependencies": {}
+      },
+      {
+        "version": "1.0.0",
+        "target_type": "branch",
+        "target": "main",
+        "frappe_core": null,
         "dependencies": {}
       }
     ]
@@ -2920,7 +3670,22 @@
     "categories": [],
     "category": "Extensions",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "version-15",
+        "frappe_core": null,
+        "dependencies": {}
+      },
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "develop",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "razorpayx_integration",
@@ -2934,6 +3699,15 @@
     "category": "Integrations",
     "stars": null,
     "targets": [
+      {
+        "version": "16.0.0-dev",
+        "target_type": "branch",
+        "target": "develop",
+        "frappe_core": ">=15.0.0,<16.0.0",
+        "dependencies": {
+          "erpnext": ">=15.0.0,<16.0.0"
+        }
+      },
       {
         "version": "15.0.1",
         "target_type": "branch",
@@ -2957,6 +3731,15 @@
     "category": "Extensions",
     "stars": null,
     "targets": [
+      {
+        "version": "16.0.0-dev",
+        "target_type": "branch",
+        "target": "develop",
+        "frappe_core": ">=15.0.0,<16.0.0",
+        "dependencies": {
+          "erpnext": ">=15.0.0,<16.0.0"
+        }
+      },
       {
         "version": "15.0.1",
         "target_type": "branch",
@@ -2990,7 +3773,7 @@
         }
       },
       {
-        "version": "15.1.0",
+        "version": "15.2.0",
         "target_type": "branch",
         "target": "version-15",
         "frappe_core": ">=15.0.0,<16.0.0",
@@ -3013,7 +3796,29 @@
     ],
     "category": "Compliance",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "version-16",
+        "frappe_core": ">=16.0.0,<17.0.0",
+        "dependencies": {}
+      },
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "version-15",
+        "frappe_core": null,
+        "dependencies": {}
+      },
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "develop",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "frappe_tingg_payments",
@@ -3030,6 +3835,13 @@
     "category": "Integrations",
     "stars": null,
     "targets": [
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "version-16",
+        "frappe_core": ">=16.0.0,<17.0.0",
+        "dependencies": {}
+      },
       {
         "version": "0.0.1",
         "target_type": "branch",
@@ -3059,7 +3871,15 @@
     ],
     "category": "Extensions",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "main",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "doctype_permission",
@@ -3074,7 +3894,15 @@
     ],
     "category": "Utilities",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "main",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "bezzie",
@@ -3104,7 +3932,15 @@
     ],
     "category": "Developer Tools",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "main",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "item_translation",
@@ -3119,7 +3955,15 @@
     ],
     "category": "Integrations",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "15.1.0",
+        "target_type": "branch",
+        "target": "version-15",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "woocommerce_integration",
@@ -3135,7 +3979,15 @@
     ],
     "category": "Integrations",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "15.0.3",
+        "target_type": "branch",
+        "target": "version-15",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "toolbox",
@@ -3152,7 +4004,15 @@
     ],
     "category": "Integrations",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "0.0.2-beta.0",
+        "target_type": "branch",
+        "target": "main",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "frappe_paystack",
@@ -3167,7 +4027,15 @@
     ],
     "category": "Integrations",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "15.0.2",
+        "target_type": "branch",
+        "target": "version-15",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "employee_self_service",
@@ -3197,7 +4065,22 @@
     ],
     "category": "Developer Tools",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "1.6.7",
+        "target_type": "branch",
+        "target": "main",
+        "frappe_core": null,
+        "dependencies": {}
+      },
+      {
+        "version": "1.6.5",
+        "target_type": "branch",
+        "target": "develop",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "erpnext_shipping",
@@ -3214,21 +4097,30 @@
     "stars": null,
     "targets": [
       {
-        "version": "15.1.1",
+        "version": "16.0.0",
         "target_type": "branch",
-        "target": "version-15",
-        "frappe_core": ">=15.0.0,<16.0.0",
+        "target": "version-16",
+        "frappe_core": ">=16.0.0,<17.0.0",
         "dependencies": {
-          "erpnext": ">=15.0.0,<16.0.0"
+          "erpnext": ">=16.0.0,<17.0.0"
         }
       },
       {
-        "version": "15.0.3",
+        "version": "16.0.0",
         "target_type": "branch",
         "target": "develop",
         "frappe_core": ">=16.0.0,<17.0.0",
         "dependencies": {
           "erpnext": ">=16.0.0,<17.0.0"
+        }
+      },
+      {
+        "version": "15.2.0",
+        "target_type": "branch",
+        "target": "version-15",
+        "frappe_core": ">=15.0.0,<16.0.0",
+        "dependencies": {
+          "erpnext": ">=15.0.0,<16.0.0"
         }
       }
     ]
@@ -3251,6 +4143,13 @@
         "version": "16.3.0",
         "target_type": "branch",
         "target": "version-16",
+        "frappe_core": ">=16.0.0,<17.0.0",
+        "dependencies": {}
+      },
+      {
+        "version": "16.3.0",
+        "target_type": "branch",
+        "target": "develop",
         "frappe_core": ">=16.0.0,<17.0.0",
         "dependencies": {}
       },
@@ -3278,6 +4177,15 @@
     "category": "Compliance",
     "stars": null,
     "targets": [
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "version-16",
+        "frappe_core": ">=15.0.0",
+        "dependencies": {
+          "erpnext": ">=15.0.0"
+        }
+      },
       {
         "version": "0.0.1",
         "target_type": "branch",
@@ -3311,7 +4219,15 @@
     ],
     "category": "Integrations",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "1.0.0",
+        "target_type": "branch",
+        "target": "main",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "erpnext_snapaddy",
@@ -3326,7 +4242,15 @@
     ],
     "category": "Integrations",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "version-15",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "ipconnex_ai_invoice",
@@ -3341,7 +4265,15 @@
     ],
     "category": "Integrations",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "main",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "autoinscribe",
@@ -3356,7 +4288,15 @@
     ],
     "category": "Integrations",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "0.1.0",
+        "target_type": "branch",
+        "target": "develop",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "frappe_s3_attachment",
@@ -3390,7 +4330,22 @@
     ],
     "category": "Utilities",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "develop",
+        "frappe_core": null,
+        "dependencies": {}
+      },
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "master",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "appointedd_integration",
@@ -3423,7 +4378,15 @@
     ],
     "category": "Compliance",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "2.0.1",
+        "target_type": "branch",
+        "target": "main",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "mtpl_api",
@@ -3453,7 +4416,15 @@
     ],
     "category": "Extensions",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "1.0.8",
+        "target_type": "branch",
+        "target": "main",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "batch_payments",
@@ -3608,7 +4579,22 @@
     ],
     "category": "Integrations",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "1.1.3",
+        "target_type": "branch",
+        "target": "version-15",
+        "frappe_core": null,
+        "dependencies": {}
+      },
+      {
+        "version": "1.1.3",
+        "target_type": "branch",
+        "target": "develop",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "signage_display",
@@ -3653,7 +4639,15 @@
     ],
     "category": "Utilities",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "1.1.1",
+        "target_type": "branch",
+        "target": "main",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "frappe_better_list_view",
@@ -3668,7 +4662,15 @@
     ],
     "category": "Utilities",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "1.4.0",
+        "target_type": "branch",
+        "target": "main",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "frappe_disable_signup",
@@ -3775,7 +4777,15 @@
     ],
     "category": "Extensions",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "1.0.10",
+        "target_type": "branch",
+        "target": "main",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "red_background",
@@ -3788,7 +4798,15 @@
     "categories": [],
     "category": "Extensions",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "15.0.0",
+        "target_type": "branch",
+        "target": "version-15",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "frappe_list_unassign_from",
@@ -3803,7 +4821,15 @@
     ],
     "category": "Extensions",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "1.0.9",
+        "target_type": "branch",
+        "target": "main",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "frappe_better_select_control",
@@ -3816,7 +4842,15 @@
     "categories": [],
     "category": "Extensions",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "1.2.1",
+        "target_type": "branch",
+        "target": "main",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "frappe_better_attach_control",
@@ -3831,7 +4865,15 @@
     ],
     "category": "Extensions",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "2.0.0",
+        "target_type": "branch",
+        "target": "main",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "restaurant_management",
@@ -3859,7 +4901,15 @@
     "categories": [],
     "category": "Extensions",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "1.2.4",
+        "target_type": "branch",
+        "target": "main",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "hr_addon",
@@ -3910,7 +4960,22 @@
     "categories": [],
     "category": "Extensions",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "version-15",
+        "frappe_core": null,
+        "dependencies": {}
+      },
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "develop",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "persona",
@@ -3923,7 +4988,15 @@
     "categories": [],
     "category": "Extensions",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "version-16",
+        "frappe_core": ">=16.0.0,<17.0.0",
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "frappe_system_monitor",
@@ -4055,7 +5128,22 @@
     ],
     "category": "Extensions",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "version-16",
+        "frappe_core": null,
+        "dependencies": {}
+      },
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "version-15",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "swiss_accounting_integration",
@@ -4087,6 +5175,13 @@
     "stars": null,
     "targets": [
       {
+        "version": "16.0.0",
+        "target_type": "branch",
+        "target": "version-16",
+        "frappe_core": null,
+        "dependencies": {}
+      },
+      {
         "version": "16.0.0-dev",
         "target_type": "branch",
         "target": "develop",
@@ -4115,7 +5210,22 @@
     ],
     "category": "Extensions",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "2.4.6",
+        "target_type": "branch",
+        "target": "main",
+        "frappe_core": null,
+        "dependencies": {}
+      },
+      {
+        "version": "2.4.2",
+        "target_type": "branch",
+        "target": "version-16",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "warehouse_item_group_rules",
@@ -4130,7 +5240,15 @@
     ],
     "category": "Extensions",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "main",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "erpnext_france",
@@ -4145,7 +5263,29 @@
     ],
     "category": "Compliance",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "16.0.1",
+        "target_type": "branch",
+        "target": "version-16",
+        "frappe_core": null,
+        "dependencies": {}
+      },
+      {
+        "version": "15.0.7",
+        "target_type": "branch",
+        "target": "version-15",
+        "frappe_core": null,
+        "dependencies": {}
+      },
+      {
+        "version": "0.1.0",
+        "target_type": "branch",
+        "target": "develop",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "swiss_accounting_software",
@@ -4161,7 +5301,15 @@
     ],
     "category": "Compliance",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "0.0.6",
+        "target_type": "branch",
+        "target": "main",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "woocommerce_fusion",
@@ -4178,7 +5326,15 @@
     ],
     "category": "Integrations",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "1.17.3",
+        "target_type": "branch",
+        "target": "version-15",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "webapp",
@@ -4194,7 +5350,29 @@
     ],
     "category": "Extensions",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "version-16",
+        "frappe_core": null,
+        "dependencies": {}
+      },
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "version-15",
+        "frappe_core": null,
+        "dependencies": {}
+      },
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "develop",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "advanced_compliance",
@@ -4210,6 +5388,15 @@
     "category": "Extensions",
     "stars": null,
     "targets": [
+      {
+        "version": "1.0.0",
+        "target_type": "branch",
+        "target": "version-15",
+        "frappe_core": ">=15.0.0",
+        "dependencies": {
+          "erpnext": ">=15.0.0"
+        }
+      },
       {
         "version": "1.0.0",
         "target_type": "branch",
@@ -4245,14 +5432,14 @@
         "dependencies": {}
       },
       {
-        "version": "16.6.2",
+        "version": "16.7.0",
         "target_type": "branch",
         "target": "version-16",
         "frappe_core": ">=16.0.0,<17.0.0",
         "dependencies": {}
       },
       {
-        "version": "15.30.2",
+        "version": "15.30.4",
         "target_type": "branch",
         "target": "version-15",
         "frappe_core": ">=15.0.0,<16.0.0",
@@ -4274,7 +5461,15 @@
     ],
     "category": "Utilities",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "develop",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "compliance_plus",
@@ -4290,7 +5485,22 @@
     ],
     "category": "Integrations",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "develop",
+        "frappe_core": null,
+        "dependencies": {}
+      },
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "master",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "esign_app",
@@ -4303,7 +5513,29 @@
     "categories": [],
     "category": "Extensions",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "version-15",
+        "frappe_core": null,
+        "dependencies": {}
+      },
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "main",
+        "frappe_core": null,
+        "dependencies": {}
+      },
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "master",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "dairy",
@@ -4318,7 +5550,15 @@
     ],
     "category": "Extensions",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "main",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "eae",
@@ -4334,7 +5574,15 @@
     ],
     "category": "Extensions",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "develop",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "print_encrypt",
@@ -4349,7 +5597,15 @@
     ],
     "category": "Utilities",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "main",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "role_permission_manager",
@@ -4362,7 +5618,15 @@
     "categories": [],
     "category": "Extensions",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "develop",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "next_ai",
@@ -4378,7 +5642,22 @@
     ],
     "category": "Integrations",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "0.3.1",
+        "target_type": "branch",
+        "target": "version-15",
+        "frappe_core": null,
+        "dependencies": {}
+      },
+      {
+        "version": "0.3.1",
+        "target_type": "branch",
+        "target": "main",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "audit_control_reports",
@@ -4393,7 +5672,15 @@
     ],
     "category": "Integrations",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "main",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "ai_translate",
@@ -4409,7 +5696,15 @@
     ],
     "category": "Developer Tools",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "main",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "duplicate",
@@ -4467,7 +5762,15 @@
     "categories": [],
     "category": "Extensions",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "1.2.1",
+        "target_type": "branch",
+        "target": "main",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "frappe_pcat_exam",
@@ -4482,7 +5785,22 @@
     ],
     "category": "Integrations",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "1.0.0",
+        "target_type": "branch",
+        "target": "main",
+        "frappe_core": null,
+        "dependencies": {}
+      },
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "develop",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "ury",
@@ -4499,7 +5817,15 @@
     ],
     "category": "Integrations",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "0.2.2",
+        "target_type": "branch",
+        "target": "develop",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "genie",
@@ -4559,12 +5885,20 @@
     "categories": [],
     "category": "Compliance",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "develop",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "frappe_zakat",
     "title": "Frappe Zakat",
-    "description": "Zakat app is a key Islamic duty that involves giving part of one\u2019s wealth to those in need. This feature helps individuals and businesses accurately calculate their Zakat in line with Islamic guidelines.",
+    "description": "Zakat app is a key Islamic duty that involves giving part of one’s wealth to those in need. This feature helps individuals and businesses accurately calculate their Zakat in line with Islamic guidelines.",
     "repo": "https://github.com/lavaloon-eg/frappe-zakat",
     "logo_url": "https://cloud.frappe.io/files/Image_Editor (2) (1).webp",
     "website": "https://lavaloon.com/",
@@ -4574,7 +5908,22 @@
     ],
     "category": "Integrations",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "0.0.2",
+        "target_type": "branch",
+        "target": "develop",
+        "frappe_core": null,
+        "dependencies": {}
+      },
+      {
+        "version": "0.0.2",
+        "target_type": "branch",
+        "target": "master",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "tims_tevin_typec_integration",
@@ -4591,12 +5940,27 @@
     ],
     "category": "Compliance",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "version-15",
+        "frappe_core": null,
+        "dependencies": {}
+      },
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "develop",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "frappe_openai_integration",
     "title": "OpenAI Integration",
-    "description": "An easy-to-use Frappe app that integrates OpenAI\u2019s GPT models (like ChatGPT) into your ERP system. Send prompts and get AI responses directly from the Frappe interface.",
+    "description": "An easy-to-use Frappe app that integrates OpenAI’s GPT models (like ChatGPT) into your ERP system. Send prompts and get AI responses directly from the Frappe interface.",
     "repo": "https://github.com/manavmandli/frappe_openai_integration",
     "logo_url": "https://cloud.frappe.io/files/ChatGPT Image May 26, 2025, 10_37_05 PM.webp",
     "website": null,
@@ -4607,7 +5971,29 @@
     ],
     "category": "Integrations",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "version-16",
+        "frappe_core": ">=16.0.0,<17.0.0",
+        "dependencies": {}
+      },
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "version-15",
+        "frappe_core": ">=15.0.0,<16.0.0",
+        "dependencies": {}
+      },
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "develop",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "material_theme",
@@ -4620,7 +6006,15 @@
     "categories": [],
     "category": "Integrations",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "main",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "nl_attendance_timesheet",
@@ -4642,6 +6036,20 @@
         "target": "version-16",
         "frappe_core": ">=16,<17",
         "dependencies": {}
+      },
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "version-15",
+        "frappe_core": null,
+        "dependencies": {}
+      },
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "develop",
+        "frappe_core": null,
+        "dependencies": {}
       }
     ]
   },
@@ -4658,7 +6066,15 @@
     ],
     "category": "Integrations",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "1.2.1",
+        "target_type": "branch",
+        "target": "master",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "mail_reminder",
@@ -4673,7 +6089,22 @@
     ],
     "category": "Utilities",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "version-15",
+        "frappe_core": null,
+        "dependencies": {}
+      },
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "main",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "sheets",
@@ -4689,7 +6120,15 @@
     ],
     "category": "Integrations",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "main",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "kenya_etims_compliance",
@@ -4705,7 +6144,29 @@
     ],
     "category": "Integrations",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "develop",
+        "frappe_core": null,
+        "dependencies": {}
+      },
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "main",
+        "frappe_core": null,
+        "dependencies": {}
+      },
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "master",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "cargo_management",
@@ -4724,11 +6185,27 @@
       {
         "version": "16.2.0",
         "target_type": "branch",
+        "target": "version-16",
+        "frappe_core": ">=16.0.0,<17.0.0",
+        "dependencies": {
+          "erpnext": ">=16.0.0,<17.0.0"
+        }
+      },
+      {
+        "version": "16.2.0",
+        "target_type": "branch",
         "target": "develop",
         "frappe_core": ">=16.0.0,<17.0.0",
         "dependencies": {
           "erpnext": ">=16.0.0,<17.0.0"
         }
+      },
+      {
+        "version": "15.1.0",
+        "target_type": "branch",
+        "target": "version-15",
+        "frappe_core": null,
+        "dependencies": {}
       }
     ]
   },
@@ -4746,7 +6223,22 @@
     ],
     "category": "Integrations",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "10122024.2",
+        "target_type": "branch",
+        "target": "master",
+        "frappe_core": null,
+        "dependencies": {}
+      },
+      {
+        "version": "v04062026.1",
+        "target_type": "branch",
+        "target": "version-15",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "tekton_theme",
@@ -4785,6 +6277,13 @@
         "dependencies": {
           "erpnext": ">=14.0.0,<16.0.0"
         }
+      },
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "main",
+        "frappe_core": null,
+        "dependencies": {}
       }
     ]
   },
@@ -4802,7 +6301,22 @@
     ],
     "category": "Integrations",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "version-15",
+        "frappe_core": null,
+        "dependencies": {}
+      },
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "main",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "meeting_management",
@@ -4843,7 +6357,15 @@
     ],
     "category": "Extensions",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "main",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "desk_navbar_extended",
@@ -4858,7 +6380,15 @@
     ],
     "category": "Extensions",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "main",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "email_reminder",
@@ -4921,7 +6451,15 @@
     ],
     "category": "Integrations",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "16.0.0",
+        "target_type": "branch",
+        "target": "version-16",
+        "frappe_core": ">=16.0.0-dev,<=17.0.0-dev",
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "csf_tz",
@@ -4964,12 +6502,27 @@
     "categories": [],
     "category": "Extensions",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "version-15",
+        "frappe_core": null,
+        "dependencies": {}
+      },
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "develop",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "myojana",
     "title": "mYojana",
-    "description": "Enhance your NGO\u2019s impact with a beneficiary management solution!",
+    "description": "Enhance your NGO’s impact with a beneficiary management solution!",
     "repo": "https://github.com/dhwani-ris/mYojana",
     "logo_url": "https://cloud.frappe.io/files/MYOJANA logo2.png",
     "website": "https://myojana.notion.site/mYojana-1c31b9e143ac4f36902ea7dd97dff082",
@@ -4979,7 +6532,15 @@
     ],
     "category": "Integrations",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "main",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "erpnext_telegram_integration",
@@ -5025,6 +6586,13 @@
     "category": "Integrations",
     "stars": null,
     "targets": [
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "version-16",
+        "frappe_core": ">=16.0.0,<17.0.0",
+        "dependencies": {}
+      },
       {
         "version": "0.0.1",
         "target_type": "branch",
@@ -5188,7 +6756,15 @@
     ],
     "category": "Extensions",
     "stars": null,
-    "targets": []
+    "targets": [
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "main",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "grynnswissqrbill",
@@ -5291,6 +6867,16 @@
     "stars": null,
     "targets": [
       {
+        "version": "16.0.0",
+        "target_type": "branch",
+        "target": "version-16",
+        "frappe_core": ">=16.0.0-dev,<17.0.0",
+        "dependencies": {
+          "erpnext": ">=16.0.0-dev,<17.0.0",
+          "hrms": ">=16.0.0-dev,<17.0.0"
+        }
+      },
+      {
         "version": "15.14.0",
         "target_type": "branch",
         "target": "version-15",
@@ -5313,7 +6899,29 @@
     "categories": [],
     "category": "Developer Tools",
     "stars": 10201,
-    "targets": []
+    "targets": [
+      {
+        "version": "17.0.0-dev",
+        "target_type": "branch",
+        "target": "develop",
+        "frappe_core": null,
+        "dependencies": {}
+      },
+      {
+        "version": "16.27.0",
+        "target_type": "branch",
+        "target": "version-16",
+        "frappe_core": null,
+        "dependencies": {}
+      },
+      {
+        "version": "15.115.4",
+        "target_type": "branch",
+        "target": "version-15",
+        "frappe_core": null,
+        "dependencies": {}
+      }
+    ]
   },
   {
     "name": "payments",
@@ -5361,7 +6969,35 @@
     "categories": [],
     "category": "Applications",
     "stars": 501,
-    "targets": []
+    "targets": [
+      {
+        "version": "17.0.0-dev",
+        "target_type": "branch",
+        "target": "develop",
+        "frappe_core": ">=17.0.0-dev,<18.0.0",
+        "dependencies": {
+          "erpnext": ">=17.0.0-dev,<18.0.0"
+        }
+      },
+      {
+        "version": "16.4.0",
+        "target_type": "branch",
+        "target": "version-16",
+        "frappe_core": ">=16.0.0,<17.0.0",
+        "dependencies": {
+          "erpnext": ">=16.0.0,<17.0.0"
+        }
+      },
+      {
+        "version": "15.2.0",
+        "target_type": "branch",
+        "target": "version-15",
+        "frappe_core": ">=15.0.0,<16.0.0",
+        "dependencies": {
+          "erpnext": ">=15.0.0,<16.0.0"
+        }
+      }
+    ]
   },
   {
     "name": "agriculture",
