@@ -1,5 +1,11 @@
 [
   {
+    "name": "suite",
+    "title": "Frappe Suite",
+    "description": "The productivity suite that doesn't suck",
+    "repo": "https://github.com/frappe/suite",
+  },
+  {
     "name": "helpdesk",
     "title": "Helpdesk",
     "description": "Well designed, open source ticketing system",
