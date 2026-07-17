@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 """
 Orchestrates the marketplace app PR check: find which targets changed
-(diff_marketplace_apps.py), clone each once, then run every validator
-(semgrep, app quality, dependencies) against the clone.
-Exits non-zero if any target fails any validator.
+(diff_marketplace_apps.py), clone each once, then run semgrep and a real
+get-app install against the clone. Exits non-zero if either fails.
 
 Run:
     python3 scripts/check_marketplace_apps.py <old-apps.json> <new-apps.json>
@@ -18,19 +17,9 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent))
 from clone_utils import clone_app
 from diff_marketplace_apps import find_changed_targets, load_apps
-from run_app_validations import AppValidator
-from run_dependency_validations import DependencyValidator
+from run_get_app_validation import GetAppValidator
 from run_semgrep_validations import SemgrepValidator
 from validate_registry_schema import SchemaValidator
-
-
-def validators_for(target: dict, clone_dir: Path, marketplace: dict[str, dict]) -> list:
-    repo, ref = target["repo"], target["target"]
-    return [
-        SemgrepValidator(clone_dir, f"{repo}@{ref}"),
-        AppValidator(repo, clone_dir),
-        DependencyValidator(target.get("dependencies", {}), marketplace),
-    ]
 
 
 def apps_missing_targets(old_apps: dict[str, dict], new_apps: dict[str, dict]) -> list[str]:
@@ -43,7 +32,7 @@ def apps_missing_targets(old_apps: dict[str, dict], new_apps: dict[str, dict]) -
     ]
 
 
-def check_target(target: dict, marketplace: dict[str, dict]) -> bool:
+def check_target(target: dict) -> bool:
     print(f"\n=== Checking {target['name']} ({target.get('repo')}@{target.get('target')}) ===", flush=True)
 
     if not SchemaValidator(target).run():
@@ -58,9 +47,15 @@ def check_target(target: dict, marketplace: dict[str, dict]) -> bool:
             print(f"  FAIL: {exc}")
             return False
 
-        results = [validator.run() for validator in validators_for(target, clone_dir, marketplace)]
+        semgrep_passed = SemgrepValidator(clone_dir, f"{repo}@{ref}").run()
 
-    return all(results)
+        # A get-app install (uv pip install into a throwaway venv) is real
+        # work — skip it for a target semgrep already flagged as insecure.
+        if not semgrep_passed:
+            print("\n--- get-app validator ---\n  SKIPPED — semgrep failed for this target.")
+            return False
+
+        return GetAppValidator(target, clone_dir).run()
 
 
 def main() -> None:
@@ -82,7 +77,7 @@ def main() -> None:
         print("No app code changes detected — nothing to scan.")
         return
 
-    results = {f"{t['name']}@{t['target']}": check_target(t, marketplace) for t in changed_targets}
+    results = {f"{t['name']}@{t['target']}": check_target(t) for t in changed_targets}
     failed = [key for key, passed in results.items() if not passed]
 
     if failed:

@@ -36,6 +36,9 @@ jobs:
       - name: Install semgrep
         run: uv tool install semgrep
 
+      - name: Install pilot
+        run: pip install git+https://github.com/frappe/pilot@main
+
       - name: Get base apps.json
         run: git show ${{ github.event.pull_request.base.sha }}:apps.json > /tmp/apps_before.json
 

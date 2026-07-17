@@ -11,9 +11,8 @@ Marketplace page.
   installable `targets` (version, branch, Frappe compatibility range, and
   dependencies on other apps).
 - `scripts/` — validation and maintenance scripts. `check_marketplace_apps.py`
-  runs the security/quality/dependency checks CI gates PRs on;
-  `migrate_registry.py` refreshes each app's `targets` from its
-  `pyproject.toml` on GitHub.
+  runs the semgrep and get-app checks CI gates PRs on; `migrate_registry.py`
+  refreshes each app's `targets` from its `pyproject.toml` on GitHub.
 - `.github/workflows/marketplace-app-check.yml` — validates every PR that
   touches `apps.json`.
 
@@ -73,22 +72,26 @@ Each entry in `targets`:
 | `frappe_core` | Yes | Frappe version range this target requires, e.g. `>=15.0.0,<17.0.0` — must come from `[tool.bench.frappe-dependencies].frappe` in the app's `pyproject.toml`; targets without it are rejected |
 | `dependencies` | No | Other marketplace apps this target requires, as `{name: version-range}` |
 
-## What the security scan checks
+## What CI checks
 
 When your PR is opened, CI clones your repo at the specified `target` and
-runs Semgrep against it. **Blocking** findings (which fail the PR) include:
+runs two checks, in order:
 
-- **Code injection** — `eval()`, `exec()`, `compile()`, `safe_eval()`
-- **Template injection** — `render_template` with dynamic input, direct `jinja2.Environment` / `Template` construction
-- **SQL injection** — f-strings or `.format()` inside `frappe.db.sql()`
-- **Command execution** — `subprocess` with `shell=True`, `os.system`, `execute_in_shell`
-- **Authorization bypass** — `ignore_permissions=True` in whitelist methods, `frappe.set_user`
-- **Multitenancy violations** — module-level globals, `redis.set`/`redis.get` without scoping
+1. **Semgrep scan.** **Blocking** findings (which fail the PR) include:
+   - **Code injection** — `eval()`, `exec()`, `compile()`, `safe_eval()`
+   - **Template injection** — `render_template` with dynamic input, direct `jinja2.Environment` / `Template` construction
+   - **SQL injection** — f-strings or `.format()` inside `frappe.db.sql()`
+   - **Command execution** — `subprocess` with `shell=True`, `os.system`, `execute_in_shell`
+   - **Authorization bypass** — `ignore_permissions=True` in whitelist methods, `frappe.set_user`
+   - **Multitenancy violations** — module-level globals, `redis.set`/`redis.get` without scoping
 
-Non-blocking findings (WARNING severity) are reported but do not prevent
-merge — a Frappe reviewer will note them in the PR.
+   Non-blocking findings (WARNING severity) are reported but do not prevent
+   merge — a Frappe reviewer will note them in the PR.
 
-Also checked: `pyproject.toml` declares `frappe` in
-`[tool.bench.frappe-dependencies]`, dynamic versioning is set up correctly,
-and every dependency an app declares already exists in the marketplace with
-a satisfying version.
+2. **get-app validator** (only runs if semgrep passed). Installs the app
+   into a throwaway venv alongside a real Frappe checkout of the version
+   your target's `frappe_core` advertises — the same install
+   [`bench get-app`](https://github.com/frappe/pilot) itself performs. Catches
+   broken repo structure, syntax errors, undeclared `[tool.bench.frappe-dependencies]`/`required_apps`
+   mismatches, and missing imports/dependencies that only show up once the
+   app is actually installed.
