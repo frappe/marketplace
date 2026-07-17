@@ -33,8 +33,8 @@ DEFAULT_BRANCH = "develop"
 
 @dataclass
 class _FakeBench:
+    path: Path  # App._remote_url reads this for credential lookup on clone
     apps_path: Path
-    env_path: Path
 
     def app(self, name: str) -> App:
         path = self.apps_path / name
@@ -67,18 +67,30 @@ class GetAppValidator(Validator):
             self.fail("No frappe_core declared — cannot determine which Frappe version to validate against")
             return
 
+        try:
+            self._install_and_check(frappe_core)
+        except AppValidationError as exc:
+            self.fail(str(exc))
+        except BenchError as exc:
+            self.fail(str(exc))
+        except Exception as exc:
+            # Anything else (unexpected pilot API change, filesystem issue,
+            # etc.) must still surface as a failed check, not crash the
+            # whole CI run for every remaining target.
+            self.fail(f"get-app validation crashed unexpectedly: {exc!r}")
+
+    def _install_and_check(self, frappe_core: str) -> None:
         branch = frappe_branch_for(frappe_core)
         with tempfile.TemporaryDirectory() as tmp:
             workdir = Path(tmp)
-            bench = _FakeBench(apps_path=workdir / "apps", env_path=workdir / "env")
+            bench = _FakeBench(path=workdir, apps_path=workdir / "apps")
             bench.apps_path.mkdir(parents=True)
 
             frappe_app = App(AppConfig(name="frappe", repo=FRAPPE_REPO, branch=branch), bench)
             try:
                 frappe_app.clone()
             except BenchError as exc:
-                self.fail(f"Could not clone frappe@{branch}: {exc}")
-                return
+                raise BenchError(f"Could not clone frappe@{branch}: {exc}") from exc
 
             app_name = self.target["name"]
             (bench.apps_path / app_name).symlink_to(self.clone_dir)
@@ -86,7 +98,4 @@ class GetAppValidator(Validator):
             app = App(
                 AppConfig(name=app_name, repo=self.target["repo"], branch=self.target["target"]), bench
             )
-            try:
-                InstallValidator(app).validate()
-            except AppValidationError as exc:
-                self.fail(str(exc))
+            InstallValidator(app).validate()

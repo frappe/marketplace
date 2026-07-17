@@ -37,7 +37,10 @@ jobs:
         run: uv tool install semgrep
 
       - name: Install pilot
-        run: pip install git+https://github.com/frappe/pilot@main
+        # Pinned to a commit, not @main — a floating ref here means a pilot
+        # change and a bug in this script could land at the same time,
+        # making failures here much harder to diagnose. Bump deliberately.
+        run: pip install git+https://github.com/frappe/pilot@ae13b2b949588b4701b99de7b463f995b7df81e9
 
       - name: Get base apps.json
         run: git show ${{ github.event.pull_request.base.sha }}:apps.json > /tmp/apps_before.json
