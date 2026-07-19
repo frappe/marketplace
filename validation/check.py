@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """
-Orchestrates the marketplace app PR check: find which targets changed
-(utils/diff.py), then run schema, semgrep, and get-app checks against
-each, in that order, stopping at the first failure. Exits non-zero if
-any fail.
+Orchestrates the marketplace app PR check: run the schema check once per
+changed/new app, then find which of its targets changed (utils/diff.py)
+and run semgrep and get-app checks against each, in that order, stopping
+at the first failure. A schema-failed app's targets are skipped entirely.
+Exits non-zero if anything fails.
 
 Run:
     python3 validation/check.py <old-apps.json> <new-apps.json>
@@ -23,21 +24,22 @@ from utils.clone import clone_app
 from utils.diff import find_changed_targets, load_apps
 
 
-def apps_missing_targets(old_apps: dict[str, dict], new_apps: dict[str, dict]) -> list[str]:
-    """New or edited apps that declare no targets — the target-driven scan can't
-    see them (they produce zero targets), so they'd slip through unchecked."""
-    return [
-        name
-        for name, app in new_apps.items()
-        if old_apps.get(name) != app and not app.get("targets")
-    ]
+def changed_apps(old_apps: dict[str, dict], new_apps: dict[str, dict]) -> dict[str, dict]:
+    return {name: app for name, app in new_apps.items() if old_apps.get(name) != app}
+
+
+def check_app_schema(name: str, app: dict) -> bool:
+    """App-level schema gate: name/repo present, non-empty targets, each
+    target's required fields. Runs once per changed app, before any of its
+    targets are cloned - a targets-driven scan can't otherwise see an app
+    with zero targets at all, and a malformed target shouldn't get an
+    otherwise-real clone/semgrep/get-app run against it."""
+    print(f"\n=== Checking {name} (schema) ===", flush=True)
+    return SchemaValidator(app).run()
 
 
 def check_target(target: dict) -> bool:
     print(f"\n=== Checking {target['name']} ({target.get('repo')}@{target.get('target')}) ===", flush=True)
-
-    if not SchemaValidator(target).run():
-        return False
 
     with tempfile.TemporaryDirectory() as tmp:
         clone_dir = Path(tmp) / "app"
@@ -85,25 +87,24 @@ def main() -> None:
     marketplace = load_apps(Path(sys.argv[1]))
     new_apps = load_apps(Path(sys.argv[2]))
 
-    missing_targets = apps_missing_targets(marketplace, new_apps)
-    if missing_targets:
-        print(f"\nFAILED: {', '.join(missing_targets)} has no targets — add at least one target.")
-        sys.exit(1)
-
-    changed_targets = find_changed_targets(marketplace, new_apps)
-
-    if not changed_targets:
+    apps = changed_apps(marketplace, new_apps)
+    if not apps:
         print("No app code changes detected — nothing to scan.")
         return
 
-    results = {f"{t['name']}@{t['target']}": check_target(t) for t in changed_targets}
-    failed = [key for key, passed in results.items() if not passed]
+    schema_failed = {name for name, app in apps.items() if not check_app_schema(name, app)}
 
+    changed_targets = [
+        t for t in find_changed_targets(marketplace, new_apps) if t["name"] not in schema_failed
+    ]
+    target_results = {f"{t['name']}@{t['target']}": check_target(t) for t in changed_targets}
+
+    failed = sorted(schema_failed) + [key for key, passed in target_results.items() if not passed]
     if failed:
         print(f"\nFAILED: {', '.join(failed)} did not pass the marketplace checks.")
         sys.exit(1)
 
-    print(f"\nAll {len(changed_targets)} changed target(s) passed.")
+    print(f"\nAll {len(apps)} changed app(s) passed.")
 
 
 if __name__ == "__main__":
