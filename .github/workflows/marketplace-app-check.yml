@@ -2,8 +2,6 @@ name: Marketplace App Check
 
 on:
   pull_request:
-    paths:
-      - "apps.json"
 
 jobs:
   semgrep-check:
@@ -14,7 +12,24 @@ jobs:
         with:
           fetch-depth: 0
 
+      # Runs on every PR (no `paths:` filter) so it can be a required status
+      # check on main - a required check that only triggers on some paths
+      # never reports on other PRs and blocks them forever. This step keeps
+      # the job itself fast/green for PRs that don't touch apps.json instead.
+      - name: Check whether apps.json changed
+        id: diff
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          if git diff --name-only "$BASE_SHA" "$HEAD_SHA" | grep -qx "apps.json"; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Ensure PR is up to date with ${{ github.event.pull_request.base.ref }}
+        if: steps.diff.outputs.changed == 'true'
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
@@ -25,27 +40,33 @@ jobs:
           fi
 
       - uses: actions/setup-python@v5
+        if: steps.diff.outputs.changed == 'true'
         with:
           python-version: "3.13"
 
       - name: Install uv
+        if: steps.diff.outputs.changed == 'true'
         run: |
           curl -LsSf https://astral.sh/uv/install.sh | sh
           echo "$HOME/.local/bin" >> $GITHUB_PATH
 
       - name: Install semgrep
+        if: steps.diff.outputs.changed == 'true'
         run: uv tool install semgrep
 
       - name: Install pilot
+        if: steps.diff.outputs.changed == 'true'
         # Pinned to a commit, not @main — a floating ref here means a pilot
         # change and a bug in this script could land at the same time,
         # making failures here much harder to diagnose. Bump deliberately.
         run: pip install git+https://github.com/frappe/pilot@ae13b2b949588b4701b99de7b463f995b7df81e9
 
       - name: Get base apps.json
+        if: steps.diff.outputs.changed == 'true'
         run: git show ${{ github.event.pull_request.base.sha }}:apps.json > /tmp/apps_before.json
 
       - name: Check changed marketplace apps
+        if: steps.diff.outputs.changed == 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: python3 validation/check.py /tmp/apps_before.json apps.json
