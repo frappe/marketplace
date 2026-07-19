@@ -22,9 +22,9 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent))
 from validator import Validator
 
-from pilot.config.app_config import AppConfig
+from pilot.config import AppConfig
 from pilot.core.app import App
-from pilot.core.app_validator import Validator as InstallValidator
+from pilot.core.app.validator import Validator as InstallValidator
 from pilot.exceptions import AppValidationError, BenchError
 
 FRAPPE_REPO = "https://github.com/frappe/frappe"
