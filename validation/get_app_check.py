@@ -20,7 +20,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
-from validator import Validator
+from utils.base import Validator
 
 from pilot.config import AppConfig
 from pilot.core.app import App

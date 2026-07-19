@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Clone a marketplace app's repo and run it through scripts/semgrep-rules/.
+Clone a marketplace app's repo and run it through validation/semgrep-rules/.
 Exits non-zero if any finding is blocking, so CI can fail the PR.
 
 Blocking logic: a finding blocks if its rule metadata sets is_blocking: true,
@@ -15,7 +15,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
-from validator import Validator
+from utils.base import Validator
 
 RULES_DIR = Path(__file__).parent / "semgrep-rules"
 

@@ -15,7 +15,7 @@ every target is emitted even when the entries are textually identical.
 Output: JSON list of {name, repo, target_type, target} items.
 
 Run:
-    python3 scripts/diff_marketplace_apps.py <old-apps.json> <new-apps.json>
+    python3 validation/utils/diff.py <old-apps.json> <new-apps.json>
 """
 
 from __future__ import annotations
@@ -64,7 +64,7 @@ def find_changed_targets(old_apps: dict[str, dict], new_apps: dict[str, dict]) -
 
 def main() -> None:
     if len(sys.argv) != 3:
-        print("Usage: diff_marketplace_apps.py <old-apps.json> <new-apps.json>", file=sys.stderr)
+        print("Usage: validation/utils/diff.py <old-apps.json> <new-apps.json>", file=sys.stderr)
         sys.exit(1)
 
     old_apps = load_apps(Path(sys.argv[1]))

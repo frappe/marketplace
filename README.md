@@ -10,8 +10,11 @@ Marketplace page.
 - `apps.json` — the registry itself: one entry per app, each with a list of
   installable `targets` (version, branch, Frappe compatibility range, and
   dependencies on other apps).
-- `scripts/` — validation and maintenance scripts. `check_marketplace_apps.py`
-  runs the semgrep and get-app checks CI gates PRs on; `migrate_registry.py`
+- `validation/` — the PR-gating checks: `check.py` runs `schema_check.py` ->
+  `semgrep_check.py` -> `get_app_check.py`, in that order, against each
+  changed target, stopping at the first failure. `validation/utils/` holds
+  their shared plumbing (cloning a target, diffing `apps.json` revisions).
+- `tools/` — one-off/periodic maintenance, not CI-gated. `migrate_registry.py`
   refreshes each app's `targets` from its `pyproject.toml` on GitHub.
 - `.github/workflows/marketplace-app-check.yml` — validates every PR that
   touches `apps.json`.
@@ -59,7 +62,7 @@ Add an entry to `apps.json` and open a PR.
 | `documentation` | No | Docs URL |
 | `categories` | No | Tags shown in the UI (e.g. `Featured`) |
 | `category` | Yes | One of: `Applications`, `Compliance`, `Developer Tools`, `Extensions`, `Integrations`, `Utilities` |
-| `stars` | No | Kept in sync by `scripts/fetch_stars.py` — leave as `0`/omit |
+| `stars` | No | Kept in sync by `tools/fetch_stars.py` — leave as `0`/omit |
 | `targets` | Yes | At least one installable version — see below |
 
 Each entry in `targets`:

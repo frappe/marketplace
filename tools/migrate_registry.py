@@ -8,8 +8,8 @@ frappe_core compatibility range, sibling app dependencies). Rewrites
 apps.json in place.
 
 Usage:
-    GITHUB_TOKEN=ghp_... python3 scripts/migrate_registry.py
-    GITHUB_TOKEN=ghp_... python3 scripts/migrate_registry.py --limit 5 --dry-run
+    GITHUB_TOKEN=ghp_... python3 tools/migrate_registry.py
+    GITHUB_TOKEN=ghp_... python3 tools/migrate_registry.py --limit 5 --dry-run
 """
 
 from __future__ import annotations

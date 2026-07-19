@@ -25,7 +25,7 @@ jobs:
       - name: Refresh targets
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: python3 scripts/migrate_registry.py
+        run: python3 tools/migrate_registry.py
 
       - name: Commit and push if changed
         run: |
