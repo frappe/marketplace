@@ -13,7 +13,7 @@ Checks per new/changed app:
   3. each target has "version", "target_type", and "target"
 
 Run:
-    python3 scripts/validate_registry_schema.py <old-apps.json> <new-apps.json>
+    python3 validation/schema_check.py <old-apps.json> <new-apps.json>
 """
 
 from __future__ import annotations
@@ -22,7 +22,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
-from validator import Validator
+from utils.base import Validator
 
 REQUIRED_TARGET_FIELDS = ("version", "target_type", "target")
 

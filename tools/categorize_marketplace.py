@@ -11,7 +11,7 @@ Categories:
   Utilities — UI themes, small utility apps
 
 Run:
-    python3 scripts/categorize_marketplace.py
+    python3 tools/categorize_marketplace.py
 """
 
 from __future__ import annotations

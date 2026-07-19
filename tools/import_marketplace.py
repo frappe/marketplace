@@ -4,13 +4,13 @@ Import marketplace apps from Frappe Desk CSV exports.
 
 Usage:
     # Step 1 — import Marketplace App metadata (title, description, logo, categories)
-    python3 scripts/import_marketplace.py marketplace <path-to-Marketplace-App.csv>
+    python3 tools/import_marketplace.py marketplace <path-to-Marketplace-App.csv>
 
     # Step 2 — import App Source repos and branches
-    python3 scripts/import_marketplace.py sources <path-to-App-Source.csv>
+    python3 tools/import_marketplace.py sources <path-to-App-Source.csv>
 
     # Run categorize afterwards to assign the 6-category taxonomy:
-    python3 scripts/categorize_marketplace.py
+    python3 tools/categorize_marketplace.py
 
 Categories (6):
     Applications, Extensions, Integrations, Compliance, Developer Tools, Utilities

@@ -48,4 +48,4 @@ jobs:
       - name: Check changed marketplace apps
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: python3 scripts/check_marketplace_apps.py /tmp/apps_before.json apps.json
+        run: python3 validation/check.py /tmp/apps_before.json apps.json

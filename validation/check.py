@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 """
 Orchestrates the marketplace app PR check: find which targets changed
-(diff_marketplace_apps.py), clone each once, then run semgrep and a real
-get-app install against the clone. Exits non-zero if either fails.
+(utils/diff.py), then run schema, semgrep, and get-app checks against
+each, in that order, stopping at the first failure. Exits non-zero if
+any fail.
 
 Run:
-    python3 scripts/check_marketplace_apps.py <old-apps.json> <new-apps.json>
+    python3 validation/check.py <old-apps.json> <new-apps.json>
 """
 
 from __future__ import annotations
@@ -15,11 +16,11 @@ import tempfile
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
-from clone_utils import clone_app
-from diff_marketplace_apps import find_changed_targets, load_apps
-from run_get_app_validation import GetAppValidator
-from run_semgrep_validations import SemgrepValidator
-from validate_registry_schema import SchemaValidator
+from get_app_check import GetAppValidator
+from schema_check import SchemaValidator
+from semgrep_check import SemgrepValidator
+from utils.clone import clone_app
+from utils.diff import find_changed_targets, load_apps
 
 
 def apps_missing_targets(old_apps: dict[str, dict], new_apps: dict[str, dict]) -> list[str]:
@@ -38,29 +39,47 @@ def check_target(target: dict) -> bool:
     if not SchemaValidator(target).run():
         return False
 
-    repo, ref, target_type = target["repo"], target["target"], target["target_type"]
     with tempfile.TemporaryDirectory() as tmp:
         clone_dir = Path(tmp) / "app"
-        try:
-            clone_app(repo, ref, target_type, clone_dir)
-        except RuntimeError as exc:
-            print(f"  FAIL: {exc}")
+        if not _clone(target, clone_dir):
             return False
+        return _run_post_clone_checks(target, clone_dir)
 
-        semgrep_passed = SemgrepValidator(clone_dir, f"{repo}@{ref}").run()
 
-        # A get-app install (uv pip install into a throwaway venv) is real
-        # work — skip it for a target semgrep already flagged as insecure.
-        if not semgrep_passed:
-            print("\n--- get-app validator ---\n  SKIPPED — semgrep failed for this target.")
-            return False
+def _clone(target: dict, clone_dir: Path) -> bool:
+    try:
+        clone_app(target["repo"], target["target"], target["target_type"], clone_dir)
+        return True
+    except RuntimeError as exc:
+        print(f"  FAIL: {exc}")
+        return False
 
-        return GetAppValidator(target, clone_dir).run()
+
+def _run_post_clone_checks(target: dict, clone_dir: Path) -> bool:
+    """Run clone-dependent checks in order; stop at the first failure and
+    print a SKIPPED line for every check that didn't get to run.
+
+    get-app installs into a throwaway venv - real work skipped once an
+    earlier check already flagged the target as failing.
+    """
+    repo, ref = target["repo"], target["target"]
+    checks = [
+        ("semgrep", SemgrepValidator(clone_dir, f"{repo}@{ref}")),
+        ("get-app", GetAppValidator(target, clone_dir)),
+    ]
+    failed_at: str | None = None
+    for name, check in checks:
+        if failed_at is not None:
+            print(f"\n--- {name} ---\n  SKIPPED — {failed_at} failed for this target.")
+            continue
+        if not check.run():
+            failed_at = name
+    return failed_at is None
 
 
 def main() -> None:
     if len(sys.argv) != 3:
-        print("Usage: check_marketplace_apps.py <old-apps.json> <new-apps.json>", file=sys.stderr)
+        print("Usage: validation/check.py <old-apps.json> <new-apps.json>", file=sys.stderr)
         sys.exit(1)
 
     marketplace = load_apps(Path(sys.argv[1]))
