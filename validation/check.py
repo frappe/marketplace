@@ -29,11 +29,7 @@ def changed_apps(old_apps: dict[str, dict], new_apps: dict[str, dict]) -> dict[s
 
 
 def check_app_schema(name: str, app: dict) -> bool:
-    """App-level schema gate: name/repo present, non-empty targets, each
-    target's required fields. Runs once per changed app, before any of its
-    targets are cloned - a targets-driven scan can't otherwise see an app
-    with zero targets at all, and a malformed target shouldn't get an
-    otherwise-real clone/semgrep/get-app run against it."""
+    """Gate a changed app's schema before any of its targets are cloned."""
     print(f"\n=== Checking {name} (schema) ===", flush=True)
     return SchemaValidator(app).run()
 
@@ -58,12 +54,7 @@ def _clone(target: dict, clone_dir: Path) -> bool:
 
 
 def _run_post_clone_checks(target: dict, clone_dir: Path) -> bool:
-    """Run clone-dependent checks in order; stop at the first failure and
-    print a SKIPPED line for every check that didn't get to run.
-
-    get-app installs into a throwaway venv - real work skipped once an
-    earlier check already flagged the target as failing.
-    """
+    """Run clone-dependent checks in order, stopping at the first failure."""
     repo, ref = target["repo"], target["target"]
     checks = [
         ("semgrep", SemgrepValidator(clone_dir, f"{repo}@{ref}")),
@@ -94,10 +85,8 @@ def main() -> None:
 
     schema_failed = {name for name, app in apps.items() if not check_app_schema(name, app)}
 
-    # Schema-failed apps are excluded here, not just filtered from the
-    # result - a broken entry (e.g. a new app missing "repo" entirely)
-    # would otherwise crash find_changed_targets() before its targets
-    # ever reach the filter below.
+    # Excluded before find_changed_targets(), not filtered after - it
+    # indexes app["repo"] directly and would crash on a schema-broken app.
     valid_new_apps = {name: app for name, app in new_apps.items() if name not in schema_failed}
     changed_targets = find_changed_targets(marketplace, valid_new_apps)
     target_results = {f"{t['name']}@{t['target']}": check_target(t) for t in changed_targets}
