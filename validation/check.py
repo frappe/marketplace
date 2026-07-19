@@ -94,9 +94,12 @@ def main() -> None:
 
     schema_failed = {name for name, app in apps.items() if not check_app_schema(name, app)}
 
-    changed_targets = [
-        t for t in find_changed_targets(marketplace, new_apps) if t["name"] not in schema_failed
-    ]
+    # Schema-failed apps are excluded here, not just filtered from the
+    # result - a broken entry (e.g. a new app missing "repo" entirely)
+    # would otherwise crash find_changed_targets() before its targets
+    # ever reach the filter below.
+    valid_new_apps = {name: app for name, app in new_apps.items() if name not in schema_failed}
+    changed_targets = find_changed_targets(marketplace, valid_new_apps)
     target_results = {f"{t['name']}@{t['target']}": check_target(t) for t in changed_targets}
 
     failed = sorted(schema_failed) + [key for key, passed in target_results.items() if not passed]
