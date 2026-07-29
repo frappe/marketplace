@@ -1,17 +1,10 @@
 #!/usr/bin/env python3
-"""
-Turns validator findings into a markdown report for the PR — a contributor
-reads the PR, not the raw job log, so severities are spelled out ("Critical",
-not "[ERROR]") and repeated hits of one rule are grouped under it instead of
-listed as 40 near-identical lines.
-"""
 
 from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-# Semgrep's own severity words are not what a contributor should have to
-# decode; these are the audit labels the marketplace reports in.
+# Semgrep's severity words, mapped to the labels the marketplace reports in.
 SEVERITY_LABELS = {
     "CRITICAL": "Critical",
     "ERROR": "Critical",
@@ -25,8 +18,7 @@ SEVERITY_ORDER = ["Critical", "Major", "Minor", "Info"]
 SEVERITY_ICONS = {"Critical": "🔴", "Major": "🟠", "Minor": "🟡", "Info": "🔵"}
 
 COMMENT_MARKER = "<!-- marketplace-app-check -->"
-# GitHub rejects comment bodies over 65536 characters; leave room for the notice.
-MAX_REPORT_CHARS = 60000
+MAX_REPORT_CHARS = 60000  # GitHub rejects comment bodies over 65536
 
 
 def severity_label(semgrep_severity: str) -> str:
@@ -75,11 +67,11 @@ STATUS_ICONS = {"passed": "✅", "failed": "❌", "skipped": "⏭️"}
 
 
 class Report:
+    """Findings from every check, rendered as markdown for the PR."""
+
     def __init__(self, commit: str = "") -> None:
         self.sections: list[Section] = []
-        # Stamped into the report so a comment always says which commit it
-        # describes — a reader can tell at a glance if it predates the tip.
-        self.commit = commit
+        self.commit = commit  # named in the report, so a stale comment is visible
 
     def section(self, title: str, subtitle: str = "") -> Section:
         section = Section(title=title, subtitle=subtitle)
@@ -164,7 +156,7 @@ class Report:
 
     @staticmethod
     def _render_rule_summary(findings: list[Finding]) -> list[str]:
-        """A rule-level count first, so the scale is clear before the detail."""
+        """Rule-level counts, so the scale is clear before the detail."""
         counts: dict[tuple[str, str], int] = {}
         for finding in findings:
             if finding.rule:

@@ -64,8 +64,7 @@ class SemgrepValidator(Validator):
 
     def _describe_finding(self, finding: dict) -> dict:
         extra = finding.get("extra", {})
-        # Paths are absolute inside the throwaway clone dir; the contributor
-        # needs them relative to their own repo root.
+        # Absolute inside the throwaway clone dir; report them repo-relative.
         path = str(Path(finding["path"]).relative_to(self.clone_dir))
         return {
             "message": " ".join(extra.get("message", "").split()),

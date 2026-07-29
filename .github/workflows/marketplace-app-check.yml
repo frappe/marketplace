@@ -7,9 +7,8 @@ permissions:
   contents: read
   pull-requests: write # to post the findings report as a PR comment
 
-# One run per PR. Without this, a slow run for an older commit can finish
-# after a newer one and overwrite its comment, leaving the PR showing
-# findings for code that is no longer there.
+# One run per PR, so a slow older run cannot finish last and overwrite a
+# newer run's comment with stale findings.
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
   cancel-in-progress: true
@@ -84,10 +83,8 @@ jobs:
           python3 validation/check.py /tmp/apps_before.json apps.json \
             --report /tmp/report.md --commit "${{ github.event.pull_request.head.sha }}"
 
-      # !cancelled() rather than always(): the report matters most when the
-      # checks failed, but a run cancelled by a newer push must stay quiet —
-      # always() is true for cancelled runs too, so it would let a superseded
-      # run post its now-stale findings over the newer run's comment.
+      # !cancelled(), not always(): failures must report, but a superseded
+      # run must stay quiet — always() is true for cancelled runs too.
       - name: Report findings on the PR
         if: ${{ !cancelled() && steps.diff.outputs.changed == 'true' }}
         env:
@@ -99,17 +96,13 @@ jobs:
           # The summary is per-run, so it is always safe to write.
           cat /tmp/report.md >> "$GITHUB_STEP_SUMMARY"
 
-          # Cancellation cannot stop this step once it has started, so check
-          # at write time that the branch still points at the commit this
-          # report describes. Without it a superseded run that got this far
-          # would overwrite a newer run's comment with stale findings.
+          # Cancellation cannot stop this step once started, so confirm the
+          # branch still points at the commit this report describes.
           CURRENT_SHA=$(gh pr view "$PR" --json headRefOid --jq .headRefOid)
           if [ "$CURRENT_SHA" != "$HEAD_SHA" ]; then
             echo "Head moved $HEAD_SHA -> $CURRENT_SHA; leaving the comment to the newer run."
             exit 0
           fi
-          # Fork PRs get a read-only token, so commenting fails there by
-          # design — the job summary above is the fallback, and the job's own
-          # pass/fail is unaffected either way.
+          # Fork PRs get a read-only token; the summary above is the fallback.
           gh pr comment "$PR" --body-file /tmp/report.md --edit-last --create-if-none \
             || echo "Could not comment on the PR (expected for forks); see the job summary."

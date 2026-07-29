@@ -4,9 +4,8 @@ Base class for marketplace app validators.
 
 Each validator collects failures via fail() while validate() runs, then
 run() reports an overall pass/fail. Subclasses take only the inputs they
-need and implement validate(). Findings are kept structured so the PR
-report can group and label them; the console output stays readable on its
-own for anyone reading the job log.
+need and implement validate(). Findings are structured so the PR report
+can group and label them.
 """
 
 from __future__ import annotations
@@ -26,13 +25,13 @@ class Validator:
         return self.findings
 
     def fail(self, message: str, **details) -> None:
-        """Record a blocking finding. `details` matches Finding's fields."""
+        """Record a blocking finding; `details` matches Finding's fields."""
         finding = Finding(message=message, **details)
         self.findings.append(finding)
         print(f"  FAIL: {self._describe(finding)}")
 
     def note(self, message: str, **details) -> None:
-        """Record a non-blocking finding — reported, but the check still passes."""
+        """Record an advisory finding; reported, but the check still passes."""
         finding = Finding(message=message, **details)
         self.notes.append(finding)
         print(f"  NOTE: {self._describe(finding)}")
