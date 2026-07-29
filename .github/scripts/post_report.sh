@@ -9,6 +9,8 @@ set -euo pipefail
 
 REPORT=${1:?usage: post_report.sh <report.md>}
 MARKER='<!-- marketplace-app-check'
+ATTEMPTS=${POST_REPORT_ATTEMPTS:-3}
+RECHECK_DELAY=${POST_REPORT_RECHECK_DELAY:-2}
 
 if [ ! -f "$REPORT" ]; then
   echo "No report written — the check crashed before scanning."
@@ -28,6 +30,10 @@ existing_comment() {
     tail -1
 }
 
+marker_sha() {
+  printf '%s' "$1" | sed -n "s/.*marketplace-app-check \([0-9a-f]\{40\}\) -->.*/\1/p"
+}
+
 # Whether this run may write is decided by ancestry rather than by timing, so
 # it cannot go stale between the check and the write: the commit a report
 # describes is recorded in its marker.
@@ -44,24 +50,44 @@ may_write() {
   [ "$(gh pr view "$PR" --json headRefOid --jq .headRefOid)" = "$HEAD_SHA" ]
 }
 
-existing=$(existing_comment)
-comment_id=${existing%% *}
-posted_sha=$(printf '%s' "$existing" | sed -n "s/.*marketplace-app-check \([0-9a-f]\{40\}\) -->.*/\1/p")
-
-if ! may_write "$posted_sha"; then
-  echo "A report for $posted_sha already covers this branch; leaving it alone."
-  exit 0
-fi
+# Fork PRs get a read-only token; the run summary is the fallback there.
+write_comment() {
+  local id=$1
+  if [ -n "$id" ]; then
+    gh api -X PATCH "repos/$GITHUB_REPOSITORY/issues/comments/$id" \
+      --input /tmp/comment.json --silent
+  else
+    gh api -X POST "repos/$GITHUB_REPOSITORY/issues/$PR/comments" \
+      --input /tmp/comment.json --silent
+  fi
+}
 
 jq -Rs '{body: .}' "$REPORT" > /tmp/comment.json
 
-# Fork PRs get a read-only token; the run summary is the fallback there.
-if [ -n "$comment_id" ]; then
-  gh api -X PATCH "repos/$GITHUB_REPOSITORY/issues/comments/$comment_id" \
-    --input /tmp/comment.json --silent ||
-    echo "Could not update the PR comment (expected for forks); see the job summary."
-else
-  gh api -X POST "repos/$GITHUB_REPOSITORY/issues/$PR/comments" \
-    --input /tmp/comment.json --silent ||
-    echo "Could not comment on the PR (expected for forks); see the job summary."
-fi
+# GitHub has no compare-and-swap for comments — If-Match is rejected outright —
+# so a write cannot be made conditional. Instead, confirm afterwards that the
+# comment still shows this run's commit, and re-assert if an older run
+# overwrote it. The older run stops as soon as it sees its own commit posted,
+# so this settles on the newest report rather than on whoever wrote last.
+for attempt in $(seq "$ATTEMPTS"); do
+  existing=$(existing_comment)
+  posted_sha=$(marker_sha "$existing")
+
+  if ! may_write "$posted_sha"; then
+    echo "A report for $posted_sha already covers this branch; leaving it alone."
+    exit 0
+  fi
+
+  if ! write_comment "${existing%% *}"; then
+    echo "Could not write the PR comment (expected for forks); see the job summary."
+    exit 0
+  fi
+
+  [ -z "$HEAD_SHA" ] && exit 0
+  sleep "$RECHECK_DELAY"
+  posted_sha=$(marker_sha "$(existing_comment)")
+  [ "$posted_sha" = "$HEAD_SHA" ] && exit 0
+  echo "Comment now shows $posted_sha, not $HEAD_SHA — re-checking (attempt $attempt)."
+done
+
+echo "Gave up re-asserting the report after $ATTEMPTS attempts; the next run will correct it."
