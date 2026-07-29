@@ -16,18 +16,10 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
 from utils.base import Validator
+from utils.report import severity_label
 
 RULES_DIR = Path(__file__).parent / "semgrep-rules"
 
-SEMGREP_TO_AUDIT_SEVERITY = {
-    "CRITICAL": "Critical",
-    "ERROR": "Critical",
-    "HIGH": "Major",
-    "WARNING": "Minor",
-    "MEDIUM": "Minor",
-    "LOW": "Info",
-    "INFO": "Info",
-}
 BLOCKING_AUDIT_SEVERITIES = {"Critical", "Major"}
 
 
@@ -46,16 +38,12 @@ def is_blocking(finding: dict) -> bool:
     metadata = finding.get("extra", {}).get("metadata", {})
     if metadata.get("is_blocking") is True:
         return True
-    severity = str(finding.get("extra", {}).get("severity", "INFO")).upper()
-    return SEMGREP_TO_AUDIT_SEVERITY.get(severity, "Info") in BLOCKING_AUDIT_SEVERITIES
+    return severity_label(finding.get("extra", {}).get("severity", "INFO")) in BLOCKING_AUDIT_SEVERITIES
 
 
-def print_finding(finding: dict) -> None:
-    extra = finding.get("extra", {})
-    message = " ".join(extra.get("message", "").split())
-    line = finding.get("start", {}).get("line")
-    print(f"  [{extra.get('severity')}] {finding['path']}:{line} ({finding['check_id']})")
-    print(f"    {message}")
+def rule_name(check_id: str) -> str:
+    """Semgrep reports the rule's full dotted path; only the last part names it."""
+    return check_id.rsplit(".", 1)[-1]
 
 
 class SemgrepValidator(Validator):
@@ -71,7 +59,17 @@ class SemgrepValidator(Validator):
         blocking = [f for f in findings if is_blocking(f)]
         print(f"  Scanned {self.label}: {len(findings)} finding(s), {len(blocking)} blocking.")
         for finding in findings:
-            print_finding(finding)
-        for finding in blocking:
-            severity = finding.get("extra", {}).get("severity")
-            self.fail(f"[{severity}] {finding['path']} ({finding['check_id']})")
+            record = self.fail if is_blocking(finding) else self.note
+            record(**self._describe_finding(finding))
+
+    def _describe_finding(self, finding: dict) -> dict:
+        extra = finding.get("extra", {})
+        # Absolute inside the throwaway clone dir; report them repo-relative.
+        path = str(Path(finding["path"]).relative_to(self.clone_dir))
+        return {
+            "message": " ".join(extra.get("message", "").split()),
+            "severity": severity_label(extra.get("severity", "INFO")),
+            "rule": rule_name(finding.get("check_id", "")),
+            "path": path,
+            "line": finding.get("start", {}).get("line"),
+        }

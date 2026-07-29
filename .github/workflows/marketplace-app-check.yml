@@ -3,6 +3,16 @@ name: Marketplace App Check
 on:
   pull_request:
 
+permissions:
+  contents: read
+  pull-requests: write # to post the findings report as a PR comment
+
+# One run per PR, so a slow older run cannot finish last and overwrite a
+# newer run's comment with stale findings.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
 jobs:
   semgrep-check:
     runs-on: ubuntu-22.04
@@ -69,4 +79,16 @@ jobs:
         if: steps.diff.outputs.changed == 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: python3 validation/check.py /tmp/apps_before.json apps.json
+        run: |
+          python3 validation/check.py /tmp/apps_before.json apps.json \
+            --report /tmp/report.md --commit "${{ github.event.pull_request.head.sha }}"
+
+      # !cancelled(), not always(): failures must report, but a superseded
+      # run must stay quiet — always() is true for cancelled runs too.
+      - name: Report findings on the PR
+        if: ${{ !cancelled() && steps.diff.outputs.changed == 'true' }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR: ${{ github.event.pull_request.number }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: .github/scripts/post_report.sh /tmp/report.md
