@@ -12,7 +12,8 @@ permissions:
 
 jobs:
   refresh:
-    if: github.event.issue.pull_request && startsWith(github.event.comment.body, '/refresh')
+    # Exact, so a '/refresher' comment never provisions a runner.
+    if: github.event.issue.pull_request && github.event.comment.body == '/refresh'
     runs-on: ubuntu-22.04
 
     steps:

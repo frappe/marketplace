@@ -41,16 +41,24 @@ case "$ASSOCIATION" in
 esac
 
 react eyes
-# Scoped to this PR: a commit can be the head of more than one PR, so match
-# the branch too, and prefer a run GitHub already associates with this PR.
+# A commit can head more than one PR, so match the branch too, take the run
+# GitHub attributes to this PR, and never touch one attributed to another.
 runs=$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/$WORKFLOW/runs?event=pull_request&head_sha=$head_sha&branch=$head_branch&per_page=20" \
   --jq .workflow_runs)
-run=$(jq -c --argjson pr "$PR" '
-  (map(select(.pull_requests | map(.number) | index($pr))) | first)
-  // first // empty' <<<"$runs")
+mine=$(jq -c --argjson pr "$PR" '[.[] | select(.pull_requests | map(.number) | index($pr))]' <<<"$runs")
+run=$(jq -c 'first // empty' <<<"$mine")
 
-if [ -z "$run" ] || [ "$run" = "null" ]; then
-  say "No app check run found for \`${head_sha:0:7}\` to refresh — push a commit to start one."
+if [ -z "$run" ]; then
+  # Forks come back with no PR attribution at all, so a single candidate is
+  # this PR's by elimination; several are indistinguishable and left alone.
+  unattributed=$(jq -c '[.[] | select(.pull_requests | length == 0)]' <<<"$runs")
+  if [ "$(jq length <<<"$unattributed")" = "1" ]; then
+    run=$(jq -c '.[0]' <<<"$unattributed")
+  fi
+fi
+
+if [ -z "$run" ]; then
+  say "No app check run for \`${head_sha:0:7}\` could be matched to this PR — push a commit to start a fresh one."
   exit 0
 fi
 
