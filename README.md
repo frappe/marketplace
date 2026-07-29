@@ -98,3 +98,17 @@ runs two checks, in order:
    broken repo structure, syntax errors, undeclared `[tool.bench.frappe-dependencies]`/`required_apps`
    mismatches, and missing imports/dependencies that only show up once the
    app is actually installed.
+
+### Reading the results
+
+CI posts a report as a comment on your PR — one comment, edited in place on
+each push — and repeats it in the workflow run's summary. It lists every
+finding grouped by rule, with severity and `file:line` locations, so you
+shouldn't need to open the raw job log.
+
+Severities are `Critical`, `Major`, `Minor` and `Info`. **Critical and Major
+block the merge**; Minor and Info are advisory and are listed under a
+collapsed "advisory findings" section.
+
+PRs from forks get a read-only token, so the comment can't be posted there —
+the run summary carries the same report.
