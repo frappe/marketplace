@@ -1,0 +1,27 @@
+name: Refresh Command
+
+on:
+  issue_comment:
+    types: [created]
+
+# No app code runs here — it only re-runs the pull_request check, which keeps
+# its own fork-appropriate token.
+permissions:
+  actions: write
+  pull-requests: write
+
+jobs:
+  refresh:
+    if: github.event.issue.pull_request && startsWith(github.event.comment.body, '/refresh')
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - run: .github/scripts/refresh_command.sh
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR: ${{ github.event.issue.number }}
+          COMMENT_ID: ${{ github.event.comment.id }}
+          ASSOCIATION: ${{ github.event.comment.author_association }}
+          COMMENTER: ${{ github.event.comment.user.login }}

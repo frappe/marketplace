@@ -112,3 +112,10 @@ collapsed "advisory findings" section.
 
 PRs from forks get a read-only token, so the comment can't be posted there —
 the run summary carries the same report.
+
+### Re-running the checks
+
+Fixed something in your app's repo? Comment `/refresh` on the PR and the
+checks re-run against your repo's current code — no new commit needed here,
+since `apps.json` hasn't changed. The PR author and anyone with write access
+can use it.
