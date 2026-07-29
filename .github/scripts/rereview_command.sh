@@ -7,7 +7,6 @@ set -euo pipefail
 
 WORKFLOW=marketplace-app-check.yml
 MARKER='<!-- marketplace-app-check'
-RUNNING_NOTE="> 🔄 Re-review requested — the checks are running again."
 
 react() {
   gh api "repos/$GITHUB_REPOSITORY/issues/comments/$COMMENT_ID/reactions" \
@@ -21,19 +20,6 @@ say() {
 report_comment_id() {
   gh api "repos/$GITHUB_REPOSITORY/issues/$PR/comments" --paginate \
     --jq ".[] | select(.body | startswith(\"$MARKER\")) | .id" 2>/dev/null | tail -1
-}
-
-# Mark the report as re-running, so the PR shows the command was taken up.
-# The fresh report replaces the whole body and clears this.
-mark_running() {
-  local id=$1 body
-  body=$(gh api "repos/$GITHUB_REPOSITORY/issues/comments/$id" --jq .body)
-  case "$body" in *"$RUNNING_NOTE"*) return 0 ;; esac
-  printf '%s\n' "$body" |
-    awk -v note="$RUNNING_NOTE" 'NR==1 {print; print ""; print note; print ""; next} {print}' |
-    jq -Rs '{body: .}' > /tmp/running.json
-  gh api -X PATCH "repos/$GITHUB_REPOSITORY/issues/comments/$id" \
-    --input /tmp/running.json --silent 2>/dev/null || true
 }
 
 # Exact match only: "/rereviewed" and "/rereview rm -rf" are not this command.
@@ -93,12 +79,14 @@ if [ -z "$run" ]; then
   exit 0
 fi
 
+# A repeat command while the checks are still going would queue a duplicate
+# run over the one already producing the answer.
 if [ "$(jq -r .status <<<"$run")" != "completed" ]; then
-  say "An app check for \`${head_sha:0:7}\` is already running."
+  echo "An app check for $head_sha is already running; ignoring."
+  react confused
   exit 0
 fi
 
 gh run rerun "$(jq -r .id <<<"$run")"
 react rocket
-mark_running "$report_id"
 echo "Re-ran the app check for $head_sha."
