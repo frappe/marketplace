@@ -122,4 +122,5 @@ commit is needed here, since `apps.json` hasn't changed. The PR author and
 anyone with write access can use it.
 
 The comment gets a 🚀 and the report says it is re-running, until the new
-results replace it.
+results replace it. It only works once the first report has been posted —
+before that there is nothing to re-run, so wait for the initial check.

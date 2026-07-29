@@ -6,6 +6,7 @@
 set -euo pipefail
 
 WORKFLOW=marketplace-app-check.yml
+MARKER='<!-- marketplace-app-check'
 RUNNING_NOTE="> 🔄 Re-review requested — the checks are running again."
 
 react() {
@@ -17,14 +18,15 @@ say() {
   gh pr comment "$PR" --body "$1" >/dev/null 2>&1 || echo "$1"
 }
 
-# Mark the existing report as re-running, so the PR shows the command was
-# taken up. The fresh report replaces the whole body and clears this.
+report_comment_id() {
+  gh api "repos/$GITHUB_REPOSITORY/issues/$PR/comments" --paginate \
+    --jq ".[] | select(.body | startswith(\"$MARKER\")) | .id" 2>/dev/null | tail -1
+}
+
+# Mark the report as re-running, so the PR shows the command was taken up.
+# The fresh report replaces the whole body and clears this.
 mark_running() {
-  local marker='<!-- marketplace-app-check'
-  local id body
-  id=$(gh api "repos/$GITHUB_REPOSITORY/issues/$PR/comments" --paginate \
-    --jq ".[] | select(.body | startswith(\"$marker\")) | .id" 2>/dev/null | tail -1)
-  [ -n "$id" ] || return 0
+  local id=$1 body
   body=$(gh api "repos/$GITHUB_REPOSITORY/issues/comments/$id" --jq .body)
   case "$body" in *"$RUNNING_NOTE"*) return 0 ;; esac
   printf '%s\n' "$body" |
@@ -58,6 +60,15 @@ case "$ASSOCIATION" in
     ;;
 esac
 
+# Only re-run once a report exists: without one there is nothing to refresh,
+# and the first run is either still going or never started.
+report_id=$(report_comment_id)
+if [ -z "$report_id" ]; then
+  say "No review has been published for this PR yet — wait for the first run to report."
+  react confused
+  exit 0
+fi
+
 # A commit can head more than one PR, so match the branch too, take the run
 # GitHub attributes to this PR, and never touch one attributed to another.
 runs=$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/$WORKFLOW/runs?event=pull_request&head_sha=$head_sha&branch=$head_branch&per_page=20" \
@@ -89,5 +100,5 @@ fi
 
 gh run rerun "$(jq -r .id <<<"$run")"
 react rocket
-mark_running
+mark_running "$report_id"
 echo "Re-ran the app check for $head_sha."
