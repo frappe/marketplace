@@ -9,7 +9,13 @@ WORKFLOW=marketplace-app-check.yml
 
 react() {
   gh api "repos/$GITHUB_REPOSITORY/issues/comments/$COMMENT_ID/reactions" \
-    -f content="$1" --silent 2>/dev/null || true
+    -f content="$1" --jq .id 2>/dev/null || true
+}
+
+unreact() {
+  [ -n "$1" ] || return 0
+  gh api -X DELETE "repos/$GITHUB_REPOSITORY/issues/comments/$COMMENT_ID/reactions/$1" \
+    --silent 2>/dev/null || true
 }
 
 say() {
@@ -34,13 +40,13 @@ case "$ASSOCIATION" in
   *)
     if [ "$(jq -r .author.login <<<"$pr")" != "$COMMENTER" ]; then
       echo "Ignoring /refresh from $COMMENTER ($ASSOCIATION)."
-      react confused
+      react confused >/dev/null
       exit 0
     fi
     ;;
 esac
 
-react eyes
+eyes_id=$(react eyes)
 # A commit can head more than one PR, so match the branch too, take the run
 # GitHub attributes to this PR, and never touch one attributed to another.
 runs=$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/$WORKFLOW/runs?event=pull_request&head_sha=$head_sha&branch=$head_branch&per_page=20" \
@@ -71,5 +77,6 @@ if [ "$(jq -r .status <<<"$run")" != "completed" ]; then
 fi
 
 gh run rerun "$(jq -r .id <<<"$run")"
-react rocket
+react rocket >/dev/null
+unreact "$eyes_id"
 echo "Re-ran the app check for $head_sha."
