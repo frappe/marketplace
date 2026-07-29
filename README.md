@@ -120,3 +120,6 @@ Fixed something in your app's repo? Comment `/rereview` — on its own, as the
 whole comment — and the checks re-run against your repo's current code. No new
 commit is needed here, since `apps.json` hasn't changed. The PR author and
 anyone with write access can use it.
+
+The comment gets a 🚀 and the report says it is re-running, until the new
+results replace it.

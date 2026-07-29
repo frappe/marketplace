@@ -6,6 +6,7 @@
 set -euo pipefail
 
 WORKFLOW=marketplace-app-check.yml
+RUNNING_NOTE="> 🔄 Re-review requested — the checks are running again."
 
 react() {
   gh api "repos/$GITHUB_REPOSITORY/issues/comments/$COMMENT_ID/reactions" \
@@ -14,6 +15,23 @@ react() {
 
 say() {
   gh pr comment "$PR" --body "$1" >/dev/null 2>&1 || echo "$1"
+}
+
+# Mark the existing report as re-running, so the PR shows the command was
+# taken up. The fresh report replaces the whole body and clears this.
+mark_running() {
+  local marker='<!-- marketplace-app-check'
+  local id body
+  id=$(gh api "repos/$GITHUB_REPOSITORY/issues/$PR/comments" --paginate \
+    --jq ".[] | select(.body | startswith(\"$marker\")) | .id" 2>/dev/null | tail -1)
+  [ -n "$id" ] || return 0
+  body=$(gh api "repos/$GITHUB_REPOSITORY/issues/comments/$id" --jq .body)
+  case "$body" in *"$RUNNING_NOTE"*) return 0 ;; esac
+  printf '%s\n' "$body" |
+    awk -v note="$RUNNING_NOTE" 'NR==1 {print; print ""; print note; print ""; next} {print}' |
+    jq -Rs '{body: .}' > /tmp/running.json
+  gh api -X PATCH "repos/$GITHUB_REPOSITORY/issues/comments/$id" \
+    --input /tmp/running.json --silent 2>/dev/null || true
 }
 
 # Exact match only: "/rereviewed" and "/rereview rm -rf" are not this command.
@@ -71,4 +89,5 @@ fi
 
 gh run rerun "$(jq -r .id <<<"$run")"
 react rocket
+mark_running
 echo "Re-ran the app check for $head_sha."
