@@ -17,7 +17,7 @@ SEVERITY_LABELS = {
 SEVERITY_ORDER = ["Critical", "Major", "Minor", "Info"]
 SEVERITY_ICONS = {"Critical": "🔴", "Major": "🟠", "Minor": "🟡", "Info": "🔵"}
 
-COMMENT_MARKER = "<!-- marketplace-app-check -->"
+COMMENT_MARKER = "<!-- marketplace-app-check"  # CI greps this to find its own comment
 MAX_REPORT_CHARS = 60000  # GitHub rejects comment bodies over 65536
 MESSAGE_INLINE_CHARS = 200  # longer than this reads better as a block
 
@@ -84,17 +84,22 @@ class Report:
         return all(section.passed for section in self.sections)
 
     @property
+    def _marker(self) -> str:
+        """Names the commit, so CI can refuse to overwrite a newer report."""
+        return f"{COMMENT_MARKER} {self.commit} -->" if self.commit else f"{COMMENT_MARKER} -->"
+
+    @property
     def _commit_line(self) -> str:
         return f"<sub>Checked commit `{self.commit[:7]}`.</sub>\n" if self.commit else ""
 
     def render(self) -> str:
         if not self.sections:
             return (
-                f"{COMMENT_MARKER}\n## Marketplace app check\n\n"
+                f"{self._marker}\n## Marketplace app check\n\n"
                 f"No app changes to check.\n{self._commit_line}"
             )
 
-        lines = [COMMENT_MARKER, "## Marketplace app check", ""]
+        lines = [self._marker, "## Marketplace app check", ""]
         if self.commit:
             lines += [self._commit_line.rstrip("\n"), ""]
         lines += self._render_overview()

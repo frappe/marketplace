@@ -96,25 +96,34 @@ jobs:
           # The summary is per-run, so it is always safe to write.
           cat /tmp/report.md >> "$GITHUB_STEP_SUMMARY"
 
-          # Cancellation cannot stop this step once started, so confirm the
-          # branch still points at the commit this report describes.
-          CURRENT_SHA=$(gh pr view "$PR" --json headRefOid --jq .headRefOid)
-          if [ "$CURRENT_SHA" != "$HEAD_SHA" ]; then
-            echo "Head moved $HEAD_SHA -> $CURRENT_SHA; leaving the comment to the newer run."
-            exit 0
-          fi
           # Find this check's own comment by its marker and edit that one, so
           # a PR carries a single report however many times CI runs. Matching
           # on the marker rather than "the bot's last comment" keeps it from
-          # overwriting some other comment the same bot made.
-          MARKER='<!-- marketplace-app-check -->'
+          # overwriting some other comment the same bot made. The marker names
+          # the commit each report describes.
+          MARKER='<!-- marketplace-app-check'
           jq -Rs '{body: .}' /tmp/report.md > /tmp/comment.json
           EXISTING=$(gh api "repos/$GITHUB_REPOSITORY/issues/$PR/comments" --paginate \
-            --jq ".[] | select(.body | startswith(\"$MARKER\")) | .id" | tail -1)
+            --jq ".[] | select(.body | startswith(\"$MARKER\")) | \"\(.id) \(.body | split(\"\n\")[0])\"" | tail -1)
+          EXISTING_ID=${EXISTING%% *}
+          POSTED_SHA=$(printf '%s' "$EXISTING" | sed -n 's/.*marketplace-app-check \([0-9a-f]\{40\}\) -->.*/\1/p')
+
+          # Whether this run may write is decided by ancestry, not by timing: a
+          # report may only be replaced by one for a descendant commit. Checking
+          # that the head still matches would leave a window between the check
+          # and the write; this cannot go stale, because the commit a report
+          # describes is recorded in the comment itself.
+          if [ -n "$POSTED_SHA" ] && [ "$POSTED_SHA" != "$HEAD_SHA" ]; then
+            git fetch --no-tags --quiet origin "$POSTED_SHA" 2>/dev/null || true
+            if ! git merge-base --is-ancestor "$POSTED_SHA" "$HEAD_SHA" 2>/dev/null; then
+              echo "Comment describes $POSTED_SHA, which $HEAD_SHA does not descend from; leaving it alone."
+              exit 0
+            fi
+          fi
 
           # Fork PRs get a read-only token; the summary above is the fallback.
-          if [ -n "$EXISTING" ]; then
-            gh api -X PATCH "repos/$GITHUB_REPOSITORY/issues/comments/$EXISTING" \
+          if [ -n "$EXISTING_ID" ]; then
+            gh api -X PATCH "repos/$GITHUB_REPOSITORY/issues/comments/$EXISTING_ID" \
               --input /tmp/comment.json --silent \
               || echo "Could not update the PR comment (expected for forks); see the job summary."
           else
