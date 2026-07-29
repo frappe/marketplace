@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from datetime import datetime, timezone
 
 # Semgrep's severity words, mapped to the labels the marketplace reports in.
 SEVERITY_LABELS = {
@@ -70,9 +71,10 @@ STATUS_ICONS = {"passed": "✅", "failed": "❌", "skipped": "⏭️"}
 class Report:
     """Findings from every check, rendered as markdown for the PR."""
 
-    def __init__(self, commit: str = "") -> None:
+    def __init__(self, commit: str = "", run_url: str = "") -> None:
         self.sections: list[Section] = []
         self.commit = commit  # named in the report, so a stale comment is visible
+        self.run_url = run_url
 
     def section(self, title: str, subtitle: str = "") -> Section:
         section = Section(title=title, subtitle=subtitle)
@@ -87,6 +89,19 @@ class Report:
     def _marker(self) -> str:
         """Names the commit, so CI can refuse to overwrite a newer report."""
         return f"{COMMENT_MARKER} {self.commit} -->" if self.commit else f"{COMMENT_MARKER} -->"
+
+    @property
+    def _footer(self) -> str:
+        """Stamped with the time so a re-run that finds the same issues still
+        visibly happened."""
+        stamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
+        run = f" · [run log]({self.run_url})" if self.run_url else ""
+        return (
+            f"<sub>Updated {stamp}{run} — fixed something in your app? Comment `/refresh` "
+            "to run these checks again. See "
+            "[what CI checks](https://github.com/frappe/marketplace/blob/main/README.md#what-ci-checks)"
+            ".</sub>"
+        )
 
     @property
     def _commit_line(self) -> str:
@@ -105,13 +120,7 @@ class Report:
         lines += self._render_overview()
         for section in self.sections:
             lines += self._render_section(section)
-        lines += [
-            "",
-            "---",
-            "<sub>Re-run these checks by pushing to the branch. See "
-            "[what CI checks](https://github.com/frappe/marketplace/blob/main/README.md#what-ci-checks) "
-            "for what each one does.</sub>",
-        ]
+        lines += ["", "---", self._footer]
         return self._cap("\n".join(lines) + "\n")
 
     @staticmethod
