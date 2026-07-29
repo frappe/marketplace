@@ -85,6 +85,17 @@ def _run_post_clone_checks(target: dict, clone_dir: Path, section: Section) -> b
     return failed_at is None
 
 
+def target_link(target: dict) -> str:
+    """`owner/app@branch`, linked to the branch — `repo@branch` is not a URL and
+    renders as a dead autolink."""
+    repo = (target.get("repo") or "").rstrip("/").removesuffix(".git")
+    ref = target.get("target", "")
+    if not repo:
+        return ref
+    label = f"{repo.split('://')[-1].split('/', 1)[-1]}@{ref}"
+    return f"[{label}]({repo}/tree/{ref})"
+
+
 def _result(validator, passed: bool) -> CheckResult:
     return CheckResult(
         name=validator.name,
@@ -122,9 +133,7 @@ def main() -> None:
     changed_targets = find_changed_targets(marketplace, valid_new_apps)
     target_results = {}
     for target in changed_targets:
-        section = report.section(
-            f"{target['name']}@{target['target']}", subtitle=f"{target.get('repo')}@{target.get('target')}"
-        )
+        section = report.section(f"{target['name']}@{target['target']}", subtitle=target_link(target))
         target_results[f"{target['name']}@{target['target']}"] = check_target(target, section)
 
     _write_report(report, args.report)
