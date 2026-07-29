@@ -56,10 +56,10 @@ jobs:
 
       - name: Install pilot
         if: steps.diff.outputs.changed == 'true'
-        # Pinned to a commit, not @main — a floating ref here means a pilot
-        # change and a bug in this script could land at the same time,
+        # Pinned to a release tag, not @main — a floating ref here means a
+        # pilot change and a bug in this script could land at the same time,
         # making failures here much harder to diagnose. Bump deliberately.
-        run: pip install git+https://github.com/frappe/pilot@ae13b2b949588b4701b99de7b463f995b7df81e9
+        run: pip install git+https://github.com/frappe/pilot@v0.0.9-pre-alpha
 
       - name: Get base apps.json
         if: steps.diff.outputs.changed == 'true'
