@@ -81,7 +81,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           python3 validation/check.py /tmp/apps_before.json apps.json \
-            --report /tmp/report.md --commit "${{ github.event.pull_request.head.sha }}"
+            --report /tmp/report.md --commit "${{ github.event.pull_request.head.sha }}" \
+            --run-url "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
 
       # !cancelled(), not always(): failures must report, but a superseded
       # run must stay quiet — always() is true for cancelled runs too.

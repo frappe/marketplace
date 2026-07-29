@@ -102,7 +102,8 @@ runs two checks, in order:
 ### Reading the results
 
 CI posts a report as a comment on your PR — one comment, edited in place on
-each push — and repeats it in the workflow run's summary. It lists every
+each push, stamped with when it last ran — and repeats it in the workflow
+run's summary. It lists every
 finding grouped by rule, with severity and `file:line` locations, so you
 shouldn't need to open the raw job log.
 
@@ -112,3 +113,10 @@ collapsed "advisory findings" section.
 
 PRs from forks get a read-only token, so the comment can't be posted there —
 the run summary carries the same report.
+
+### Re-running the checks
+
+Fixed something in your app's repo? Comment `/refresh` — on its own, as the
+whole comment — and the checks re-run against your repo's current code. No new
+commit is needed here, since `apps.json` hasn't changed. The PR author and
+anyone with write access can use it.

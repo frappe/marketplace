@@ -7,7 +7,8 @@ at the first failure. A schema-failed app's targets are skipped entirely.
 Exits non-zero if anything fails.
 
 Run:
-    python3 validation/check.py <old-apps.json> <new-apps.json> [--report report.md] [--commit SHA]
+    python3 validation/check.py <old-apps.json> <new-apps.json> [--report report.md]
+        [--commit SHA] [--run-url URL]
 
 --report writes a markdown summary of every finding, for CI to post on the PR.
 """
@@ -99,11 +100,12 @@ def main() -> None:
     parser.add_argument("new_apps", type=Path, help="apps.json as proposed")
     parser.add_argument("--report", type=Path, help="write a markdown report of all findings here")
     parser.add_argument("--commit", default="", help="head SHA the report describes")
+    parser.add_argument("--run-url", default="", help="link back to the workflow run")
     args = parser.parse_args()
 
     marketplace = load_apps(args.old_apps)
     new_apps = load_apps(args.new_apps)
-    report = Report(commit=args.commit)
+    report = Report(commit=args.commit, run_url=args.run_url)
 
     apps = changed_apps(marketplace, new_apps)
     if not apps:
