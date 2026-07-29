@@ -25,3 +25,6 @@ jobs:
           COMMENT_ID: ${{ github.event.comment.id }}
           ASSOCIATION: ${{ github.event.comment.author_association }}
           COMMENTER: ${{ github.event.comment.user.login }}
+          # Via env, never interpolated into the shell: comment bodies are
+          # attacker-controlled. The script requires an exact match.
+          BODY: ${{ github.event.comment.body }}
