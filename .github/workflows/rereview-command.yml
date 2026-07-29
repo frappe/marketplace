@@ -1,4 +1,4 @@
-name: Refresh Command
+name: Rereview Command
 
 on:
   issue_comment:
@@ -11,15 +11,15 @@ permissions:
   pull-requests: write
 
 jobs:
-  refresh:
-    # Exact, so a '/refresher' comment never provisions a runner.
-    if: github.event.issue.pull_request && github.event.comment.body == '/refresh'
+  rereview:
+    # Exact, so a '/rereviewed' comment never provisions a runner.
+    if: github.event.issue.pull_request && github.event.comment.body == '/rereview'
     runs-on: ubuntu-22.04
 
     steps:
       - uses: actions/checkout@v4
 
-      - run: .github/scripts/refresh_command.sh
+      - run: .github/scripts/rereview_command.sh
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR: ${{ github.event.issue.number }}

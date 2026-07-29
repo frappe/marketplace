@@ -116,7 +116,11 @@ the run summary carries the same report.
 
 ### Re-running the checks
 
-Fixed something in your app's repo? Comment `/refresh` — on its own, as the
+Fixed something in your app's repo? Comment `/rereview` — on its own, as the
 whole comment — and the checks re-run against your repo's current code. No new
 commit is needed here, since `apps.json` hasn't changed. The PR author and
 anyone with write access can use it.
+
+The comment gets a 🚀 once the checks restart. It only works after the first
+report has been posted, and a second `/rereview` while a run is still going
+is ignored.
