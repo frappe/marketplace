@@ -49,10 +49,13 @@ mine=$(jq -c --argjson pr "$PR" '[.[] | select(.pull_requests | map(.number) | i
 run=$(jq -c 'first // empty' <<<"$mine")
 
 if [ -z "$run" ]; then
-  # Forks come back with no PR attribution at all, so a single candidate is
-  # this PR's by elimination; several are indistinguishable and left alone.
+  # Forks arrive with no PR attribution, so bind from the PR side instead: if
+  # this commit belongs to no other pull request, a run on it cannot be
+  # another PR's. Counting unattributed runs would not establish that.
+  others=$(gh api "repos/$GITHUB_REPOSITORY/commits/$head_sha/pulls" \
+    --jq "[.[] | select(.number != $PR)] | length" 2>/dev/null || echo unknown)
   unattributed=$(jq -c '[.[] | select(.pull_requests | length == 0)]' <<<"$runs")
-  if [ "$(jq length <<<"$unattributed")" = "1" ]; then
+  if [ "$others" = "0" ] && [ "$(jq length <<<"$unattributed")" = "1" ]; then
     run=$(jq -c '.[0]' <<<"$unattributed")
   fi
 fi
