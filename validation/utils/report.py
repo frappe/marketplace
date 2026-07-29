@@ -19,6 +19,7 @@ SEVERITY_ICONS = {"Critical": "🔴", "Major": "🟠", "Minor": "🟡", "Info": 
 
 COMMENT_MARKER = "<!-- marketplace-app-check -->"
 MAX_REPORT_CHARS = 60000  # GitHub rejects comment bodies over 65536
+MESSAGE_INLINE_CHARS = 200  # longer than this reads better as a block
 
 
 def severity_label(semgrep_severity: str) -> str:
@@ -176,8 +177,13 @@ class Report:
     def _render_findings(self, findings: list[Finding]) -> list[str]:
         lines: list[str] = []
         for (rule, severity, message), group in self._group(findings):
-            header = f"{SEVERITY_ICONS.get(severity, '')} **{severity}** — {message}"
-            lines += ["", header]
+            icon = SEVERITY_ICONS.get(severity, "")
+            # Tool output (a failed clone, a failed install) runs to several
+            # lines and would break the markdown if inlined in the heading.
+            if "\n" in message or len(message) > MESSAGE_INLINE_CHARS:
+                lines += ["", f"{icon} **{severity}**", "", "```", message.strip(), "```"]
+            else:
+                lines += ["", f"{icon} **{severity}** — {message}"]
             if rule:
                 lines.append(f"<sub>rule: `{rule}`</sub>")
             locations = [finding.location for finding in group if finding.location]

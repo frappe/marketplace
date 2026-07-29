@@ -57,8 +57,9 @@ def _clone(target: dict, clone_dir: Path, section: Section) -> bool:
         return True
     except RuntimeError as exc:
         print(f"  FAIL: {exc}")
+        message = str(exc).replace(str(clone_dir), target["name"])
         section.checks.append(
-            CheckResult(name="clone", status="failed", findings=[Finding(message=str(exc))])
+            CheckResult(name="clone", status="failed", findings=[Finding(message=message)])
         )
         return False
 

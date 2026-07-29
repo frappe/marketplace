@@ -61,6 +61,10 @@ class GetAppValidator(Validator):
         self.target = target
         self.clone_dir = clone_dir
 
+    def fail(self, message: str, **details) -> None:
+        """Report install output against the app's own name, not the temp checkout."""
+        super().fail(message.replace(str(self.clone_dir), self.target["name"]), **details)
+
     def validate(self) -> None:
         frappe_core = self.target.get("frappe_core")
         if not frappe_core:

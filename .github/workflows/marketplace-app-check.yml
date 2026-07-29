@@ -103,6 +103,22 @@ jobs:
             echo "Head moved $HEAD_SHA -> $CURRENT_SHA; leaving the comment to the newer run."
             exit 0
           fi
+          # Find this check's own comment by its marker and edit that one, so
+          # a PR carries a single report however many times CI runs. Matching
+          # on the marker rather than "the bot's last comment" keeps it from
+          # overwriting some other comment the same bot made.
+          MARKER='<!-- marketplace-app-check -->'
+          jq -Rs '{body: .}' /tmp/report.md > /tmp/comment.json
+          EXISTING=$(gh api "repos/$GITHUB_REPOSITORY/issues/$PR/comments" --paginate \
+            --jq ".[] | select(.body | startswith(\"$MARKER\")) | .id" | tail -1)
+
           # Fork PRs get a read-only token; the summary above is the fallback.
-          gh pr comment "$PR" --body-file /tmp/report.md --edit-last --create-if-none \
-            || echo "Could not comment on the PR (expected for forks); see the job summary."
+          if [ -n "$EXISTING" ]; then
+            gh api -X PATCH "repos/$GITHUB_REPOSITORY/issues/comments/$EXISTING" \
+              --input /tmp/comment.json --silent \
+              || echo "Could not update the PR comment (expected for forks); see the job summary."
+          else
+            gh api -X POST "repos/$GITHUB_REPOSITORY/issues/$PR/comments" \
+              --input /tmp/comment.json --silent \
+              || echo "Could not comment on the PR (expected for forks); see the job summary."
+          fi
