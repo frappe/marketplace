@@ -91,43 +91,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR: ${{ github.event.pull_request.number }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
-        run: |
-          [ -f /tmp/report.md ] || { echo "No report written — the check crashed before scanning."; exit 0; }
-          # The summary is per-run, so it is always safe to write.
-          cat /tmp/report.md >> "$GITHUB_STEP_SUMMARY"
-
-          # Find this check's own comment by its marker and edit that one, so
-          # a PR carries a single report however many times CI runs. Matching
-          # on the marker rather than "the bot's last comment" keeps it from
-          # overwriting some other comment the same bot made. The marker names
-          # the commit each report describes.
-          MARKER='<!-- marketplace-app-check'
-          jq -Rs '{body: .}' /tmp/report.md > /tmp/comment.json
-          EXISTING=$(gh api "repos/$GITHUB_REPOSITORY/issues/$PR/comments" --paginate \
-            --jq ".[] | select(.body | startswith(\"$MARKER\")) | \"\(.id) \(.body | split(\"\n\")[0])\"" | tail -1)
-          EXISTING_ID=${EXISTING%% *}
-          POSTED_SHA=$(printf '%s' "$EXISTING" | sed -n 's/.*marketplace-app-check \([0-9a-f]\{40\}\) -->.*/\1/p')
-
-          # Whether this run may write is decided by ancestry, not by timing: a
-          # report may only be replaced by one for a descendant commit. Checking
-          # that the head still matches would leave a window between the check
-          # and the write; this cannot go stale, because the commit a report
-          # describes is recorded in the comment itself.
-          if [ -n "$POSTED_SHA" ] && [ "$POSTED_SHA" != "$HEAD_SHA" ]; then
-            git fetch --no-tags --quiet origin "$POSTED_SHA" 2>/dev/null || true
-            if ! git merge-base --is-ancestor "$POSTED_SHA" "$HEAD_SHA" 2>/dev/null; then
-              echo "Comment describes $POSTED_SHA, which $HEAD_SHA does not descend from; leaving it alone."
-              exit 0
-            fi
-          fi
-
-          # Fork PRs get a read-only token; the summary above is the fallback.
-          if [ -n "$EXISTING_ID" ]; then
-            gh api -X PATCH "repos/$GITHUB_REPOSITORY/issues/comments/$EXISTING_ID" \
-              --input /tmp/comment.json --silent \
-              || echo "Could not update the PR comment (expected for forks); see the job summary."
-          else
-            gh api -X POST "repos/$GITHUB_REPOSITORY/issues/$PR/comments" \
-              --input /tmp/comment.json --silent \
-              || echo "Could not comment on the PR (expected for forks); see the job summary."
-          fi
+        run: .github/scripts/post_report.sh /tmp/report.md
