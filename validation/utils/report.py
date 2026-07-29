@@ -97,7 +97,7 @@ class Report:
         stamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
         run = f" · [run log]({self.run_url})" if self.run_url else ""
         return (
-            f"<sub>Updated {stamp}{run} — fixed something in your app? Comment `/refresh` "
+            f"<sub>Updated {stamp}{run} — fixed something in your app? Comment `/rereview` "
             "to run these checks again. See "
             "[what CI checks](https://github.com/frappe/marketplace/blob/main/README.md#what-ci-checks)"
             ".</sub>"

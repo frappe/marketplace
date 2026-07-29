@@ -16,9 +16,11 @@ Run:
 from __future__ import annotations
 
 import argparse
+import re
 import sys
 import tempfile
 from pathlib import Path
+from urllib.parse import quote, urlparse
 
 sys.path.insert(0, str(Path(__file__).parent))
 from get_app_check import GetAppValidator
@@ -85,6 +87,28 @@ def _run_post_clone_checks(target: dict, clone_dir: Path, section: Section) -> b
     return failed_at is None
 
 
+# apps.json is contributor-supplied and nothing validates these as a git ref or
+# a URL, so both are escaped before going into a comment CI posts.
+MARKDOWN_SPECIALS = re.compile(r"([\\`*_{}\[\]()#+\-.!|<>])")
+URL_SAFE = ":/?&=@$,;+~%'"
+
+
+def escape_markdown(text: str) -> str:
+    return MARKDOWN_SPECIALS.sub(r"\\\1", text)
+
+
+def target_link(target: dict) -> str:
+    """`owner/app@branch`, linked to the branch — `repo@branch` is not a URL and
+    renders as a dead autolink."""
+    repo = (target.get("repo") or "").rstrip("/").removesuffix(".git")
+    ref = target.get("target", "")
+    if not repo:
+        return escape_markdown(ref)
+    label = escape_markdown(f"{urlparse(repo).path.strip('/')}@{ref}")
+    url = quote(f"{repo}/tree/{ref}", safe=URL_SAFE)
+    return f"[{label}]({url})"
+
+
 def _result(validator, passed: bool) -> CheckResult:
     return CheckResult(
         name=validator.name,
@@ -122,9 +146,7 @@ def main() -> None:
     changed_targets = find_changed_targets(marketplace, valid_new_apps)
     target_results = {}
     for target in changed_targets:
-        section = report.section(
-            f"{target['name']}@{target['target']}", subtitle=f"{target.get('repo')}@{target.get('target')}"
-        )
+        section = report.section(f"{target['name']}@{target['target']}", subtitle=target_link(target))
         target_results[f"{target['name']}@{target['target']}"] = check_target(target, section)
 
     _write_report(report, args.report)
