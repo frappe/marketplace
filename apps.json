@@ -5685,5 +5685,28 @@
     "category": "Applications",
     "stars": 93,
     "targets": []
+  },
+  {
+    "name": "suite",
+    "title": "Frappe Suite",
+    "description": "Drive, Slides, Writer, Sheets, Meet, Mail and Calendar in one app",
+    "repo": "https://github.com/frappe/suite",
+    "logo_url": "https://raw.githubusercontent.com/frappe/suite/develop/frontend/public/logo.svg",
+    "website": "https://frappe.io",
+    "documentation": "https://docs.frappe.io",
+    "categories": [
+      "Productivity"
+    ],
+    "category": "Applications",
+    "stars": 56,
+    "targets": [
+      {
+        "version": "0.0.1",
+        "target_type": "branch",
+        "target": "develop",
+        "frappe_core": ">=16.0.0,<18.0.0",
+        "dependencies": {}
+      }
+    ]
   }
 ]
