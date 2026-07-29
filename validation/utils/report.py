@@ -75,8 +75,11 @@ STATUS_ICONS = {"passed": "✅", "failed": "❌", "skipped": "⏭️"}
 
 
 class Report:
-    def __init__(self) -> None:
+    def __init__(self, commit: str = "") -> None:
         self.sections: list[Section] = []
+        # Stamped into the report so a comment always says which commit it
+        # describes — a reader can tell at a glance if it predates the tip.
+        self.commit = commit
 
     def section(self, title: str, subtitle: str = "") -> Section:
         section = Section(title=title, subtitle=subtitle)
@@ -87,11 +90,20 @@ class Report:
     def passed(self) -> bool:
         return all(section.passed for section in self.sections)
 
+    @property
+    def _commit_line(self) -> str:
+        return f"<sub>Checked commit `{self.commit[:7]}`.</sub>\n" if self.commit else ""
+
     def render(self) -> str:
         if not self.sections:
-            return f"{COMMENT_MARKER}\n## Marketplace app check\n\nNo app changes to check.\n"
+            return (
+                f"{COMMENT_MARKER}\n## Marketplace app check\n\n"
+                f"No app changes to check.\n{self._commit_line}"
+            )
 
         lines = [COMMENT_MARKER, "## Marketplace app check", ""]
+        if self.commit:
+            lines += [self._commit_line.rstrip("\n"), ""]
         lines += self._render_overview()
         for section in self.sections:
             lines += self._render_section(section)

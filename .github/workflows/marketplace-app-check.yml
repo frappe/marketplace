@@ -7,6 +7,13 @@ permissions:
   contents: read
   pull-requests: write # to post the findings report as a PR comment
 
+# One run per PR. Without this, a slow run for an older commit can finish
+# after a newer one and overwrite its comment, leaving the PR showing
+# findings for code that is no longer there.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
 jobs:
   semgrep-check:
     runs-on: ubuntu-22.04
@@ -73,11 +80,16 @@ jobs:
         if: steps.diff.outputs.changed == 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: python3 validation/check.py /tmp/apps_before.json apps.json --report /tmp/report.md
+        run: |
+          python3 validation/check.py /tmp/apps_before.json apps.json \
+            --report /tmp/report.md --commit "${{ github.event.pull_request.head.sha }}"
 
-      # always(): the report matters most when the checks failed.
+      # !cancelled() rather than always(): the report matters most when the
+      # checks failed, but a run cancelled by a newer push must stay quiet —
+      # always() is true for cancelled runs too, so it would let a superseded
+      # run post its now-stale findings over the newer run's comment.
       - name: Report findings on the PR
-        if: always() && steps.diff.outputs.changed == 'true'
+        if: ${{ !cancelled() && steps.diff.outputs.changed == 'true' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PR: ${{ github.event.pull_request.number }}
