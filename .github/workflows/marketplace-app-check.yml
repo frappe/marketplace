@@ -3,6 +3,10 @@ name: Marketplace App Check
 on:
   pull_request:
 
+permissions:
+  contents: read
+  pull-requests: write # to post the findings report as a PR comment
+
 jobs:
   semgrep-check:
     runs-on: ubuntu-22.04
@@ -69,4 +73,19 @@ jobs:
         if: steps.diff.outputs.changed == 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: python3 validation/check.py /tmp/apps_before.json apps.json
+        run: python3 validation/check.py /tmp/apps_before.json apps.json --report /tmp/report.md
+
+      # always(): the report matters most when the checks failed.
+      - name: Report findings on the PR
+        if: always() && steps.diff.outputs.changed == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR: ${{ github.event.pull_request.number }}
+        run: |
+          [ -f /tmp/report.md ] || { echo "No report written — the check crashed before scanning."; exit 0; }
+          cat /tmp/report.md >> "$GITHUB_STEP_SUMMARY"
+          # Fork PRs get a read-only token, so commenting fails there by
+          # design — the job summary above is the fallback, and the job's own
+          # pass/fail is unaffected either way.
+          gh pr comment "$PR" --body-file /tmp/report.md --edit-last --create-if-none \
+            || echo "Could not comment on the PR (expected for forks); see the job summary."

@@ -7,11 +7,14 @@ at the first failure. A schema-failed app's targets are skipped entirely.
 Exits non-zero if anything fails.
 
 Run:
-    python3 validation/check.py <old-apps.json> <new-apps.json>
+    python3 validation/check.py <old-apps.json> <new-apps.json> [--report report.md]
+
+--report writes a markdown summary of every finding, for CI to post on the PR.
 """
 
 from __future__ import annotations
 
+import argparse
 import sys
 import tempfile
 from pathlib import Path
@@ -22,38 +25,45 @@ from schema_check import SchemaValidator
 from semgrep_check import SemgrepValidator
 from utils.clone import clone_app
 from utils.diff import find_changed_targets, load_apps
+from utils.report import CheckResult, Finding, Report, Section
 
 
 def changed_apps(old_apps: dict[str, dict], new_apps: dict[str, dict]) -> dict[str, dict]:
     return {name: app for name, app in new_apps.items() if old_apps.get(name) != app}
 
 
-def check_app_schema(name: str, app: dict) -> bool:
+def check_app_schema(name: str, app: dict, section: Section) -> bool:
     """Gate a changed app's schema before any of its targets are cloned."""
     print(f"\n=== Checking {name} (schema) ===", flush=True)
-    return SchemaValidator(app).run()
+    validator = SchemaValidator(app)
+    passed = validator.run()
+    section.checks.append(_result(validator, passed))
+    return passed
 
 
-def check_target(target: dict) -> bool:
+def check_target(target: dict, section: Section) -> bool:
     print(f"\n=== Checking {target['name']} ({target.get('repo')}@{target.get('target')}) ===", flush=True)
 
     with tempfile.TemporaryDirectory() as tmp:
         clone_dir = Path(tmp) / "app"
-        if not _clone(target, clone_dir):
+        if not _clone(target, clone_dir, section):
             return False
-        return _run_post_clone_checks(target, clone_dir)
+        return _run_post_clone_checks(target, clone_dir, section)
 
 
-def _clone(target: dict, clone_dir: Path) -> bool:
+def _clone(target: dict, clone_dir: Path, section: Section) -> bool:
     try:
         clone_app(target["repo"], target["target"], target["target_type"], clone_dir)
         return True
     except RuntimeError as exc:
         print(f"  FAIL: {exc}")
+        section.checks.append(
+            CheckResult(name="clone", status="failed", findings=[Finding(message=str(exc))])
+        )
         return False
 
 
-def _run_post_clone_checks(target: dict, clone_dir: Path) -> bool:
+def _run_post_clone_checks(target: dict, clone_dir: Path, section: Section) -> bool:
     """Run clone-dependent checks in order, stopping at the first failure."""
     repo, ref = target["repo"], target["target"]
     checks = [
@@ -63,33 +73,57 @@ def _run_post_clone_checks(target: dict, clone_dir: Path) -> bool:
     failed_at: str | None = None
     for name, check in checks:
         if failed_at is not None:
-            print(f"\n--- {name} ---\n  SKIPPED — {failed_at} failed for this target.")
+            print(f"\n--- {check.name} ---\n  SKIPPED — {failed_at} failed for this target.")
+            section.checks.append(CheckResult(name=check.name, status="skipped"))
             continue
-        if not check.run():
+        passed = check.run()
+        section.checks.append(_result(check, passed))
+        if not passed:
             failed_at = name
     return failed_at is None
 
 
-def main() -> None:
-    if len(sys.argv) != 3:
-        print("Usage: validation/check.py <old-apps.json> <new-apps.json>", file=sys.stderr)
-        sys.exit(1)
+def _result(validator, passed: bool) -> CheckResult:
+    return CheckResult(
+        name=validator.name,
+        status="passed" if passed else "failed",
+        findings=list(validator.findings),
+        notes=list(validator.notes),
+    )
 
-    marketplace = load_apps(Path(sys.argv[1]))
-    new_apps = load_apps(Path(sys.argv[2]))
+
+def main() -> None:
+    parser = argparse.ArgumentParser(description="Run the marketplace app checks over an apps.json change.")
+    parser.add_argument("old_apps", type=Path, help="apps.json at the base revision")
+    parser.add_argument("new_apps", type=Path, help="apps.json as proposed")
+    parser.add_argument("--report", type=Path, help="write a markdown report of all findings here")
+    args = parser.parse_args()
+
+    marketplace = load_apps(args.old_apps)
+    new_apps = load_apps(args.new_apps)
+    report = Report()
 
     apps = changed_apps(marketplace, new_apps)
     if not apps:
         print("No app code changes detected — nothing to scan.")
+        _write_report(report, args.report)
         return
 
-    schema_failed = {name for name, app in apps.items() if not check_app_schema(name, app)}
+    sections = {name: report.section(name) for name in apps}
+    schema_failed = {name for name, app in apps.items() if not check_app_schema(name, app, sections[name])}
 
     # Excluded before find_changed_targets(), not filtered after - it
     # indexes app["repo"] directly and would crash on a schema-broken app.
     valid_new_apps = {name: app for name, app in new_apps.items() if name not in schema_failed}
     changed_targets = find_changed_targets(marketplace, valid_new_apps)
-    target_results = {f"{t['name']}@{t['target']}": check_target(t) for t in changed_targets}
+    target_results = {}
+    for target in changed_targets:
+        section = report.section(
+            f"{target['name']}@{target['target']}", subtitle=f"{target.get('repo')}@{target.get('target')}"
+        )
+        target_results[f"{target['name']}@{target['target']}"] = check_target(target, section)
+
+    _write_report(report, args.report)
 
     failed = sorted(schema_failed) + [key for key, passed in target_results.items() if not passed]
     if failed:
@@ -97,6 +131,13 @@ def main() -> None:
         sys.exit(1)
 
     print(f"\nAll {len(apps)} changed app(s) passed.")
+
+
+def _write_report(report: Report, path: Path | None) -> None:
+    if path is None:
+        return
+    path.write_text(report.render())
+    print(f"\nWrote report to {path}")
 
 
 if __name__ == "__main__":
