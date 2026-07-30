@@ -1,0 +1,29 @@
+{
+  "name": "pospire",
+  "releases": [
+    {
+      "version": "1.0.4",
+      "branch": "version-16",
+      "commit": "aa772e501967f13c623df50e81ae96bfa85e4e10",
+      "frappe_core": ">=16.0.0,<17.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    },
+    {
+      "version": "1.0.2",
+      "branch": "develop",
+      "commit": "5d845d9ed2ba45965f14a102e7c5ddf5e0cbeffa",
+      "frappe_core": ">=15.0.0,<16.0.0",
+      "dependencies": {},
+      "channel": "nightly"
+    },
+    {
+      "version": "1.0.2",
+      "branch": "main",
+      "commit": "faa6705606be3ef5bd56e109f4a8358b1ecbacbe",
+      "frappe_core": ">=15.0.0,<16.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    }
+  ]
+}

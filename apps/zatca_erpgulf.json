@@ -1,0 +1,13 @@
+{
+  "name": "zatca_erpgulf",
+  "releases": [
+    {
+      "version": "3.0.1",
+      "branch": "main",
+      "commit": "05e8414ea3bb1f86c982a49cf35f5797a64317b1",
+      "frappe_core": ">=14.0.0,<17.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    }
+  ]
+}

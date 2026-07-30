@@ -1,0 +1,29 @@
+{
+  "name": "za_local",
+  "releases": [
+    {
+      "version": "1.0.0",
+      "branch": "version-16",
+      "commit": "8b6a0e2ee08be819881e4c73dda0dd9cbb9dd94c",
+      "frappe_core": ">=16.0.0,<17.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    },
+    {
+      "version": "1.0.0",
+      "branch": "version-15",
+      "commit": "7ac647e3794b37090a7add5c79209982c813a2f7",
+      "frappe_core": ">=15.0.0,<17.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    },
+    {
+      "version": "1.0.0",
+      "branch": "main",
+      "commit": "a50c6560e9343e241e31fbe542a5dc2382a41b3e",
+      "frappe_core": ">=16.0.0,<17.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    }
+  ]
+}

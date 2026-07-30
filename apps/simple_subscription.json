@@ -1,0 +1,25 @@
+{
+  "name": "simple_subscription",
+  "releases": [
+    {
+      "version": "16.1.0",
+      "branch": "version-16",
+      "commit": "ca769f56637dce9fedaec0de472db6f9b1c0535d",
+      "frappe_core": ">=16.0.0,<17.0.0",
+      "dependencies": {
+        "erpnext": ">=16.0.0,<17.0.0"
+      },
+      "channel": "stable"
+    },
+    {
+      "version": "15.3.0",
+      "branch": "version-15",
+      "commit": "2cd5077afeb1a6d115afed02d063017de53469a6",
+      "frappe_core": ">=15.0.0,<16.0.0",
+      "dependencies": {
+        "erpnext": ">=15.0.0,<16.0.0"
+      },
+      "channel": "stable"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "name": "working_time",
+  "releases": [
+    {
+      "version": "15.6.0",
+      "branch": "version-15",
+      "commit": "e1e6d5f6c26fc330148d5d23270b0669b352c912",
+      "frappe_core": ">=15.60.0,<16.0.0",
+      "dependencies": {
+        "erpnext": ">=15.57.0,<16.0.0",
+        "hrms": ">=15.0.0,<16.0.0"
+      },
+      "channel": "stable"
+    }
+  ]
+}

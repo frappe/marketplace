@@ -1,0 +1,38 @@
+{
+  "name": "kenya_compliance_via_slade",
+  "releases": [
+    {
+      "version": "15.19.0",
+      "branch": "version-15",
+      "commit": "65e9de9955c48d4d31659b48bc2d02f759cbb708",
+      "frappe_core": ">=15.0.0,<16.0.0",
+      "dependencies": {
+        "erpnext": ">=15.0.0,<16.0.0",
+        "csf_ke": ">=2.12.0,<3.0.0"
+      },
+      "channel": "stable"
+    },
+    {
+      "version": "0.8.2",
+      "branch": "version-16",
+      "commit": "6ebc115b7355136e962f295e4ac028f917405a4b",
+      "frappe_core": ">=16.0.0,<17.0.0",
+      "dependencies": {
+        "erpnext": ">=16.0.0,<17.0.0",
+        "csf_ke": ">=16.5.0,<17.0.0"
+      },
+      "channel": "stable"
+    },
+    {
+      "version": "0.8.2",
+      "branch": "develop",
+      "commit": "52ef4547e159d4f4120ca881ac0f01d936ef4d5a",
+      "frappe_core": ">=16.0.0,<17.0.0",
+      "dependencies": {
+        "erpnext": ">=16.0.0,<17.0.0",
+        "csf_ke": ">=16.5.0,<17.0.0"
+      },
+      "channel": "nightly"
+    }
+  ]
+}

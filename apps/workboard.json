@@ -1,0 +1,21 @@
+{
+  "name": "workboard",
+  "releases": [
+    {
+      "version": "0.0.1",
+      "branch": "version-16",
+      "commit": "54ec2bf6485460276f0229d3c67d6a230cd717e0",
+      "frappe_core": ">=15.0.0,<17.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    },
+    {
+      "version": "0.0.1",
+      "branch": "master",
+      "commit": "136487a44c991beea764831c100b487c31fedc1e",
+      "frappe_core": ">=15.0.0,<17.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    }
+  ]
+}

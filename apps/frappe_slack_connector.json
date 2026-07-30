@@ -1,0 +1,29 @@
+{
+  "name": "frappe_slack_connector",
+  "releases": [
+    {
+      "version": "1.1.2",
+      "branch": "version-16",
+      "commit": "706b937a020f3a70702a42cac66636db3f8690d3",
+      "frappe_core": ">=15.0.0,<=17.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    },
+    {
+      "version": "0.0.1",
+      "branch": "develop",
+      "commit": "6d04260a841210f83561e6c14b66aa19769c5433",
+      "frappe_core": ">=15.0.0,<17.0.0",
+      "dependencies": {},
+      "channel": "nightly"
+    },
+    {
+      "version": "0.0.1",
+      "branch": "main",
+      "commit": "42a7bb140e3f0c512fae523f949047860f82e57e",
+      "frappe_core": ">=15.0.0,<17.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    }
+  ]
+}

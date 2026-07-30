@@ -1,0 +1,13 @@
+{
+  "name": "uae_erpgulf",
+  "releases": [
+    {
+      "version": "0.0.1",
+      "branch": "main",
+      "commit": "ecc2ea2e760e41678ce02162a49fcf2e826d2304",
+      "frappe_core": ">=14.0.0,<17.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    }
+  ]
+}

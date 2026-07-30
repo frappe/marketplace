@@ -1,0 +1,27 @@
+{
+  "name": "visitormanagement",
+  "releases": [
+    {
+      "version": "1.0.0",
+      "branch": "develop",
+      "commit": "bb7b030b69d2e6551efc1c354cc75fbe65893606",
+      "frappe_core": ">=15.0.0,<16.0.0",
+      "dependencies": {
+        "erpnext": ">=15.0.0,<16.0.0",
+        "hrms": ">=15.0.0,<16.0.0"
+      },
+      "channel": "nightly"
+    },
+    {
+      "version": "1.0.0",
+      "branch": "main",
+      "commit": "c89e482cf47b4a210a4588d1069c1e2fe36849e1",
+      "frappe_core": ">=15.0.0,<16.0.0",
+      "dependencies": {
+        "erpnext": ">=15.0.0,<16.0.0",
+        "hrms": ">=15.0.0,<16.0.0"
+      },
+      "channel": "stable"
+    }
+  ]
+}

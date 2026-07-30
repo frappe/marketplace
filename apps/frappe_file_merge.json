@@ -1,0 +1,29 @@
+{
+  "name": "frappe_file_merge",
+  "releases": [
+    {
+      "version": "0.0.1",
+      "branch": "version-16",
+      "commit": "42162ecb3683cb32a50280ae8e51e3652b5e4841",
+      "frappe_core": ">=16.0.0,<17.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    },
+    {
+      "version": "0.0.1",
+      "branch": "version-15",
+      "commit": "0646303f61c0cec3b1667509cb6c74b5db18be47",
+      "frappe_core": ">=15.0.0,<16.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    },
+    {
+      "version": "0.0.1",
+      "branch": "master",
+      "commit": "0646303f61c0cec3b1667509cb6c74b5db18be47",
+      "frappe_core": ">=15.0.0,<16.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    }
+  ]
+}

@@ -1,11 +1,16 @@
 #!/usr/bin/env python3
 """
-Refresh apps.json's targets from each app's pyproject.toml on GitHub.
+Split the flat apps.json into a metadata index plus one commit-scoped release
+file per app.
 
-Run periodically against this repo: for every app, fetches pyproject.toml
-across the known Frappe branches and rebuilds its targets array (version,
-frappe_core compatibility range, sibling app dependencies). Rewrites
-apps.json in place.
+For every app, fetches pyproject.toml across the known Frappe branches,
+resolves each branch to its current tip commit, and writes the releases to
+apps/<name>.json; apps.json keeps only metadata and a "releases" pointer.
+Apps with no resolvable release are dropped.
+
+This is a one-shot migration, not a cron job: after it runs, releases only
+change through an app owner's PR, which is what makes every advertised
+commit one the marketplace checks have seen.
 
 Usage:
     GITHUB_TOKEN=ghp_... python3 tools/migrate_registry.py
@@ -17,6 +22,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import subprocess
 import time
 import tomllib
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -26,7 +32,10 @@ from urllib.request import Request, urlopen
 
 from packaging.version import Version, InvalidVersion
 
-REGISTRY = Path(__file__).parent.parent / "apps.json"
+ROOT = Path(__file__).parent.parent
+REGISTRY = ROOT / "apps.json"
+APPS_DIR = ROOT / "apps"
+NIGHTLY_BRANCHES = ("develop",)
 PILOT_BRANCHES = ["version-16", "version-15", "develop", "main", "master"]
 FRAPPE_KEY = "frappe"
 REQUEST_TIMEOUT = 10
@@ -123,7 +132,19 @@ def _is_dynamic_version(toml: dict) -> bool:
     return "version" in toml.get("project", {}).get("dynamic", [])
 
 
-def parse_target(toml: dict, branch: str, dynamic_version: str | None = None) -> dict | None:
+def branch_sha(repo_url: str, branch: str, log: Log) -> str | None:
+    """The branch's current tip commit, straight from the remote."""
+    result = subprocess.run(
+        ["git", "ls-remote", repo_url, f"refs/heads/{branch}"], capture_output=True, text=True
+    )
+    if result.returncode != 0:
+        log.append(f"{branch}: ls-remote failed — {result.stderr.strip()}")
+        return None
+    line = result.stdout.strip().splitlines()
+    return line[0].split("\t", 1)[0] if line else None
+
+
+def parse_release(toml: dict, branch: str, dynamic_version: str | None = None) -> dict | None:
     project = toml.get("project", {})
     version = project.get("version") or dynamic_version
     if not version:
@@ -137,22 +158,36 @@ def parse_target(toml: dict, branch: str, dynamic_version: str | None = None) ->
 
     return {
         "version": version,
-        "target_type": "branch",
-        "target": branch,
+        "branch": branch,
+        "commit": "",  # filled in from the branch tip once the release is kept
         "frappe_core": frappe_core,
         "dependencies": dependencies,
+        "channel": "stable",  # set once every branch is known - see assign_channels()
     }
 
 
-def sort_key(target: dict) -> Version:
+def sort_key(release: dict) -> Version:
     try:
-        return Version(target["version"])
+        return Version(release["version"])
     except InvalidVersion:
         return Version("0")
 
 
-def build_targets(repo_url: str, client: GitHubClient, log: Log) -> list[dict]:
-    targets = []
+def assign_channels(releases: list[dict]) -> None:
+    """Mark develop releases nightly only when the app also cuts releases elsewhere.
+
+    An app whose only branch is develop (e.g. telephony) publishes one code line
+    that every bench runs, so calling it nightly would make every stable bench
+    look like it fell back to a dev build.
+    """
+    cuts_releases = any(release["branch"] not in NIGHTLY_BRANCHES for release in releases)
+    for release in releases:
+        nightly = cuts_releases and release["branch"] in NIGHTLY_BRANCHES
+        release["channel"] = "nightly" if nightly else "stable"
+
+
+def build_releases(repo_url: str, client: GitHubClient, log: Log) -> list[dict]:
+    releases = []
 
     for branch in PILOT_BRANCHES:
         toml = client.fetch_pyproject(repo_url, branch, log)
@@ -165,21 +200,28 @@ def build_targets(repo_url: str, client: GitHubClient, log: Log) -> list[dict]:
             app_name = toml.get("project", {}).get("name", "")
             dynamic_version = client.fetch_dynamic_version(repo_url, branch, app_name, log)
 
-        target = parse_target(toml, branch, dynamic_version)
-        if target is None:
+        release = parse_release(toml, branch, dynamic_version)
+        if release is None:
             log.append(f"{branch}: no version field")
             continue
-        if not target["frappe_core"]:
+        if not release["frappe_core"]:
             log.append(f"{branch}: no frappe declared in [tool.bench.frappe-dependencies] — skipping")
             continue
-        targets.append(target)
-        log.append(f"{branch}: v{target['version']}")
+        commit = branch_sha(repo_url, branch, log)
+        if not commit:
+            log.append(f"{branch}: could not resolve a commit — skipping")
+            continue
+        release["commit"] = commit
+        releases.append(release)
+        log.append(f"{branch}: v{release['version']} @ {commit[:8]}")
 
-    targets.sort(key=sort_key, reverse=True)
-    return targets
+    assign_channels(releases)
+    releases.sort(key=sort_key, reverse=True)
+    return releases
 
 
-def refresh_app(app: dict, client: GitHubClient) -> tuple[dict | None, Log]:
+def build_app(app: dict, client: GitHubClient) -> tuple[dict | None, Log]:
+    """The app's index entry plus its releases, or None when nothing is installable."""
     log: Log = []
     repo = app.get("repo")
     if not repo:
@@ -189,9 +231,12 @@ def refresh_app(app: dict, client: GitHubClient) -> tuple[dict | None, Log]:
         log.append("repo not found — skipping")
         return None, log
 
-    targets = build_targets(repo, client, log)
+    releases = build_releases(repo, client, log)
+    if not releases:
+        log.append("no installable release — dropping from the registry")
+        return None, log
 
-    refreshed = {
+    entry = {
         "name": app["name"],
         "title": app["title"],
         "description": app.get("description"),
@@ -201,10 +246,22 @@ def refresh_app(app: dict, client: GitHubClient) -> tuple[dict | None, Log]:
         "documentation": app.get("documentation"),
         "categories": app.get("categories", []),
         "category": app.get("category"),
-        "stars": app.get("stars"),
-        "targets": targets,
+        "stars": app.get("stars") or 0,  # the schema check requires an int
+        "releases": f"apps/{app['name']}.json",
     }
-    return refreshed, log
+    return {"entry": entry, "releases": releases}, log
+
+
+def write_registry(index: list[dict], releases_by_name: dict[str, list[dict]]) -> None:
+    APPS_DIR.mkdir(exist_ok=True)
+    REGISTRY.write_text(json.dumps(index, indent=2, ensure_ascii=False) + "\n")
+    for name, releases in releases_by_name.items():
+        payload = {"name": name, "releases": releases}
+        (APPS_DIR / f"{name}.json").write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n")
+    # A release file with no index entry is unreachable - pilot only ever reads
+    # apps/<name>.json for a name the index lists.
+    for stale in set(APPS_DIR.glob("*.json")) - {APPS_DIR / f"{name}.json" for name in releases_by_name}:
+        stale.unlink()
 
 
 def main() -> None:
@@ -219,54 +276,48 @@ def main() -> None:
 
     apps: list[dict] = json.loads(REGISTRY.read_text())
     to_process = apps[: args.limit] if args.limit else apps
-    process_names = {app["name"] for app in to_process}
 
     client = GitHubClient(token=token)
-    # refresh_app only reads GitHubClient/network state — safe to run
-    # concurrently. Every write (the dict below, the file at the end) stays
+    # build_app only reads GitHubClient/network state — safe to run
+    # concurrently. Every write (the dicts below, the files at the end) stays
     # on the main thread, so nothing needs a lock.
-    refreshed_by_name: dict[str, dict] = {}
+    built_by_name: dict[str, dict] = {}
 
     skipped = 0
     with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
-        futures = {executor.submit(refresh_app, app, client): app for app in to_process}
+        futures = {executor.submit(build_app, app, client): app for app in to_process}
         for index, future in enumerate(as_completed(futures), 1):
             app = futures[future]
             print(f"[{index}/{len(to_process)}] {app['name']}")
             try:
-                refreshed, log = future.result()
+                built, log = future.result()
             except Exception as error:
                 print(f"    unexpected error, skipping: {error}")
                 skipped += 1
                 continue
             for line in log:
                 print(f"    {line}")
-            if refreshed is None:
+            if built is None:
                 skipped += 1
             else:
-                refreshed_by_name[app["name"]] = refreshed
+                built_by_name[app["name"]] = built
 
-    # Apps outside --limit's scope are carried over untouched, in their
-    # original position — input and output are the same file, so a
-    # partial/test run must never drop or reorder the rest of the registry.
-    result = [
-        refreshed_by_name[app["name"]] if app["name"] in process_names else app
-        for app in apps
-        if app["name"] not in process_names or app["name"] in refreshed_by_name
-    ]
-
-    with_targets = sum(1 for a in refreshed_by_name.values() if a["targets"])
+    # Keep the registry's original order, and drop every app that has no
+    # release — a metadata-only entry is not installable and pilot rejects it.
+    index = [built_by_name[app["name"]]["entry"] for app in apps if app["name"] in built_by_name]
+    releases_by_name = {name: built["releases"] for name, built in built_by_name.items()}
+    total_releases = sum(len(releases) for releases in releases_by_name.values())
 
     if args.dry_run:
         print("\n--- sample output (first 3) ---")
-        print(json.dumps(list(refreshed_by_name.values())[:3], indent=2, ensure_ascii=False))
-        print(f"\n{with_targets}/{len(refreshed_by_name)} apps would have targets, {skipped} would be removed")
+        print(json.dumps(list(built_by_name.values())[:3], indent=2, ensure_ascii=False))
+        print(f"\n{len(index)} apps would be kept with {total_releases} releases, {skipped} dropped")
         return
 
-    REGISTRY.write_text(json.dumps(result, indent=2, ensure_ascii=False) + "\n")
-    print(f"\nWrote {len(result)} apps → {REGISTRY}")
-    print(f"  {with_targets} with targets, {len(refreshed_by_name) - with_targets} without targets")
-    print(f"  {skipped} removed (no repo or 404)")
+    write_registry(index, releases_by_name)
+    print(f"\nWrote {len(index)} apps → {REGISTRY} and {APPS_DIR}")
+    print(f"  {total_releases} releases across {len(releases_by_name)} apps")
+    print(f"  {skipped} dropped (no repo, 404, or no installable release)")
 
 
 if __name__ == "__main__":

@@ -1,0 +1,13 @@
+{
+  "name": "insights",
+  "releases": [
+    {
+      "version": "3.3.1",
+      "branch": "develop",
+      "commit": "1a78fa6631d158f115c507d1224cc50a3d0de36a",
+      "frappe_core": ">=15.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    }
+  ]
+}

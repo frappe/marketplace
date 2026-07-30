@@ -1,0 +1,13 @@
+{
+  "name": "uganda_compliance",
+  "releases": [
+    {
+      "version": "0.0.1",
+      "branch": "version-16",
+      "commit": "33743cd596c6e8c079945478d0e5b52e461fe770",
+      "frappe_core": ">=16.0.0,<17.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    }
+  ]
+}

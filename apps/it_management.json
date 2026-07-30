@@ -1,0 +1,13 @@
+{
+  "name": "it_management",
+  "releases": [
+    {
+      "version": "0.0.1",
+      "branch": "develop",
+      "commit": "d22290066d0bde402808b5a3f21dcd5bc25598d2",
+      "frappe_core": ">=13.0.0,<16.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    }
+  ]
+}

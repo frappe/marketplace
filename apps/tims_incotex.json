@@ -1,0 +1,25 @@
+{
+  "name": "tims_incotex",
+  "releases": [
+    {
+      "version": "0.0.1",
+      "branch": "version-16",
+      "commit": "2da5c185a8fcb193df31c26e7a6104cb1bdb867f",
+      "frappe_core": ">=16.0.0,<17.0.0",
+      "dependencies": {
+        "erpnext": ">=16.0.0,<17.0.0"
+      },
+      "channel": "stable"
+    },
+    {
+      "version": "0.0.1",
+      "branch": "develop",
+      "commit": "83220533676d930918eeac4b567f16577f639fb8",
+      "frappe_core": ">=16.0.0,<17.0.0",
+      "dependencies": {
+        "erpnext": ">=16.0.0,<17.0.0"
+      },
+      "channel": "nightly"
+    }
+  ]
+}

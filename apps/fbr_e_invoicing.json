@@ -1,0 +1,21 @@
+{
+  "name": "fbr_e_invoicing",
+  "releases": [
+    {
+      "version": "0.0.1",
+      "branch": "version-16",
+      "commit": "017920ef4f5dffbd295d0f85f0460ef6b2cadeb6",
+      "frappe_core": ">=16.0.0,<17.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    },
+    {
+      "version": "0.0.1",
+      "branch": "version-15",
+      "commit": "26a52c64e2004c90376e0dcef3f9c60f46018891",
+      "frappe_core": ">=15.0.0,<16.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "name": "erpnext_australian_localisation",
+  "releases": [
+    {
+      "version": "16.3.4",
+      "branch": "version-16",
+      "commit": "ec8b83a0dfbcbcb467f58c7f433b388bf9583e3c",
+      "frappe_core": ">=16.0.0,<17.0.0",
+      "dependencies": {
+        "erpnext": ">=16.0.0,<17.0.0"
+      },
+      "channel": "stable"
+    },
+    {
+      "version": "15.3.3",
+      "branch": "version-15",
+      "commit": "0daf68ba0ce0f9bb9ca51a83cb6cdc67ac1ea6c3",
+      "frappe_core": ">=15.0.0,<16.0.0",
+      "dependencies": {
+        "erpnext": ">=15.0.0,<16.0.0"
+      },
+      "channel": "stable"
+    }
+  ]
+}

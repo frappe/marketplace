@@ -1,0 +1,45 @@
+{
+  "name": "ecommerce_integrations",
+  "releases": [
+    {
+      "version": "1.20.3",
+      "branch": "version-15",
+      "commit": "3fc7d60c6b0c064e883e56c86d3c51af48511404",
+      "frappe_core": ">=15.0.0,<16.0.0",
+      "dependencies": {
+        "erpnext": ">=15.0.0,<16.0.0"
+      },
+      "channel": "stable"
+    },
+    {
+      "version": "1.20.3",
+      "branch": "main",
+      "commit": "ff9364dbab1a06bdcd4118dd2898a63c75421f14",
+      "frappe_core": ">=15.0.0,<16.0.0",
+      "dependencies": {
+        "erpnext": ">=15.0.0,<16.0.0"
+      },
+      "channel": "stable"
+    },
+    {
+      "version": "1.17.0",
+      "branch": "version-16",
+      "commit": "0f6b39ba5971278edb3a9a5c7c4eef435fff6171",
+      "frappe_core": ">=16.0.0,<17.0.0",
+      "dependencies": {
+        "erpnext": ">=16.0.0,<17.0.0"
+      },
+      "channel": "stable"
+    },
+    {
+      "version": "1.17.0",
+      "branch": "develop",
+      "commit": "1ffca762dcdc0a188bb7f2cb9c5c82f8ab6c5ee2",
+      "frappe_core": ">=16.0.0-dev,<=17.0.0-dev",
+      "dependencies": {
+        "erpnext": ">=16.0.0-dev,<=17.0.0-dev"
+      },
+      "channel": "nightly"
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "name": "whatsapp_automation_pro",
+  "releases": [
+    {
+      "version": "1.0.0",
+      "branch": "main",
+      "commit": "aec775d4ab8aceeecbaf58e07c0e3900e8861fe5",
+      "frappe_core": ">=15.0.0,<=17.0.0-dev",
+      "dependencies": {},
+      "channel": "stable"
+    }
+  ]
+}

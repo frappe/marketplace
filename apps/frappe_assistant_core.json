@@ -1,0 +1,21 @@
+{
+  "name": "frappe_assistant_core",
+  "releases": [
+    {
+      "version": "2.5.0",
+      "branch": "develop",
+      "commit": "e50c5c32bc7d28f10842c5779e0aec61d5b77bbb",
+      "frappe_core": ">=15.0.0,<17.0.0",
+      "dependencies": {},
+      "channel": "nightly"
+    },
+    {
+      "version": "2.5.0",
+      "branch": "main",
+      "commit": "e50c5c32bc7d28f10842c5779e0aec61d5b77bbb",
+      "frappe_core": ">=15.0.0,<17.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    }
+  ]
+}

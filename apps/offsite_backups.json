@@ -1,0 +1,13 @@
+{
+  "name": "offsite_backups",
+  "releases": [
+    {
+      "version": "0.0.1",
+      "branch": "version-16",
+      "commit": "67c1d2416fda733e6d1c740b36a55a60bd7ef686",
+      "frappe_core": ">=16.0.0,<17.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "name": "erpnext_portugal",
+  "releases": [
+    {
+      "version": "0.0.1",
+      "branch": "version-16",
+      "commit": "c8d02aa755b87d7829a64a4b2d6ee27254a5c98b",
+      "frappe_core": ">=16.0.0,<17.0.0",
+      "dependencies": {
+        "erpnext": ">=16.0.0,<17.0.0"
+      },
+      "channel": "stable"
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "name": "cargo_management",
+  "releases": [
+    {
+      "version": "16.2.0",
+      "branch": "version-16",
+      "commit": "6a5fa34e6de29d98741556fa77a2edd289f779de",
+      "frappe_core": ">=16.0.0,<17.0.0",
+      "dependencies": {
+        "erpnext": ">=16.0.0,<17.0.0"
+      },
+      "channel": "stable"
+    },
+    {
+      "version": "16.2.0",
+      "branch": "develop",
+      "commit": "cc97e1d514c962cfcbb7f678d2cd436b7d4e6cfa",
+      "frappe_core": ">=16.0.0,<17.0.0",
+      "dependencies": {
+        "erpnext": ">=16.0.0,<17.0.0"
+      },
+      "channel": "nightly"
+    }
+  ]
+}

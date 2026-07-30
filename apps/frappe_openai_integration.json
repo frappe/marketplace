@@ -1,0 +1,21 @@
+{
+  "name": "frappe_openai_integration",
+  "releases": [
+    {
+      "version": "0.0.1",
+      "branch": "version-16",
+      "commit": "0c9b41fbcefb93c9143be7e314e1192afdac4ec3",
+      "frappe_core": ">=16.0.0,<17.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    },
+    {
+      "version": "0.0.1",
+      "branch": "version-15",
+      "commit": "b6bc85664e63337c6100fb5cef9db49cb11a29be",
+      "frappe_core": ">=15.0.0,<16.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    }
+  ]
+}

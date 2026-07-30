@@ -1,0 +1,21 @@
+{
+  "name": "pwa_frappe",
+  "releases": [
+    {
+      "version": "1.1.0",
+      "branch": "version-16",
+      "commit": "51ab16ae74cdc29c29e0356ba9b0df80ac1e7334",
+      "frappe_core": ">=16.0.0,<17.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    },
+    {
+      "version": "1.1.0",
+      "branch": "main",
+      "commit": "8162326dcb5b347baa9aa11bd7fb72a9b076680e",
+      "frappe_core": ">=15.0.0,<16.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    }
+  ]
+}

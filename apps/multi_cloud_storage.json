@@ -1,0 +1,21 @@
+{
+  "name": "multi_cloud_storage",
+  "releases": [
+    {
+      "version": "1.0.0",
+      "branch": "develop",
+      "commit": "cbe553f53f0835ab3d28388ba94e46a555d87262",
+      "frappe_core": ">=16.0.0",
+      "dependencies": {},
+      "channel": "nightly"
+    },
+    {
+      "version": "1.0.0",
+      "branch": "main",
+      "commit": "5819ba65c123b6c8f752ed7e122865f6a218a174",
+      "frappe_core": ">=16.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "name": "nigeria_compliance_via_digitax",
+  "releases": [
+    {
+      "version": "0.0.1",
+      "branch": "version-16",
+      "commit": "da99840f85f9b0411b84a72ccbc858640c606c18",
+      "frappe_core": ">=16.0.0,<17.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    },
+    {
+      "version": "0.0.1",
+      "branch": "version-15",
+      "commit": "2f05d87524516bedf6f447eec591075df0707787",
+      "frappe_core": ">=15.0.0,<16.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    },
+    {
+      "version": "0.0.1",
+      "branch": "develop",
+      "commit": "b86a5393e8055a6b2b7a1bf22feb57faf9eb659c",
+      "frappe_core": ">=16.0.0,<17.0.0",
+      "dependencies": {},
+      "channel": "nightly"
+    }
+  ]
+}

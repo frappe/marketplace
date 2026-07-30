@@ -1,0 +1,29 @@
+{
+  "name": "bulk_import_export_template",
+  "releases": [
+    {
+      "version": "1.0.1",
+      "branch": "version-16",
+      "commit": "b1e618c83730c6c78d31cd47040505c53199c63f",
+      "frappe_core": ">=16.0.0,<17.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    },
+    {
+      "version": "1.0.1",
+      "branch": "version-15",
+      "commit": "9bb1b45a352f1774501e7efe5c067172cc454719",
+      "frappe_core": ">=15.0.0,<16.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    },
+    {
+      "version": "1.0.1",
+      "branch": "develop",
+      "commit": "d89e4cb7e87cbd304ef1880899760ecc27764edc",
+      "frappe_core": ">=15.0.0",
+      "dependencies": {},
+      "channel": "nightly"
+    }
+  ]
+}

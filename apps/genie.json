@@ -1,0 +1,13 @@
+{
+  "name": "genie",
+  "releases": [
+    {
+      "version": "0.0.1",
+      "branch": "main",
+      "commit": "0becfee480bc4ccacf1556b558c8429f14215ee4",
+      "frappe_core": ">=14.0.0,<18.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "name": "check_run",
+  "releases": [
+    {
+      "version": "16.0.0",
+      "branch": "version-16",
+      "commit": "61c47ddb585d6582d7441fbeccf074eade85a9fa",
+      "frappe_core": ">=16.0.0-dev,<17.0.0",
+      "dependencies": {
+        "erpnext": ">=16.0.0-dev,<17.0.0",
+        "hrms": ">=16.0.0-dev,<17.0.0"
+      },
+      "channel": "stable"
+    },
+    {
+      "version": "15.14.0",
+      "branch": "version-15",
+      "commit": "dcf78143bfa861253535d564e96d8aa6210e0b69",
+      "frappe_core": ">=15.0.0,<16.0.0",
+      "dependencies": {
+        "erpnext": ">=15.0.0,<16.0.0",
+        "hrms": ">=15.0.0,<16.0.0"
+      },
+      "channel": "stable"
+    }
+  ]
+}

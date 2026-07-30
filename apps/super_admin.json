@@ -1,0 +1,15 @@
+{
+  "name": "super_admin",
+  "releases": [
+    {
+      "version": "0.0.1",
+      "branch": "version-15",
+      "commit": "999540ba8398b1d6ec7adb046c3db1debc971624",
+      "frappe_core": ">=14.0.0,<16.0.0",
+      "dependencies": {
+        "erpnext": ">=14.0.0,<16.0.0"
+      },
+      "channel": "stable"
+    }
+  ]
+}

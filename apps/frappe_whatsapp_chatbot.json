@@ -1,0 +1,25 @@
+{
+  "name": "frappe_whatsapp_chatbot",
+  "releases": [
+    {
+      "version": "0.0.1",
+      "branch": "version-16",
+      "commit": "9926e914d0da157b1e6d1ac0a0ece04f1384c5c4",
+      "frappe_core": ">=14.0.0,<17.0.0",
+      "dependencies": {
+        "frappe_whatsapp": ">=1.0.0,<2.0.0"
+      },
+      "channel": "stable"
+    },
+    {
+      "version": "0.0.1",
+      "branch": "master",
+      "commit": "e98a655af42be5c0e8cc3912780418e2206d5bdb",
+      "frappe_core": ">=14.0.0,<=17.0.0-dev",
+      "dependencies": {
+        "frappe_whatsapp": ">=0.0.1"
+      },
+      "channel": "stable"
+    }
+  ]
+}

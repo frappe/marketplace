@@ -1,0 +1,25 @@
+{
+  "name": "banking",
+  "releases": [
+    {
+      "version": "16.2.1",
+      "branch": "version-16",
+      "commit": "2d6a7de37b3e2680e3a78518f2e0ee5ed39d2809",
+      "frappe_core": ">=16.15.0,<17.0.0",
+      "dependencies": {
+        "erpnext": ">=16.14.0,<17.0.0"
+      },
+      "channel": "stable"
+    },
+    {
+      "version": "15.36.1",
+      "branch": "version-15",
+      "commit": "0bebc1c45b9e55f260db2581313bf672ade1a9d4",
+      "frappe_core": ">=15.60.0,<16.0.0",
+      "dependencies": {
+        "erpnext": ">=15.99.0,<16.0.0"
+      },
+      "channel": "stable"
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "name": "propms",
+  "releases": [
+    {
+      "version": "15.2.0",
+      "branch": "version-15",
+      "commit": "fc7eb98973c226eeee70832981ad78846d27b197",
+      "frappe_core": ">=15.0.0,<16.0.0",
+      "dependencies": {
+        "erpnext": ">=15.0.0,<16.0.0"
+      },
+      "channel": "stable"
+    }
+  ]
+}

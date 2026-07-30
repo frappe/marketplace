@@ -1,0 +1,13 @@
+{
+  "name": "precivault",
+  "releases": [
+    {
+      "version": "0.0.1",
+      "branch": "master",
+      "commit": "07795de3260c6d06db24ecc16ba227481d1b05c1",
+      "frappe_core": ">=15.0.0,<16.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    }
+  ]
+}

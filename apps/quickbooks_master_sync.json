@@ -1,0 +1,29 @@
+{
+  "name": "quickbooks_master_sync",
+  "releases": [
+    {
+      "version": "2.0.2",
+      "branch": "version-16",
+      "commit": "668de0306a3f1d93ca08f74c395819bf3a1b7b06",
+      "frappe_core": ">=16.0.0,<17.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    },
+    {
+      "version": "1.0.0",
+      "branch": "version-15",
+      "commit": "4b171be898b273c7c834c4a63b8385bdbb83b828",
+      "frappe_core": ">=15.0.0,<16.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    },
+    {
+      "version": "1.0.0",
+      "branch": "develop",
+      "commit": "1184b56170f14e9006ea51ccc9a5b4a79b2a026f",
+      "frappe_core": ">=15.0.0,<16.0.0",
+      "dependencies": {},
+      "channel": "nightly"
+    }
+  ]
+}

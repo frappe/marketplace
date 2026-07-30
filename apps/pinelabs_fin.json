@@ -1,0 +1,25 @@
+{
+  "name": "pinelabs_fin",
+  "releases": [
+    {
+      "version": "0.0.1",
+      "branch": "develop",
+      "commit": "204073b5534aa88aa932dc20669222d2dae4688b",
+      "frappe_core": ">=15.0.0,<16.0.0",
+      "dependencies": {
+        "erpnext": ">=15.0.0,<16.0.0"
+      },
+      "channel": "nightly"
+    },
+    {
+      "version": "0.0.1",
+      "branch": "main",
+      "commit": "507b514798bf767641269a6d309251bb3baf06bb",
+      "frappe_core": ">=15.0.0,<16.0.0",
+      "dependencies": {
+        "erpnext": ">=15.0.0,<16.0.0"
+      },
+      "channel": "stable"
+    }
+  ]
+}

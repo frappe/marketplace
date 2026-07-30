@@ -1,0 +1,13 @@
+{
+  "name": "e_sign",
+  "releases": [
+    {
+      "version": "0.0.1",
+      "branch": "develop",
+      "commit": "a733e735a41ec504a1b4f64a2f8b9a8b09525442",
+      "frappe_core": ">=15.0.0,<16.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    }
+  ]
+}

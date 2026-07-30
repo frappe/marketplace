@@ -1,0 +1,35 @@
+{
+  "name": "health",
+  "releases": [
+    {
+      "version": "17.0.0-dev",
+      "branch": "develop",
+      "commit": "c6bb3ddef0af36fe5049f6307f132ab7684f0760",
+      "frappe_core": ">=17.0.0-dev,<18.0.0",
+      "dependencies": {
+        "erpnext": ">=17.0.0-dev,<18.0.0"
+      },
+      "channel": "nightly"
+    },
+    {
+      "version": "16.4.1",
+      "branch": "version-16",
+      "commit": "15d78ad6436b53ec188b3af74b05c7691c7bdb5c",
+      "frappe_core": ">=16.0.0,<17.0.0",
+      "dependencies": {
+        "erpnext": ">=16.0.0,<17.0.0"
+      },
+      "channel": "stable"
+    },
+    {
+      "version": "15.2.1",
+      "branch": "version-15",
+      "commit": "09f0c7eb90c1ab72881acdac5740195b6e207b93",
+      "frappe_core": ">=15.0.0,<16.0.0",
+      "dependencies": {
+        "erpnext": ">=15.0.0,<16.0.0"
+      },
+      "channel": "stable"
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "name": "projectit",
+  "releases": [
+    {
+      "version": "16.0.1",
+      "branch": "version-16",
+      "commit": "08f13c29bdf84f964abcb5b68a059d2d0e5cffe0",
+      "frappe_core": ">=16.0.0,<17.0.0",
+      "dependencies": {
+        "erpnext": ">=16.0.0,<17.0.0",
+        "hrms": ">=16.0.0,<17.0.0"
+      },
+      "channel": "stable"
+    },
+    {
+      "version": "16.0.1",
+      "branch": "develop",
+      "commit": "cb73da6d842eb364fd5139ffc4df20265c7a2862",
+      "frappe_core": ">=16.0.0,<17.0.0",
+      "dependencies": {
+        "erpnext": ">=16.0.0,<17.0.0",
+        "hrms": ">=16.0.0,<17.0.0"
+      },
+      "channel": "nightly"
+    },
+    {
+      "version": "15.0.3",
+      "branch": "version-15",
+      "commit": "484f3eaa3d3cca59dd35803c29c5183b04643b27",
+      "frappe_core": ">=15.0.0,<16.0.0",
+      "dependencies": {
+        "erpnext": ">=15.0.0,<16.0.0",
+        "hrms": ">=15.0.0,<16.0.0"
+      },
+      "channel": "stable"
+    }
+  ]
+}

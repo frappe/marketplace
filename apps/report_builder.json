@@ -1,0 +1,21 @@
+{
+  "name": "report_builder",
+  "releases": [
+    {
+      "version": "0.0.1",
+      "branch": "develop",
+      "commit": "215fbb89577bd5eaf3ba2fb52865c07c059bc243",
+      "frappe_core": ">=15.0.0,<16.0.0",
+      "dependencies": {},
+      "channel": "nightly"
+    },
+    {
+      "version": "0.0.1",
+      "branch": "main",
+      "commit": "e45b4651c3621dfd9b49b83e7b3f96268532c69f",
+      "frappe_core": ">=15.0.0,<16.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    }
+  ]
+}

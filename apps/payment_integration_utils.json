@@ -1,0 +1,25 @@
+{
+  "name": "payment_integration_utils",
+  "releases": [
+    {
+      "version": "16.0.0-dev",
+      "branch": "develop",
+      "commit": "71ab8ccafe06705d0b6f62eb2a3970385d8b471c",
+      "frappe_core": ">=15.0.0,<16.0.0",
+      "dependencies": {
+        "erpnext": ">=15.0.0,<16.0.0"
+      },
+      "channel": "nightly"
+    },
+    {
+      "version": "15.2.0",
+      "branch": "version-15",
+      "commit": "edf85b2bb65c7012485d90b04a58a7d6e7f3a15b",
+      "frappe_core": ">=15.0.0,<16.0.0",
+      "dependencies": {
+        "erpnext": ">=15.0.0,<16.0.0"
+      },
+      "channel": "stable"
+    }
+  ]
+}

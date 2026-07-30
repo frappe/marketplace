@@ -1,0 +1,23 @@
+{
+  "name": "erpnext_egypt_compliance",
+  "releases": [
+    {
+      "version": "1.6.0",
+      "branch": "version-16",
+      "commit": "ffba870ab201342a13f5dc7fc1840573a0b8ee56",
+      "frappe_core": ">=15.0.0,<17.0.0",
+      "dependencies": {
+        "erpnext": ">=15.0.0,<17.0.0"
+      },
+      "channel": "stable"
+    },
+    {
+      "version": "0.0.1",
+      "branch": "main",
+      "commit": "9269a8081a1ac59fb11ae51dad947b6d50e76a69",
+      "frappe_core": ">=15.0.0,<16.0.0-dev",
+      "dependencies": {},
+      "channel": "stable"
+    }
+  ]
+}

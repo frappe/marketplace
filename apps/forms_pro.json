@@ -1,0 +1,21 @@
+{
+  "name": "forms_pro",
+  "releases": [
+    {
+      "version": "15.0.0",
+      "branch": "version-15",
+      "commit": "7dd35fad14e4dca9f4aa79df6ff9a3fd49bdc729",
+      "frappe_core": ">=15.0.0,<16.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    },
+    {
+      "version": "0.0.1",
+      "branch": "develop",
+      "commit": "17199d6b61b55becd19d19a6426d748632a7a0c4",
+      "frappe_core": ">=16.0.0-dev,<18.0.0",
+      "dependencies": {},
+      "channel": "nightly"
+    }
+  ]
+}

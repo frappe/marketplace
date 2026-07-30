@@ -1,0 +1,25 @@
+{
+  "name": "helpdesk",
+  "releases": [
+    {
+      "version": "1.28.1",
+      "branch": "main",
+      "commit": "7b4b400a50707f8ff06d030b36fbc24cf4a9daa0",
+      "frappe_core": ">=15.109.0,<17.0.0",
+      "dependencies": {
+        "telephony": ">=0.0.1,<1.0.0"
+      },
+      "channel": "stable"
+    },
+    {
+      "version": "1.22.2",
+      "branch": "develop",
+      "commit": "0975880ebab41ee78fe9cb9c37adbccf737fc395",
+      "frappe_core": ">=16.0.0-dev,<18.0.0",
+      "dependencies": {
+        "telephony": ">=0.0.1,<1.0.0"
+      },
+      "channel": "nightly"
+    }
+  ]
+}

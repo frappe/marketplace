@@ -1,0 +1,29 @@
+{
+  "name": "frappe_tingg_payments",
+  "releases": [
+    {
+      "version": "0.0.1",
+      "branch": "version-16",
+      "commit": "394b3bcea039f741f2c8a411703ab160e9137d2c",
+      "frappe_core": ">=16.0.0,<17.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    },
+    {
+      "version": "0.0.1",
+      "branch": "version-15",
+      "commit": "523edc466c883bccc1355b90a8531a869765da8a",
+      "frappe_core": ">=15.0.0,<16.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    },
+    {
+      "version": "0.0.1",
+      "branch": "develop",
+      "commit": "5940abba80735f466c9e5de81a3589f7fdf1a064",
+      "frappe_core": ">=17.0.0-dev,<18.0.0",
+      "dependencies": {},
+      "channel": "nightly"
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "name": "statement_importer",
+  "releases": [
+    {
+      "version": "1.4.0",
+      "branch": "main",
+      "commit": "7beb1572f967d1dc624b311f72d782c2b1391433",
+      "frappe_core": ">=15.0.0,<17.0.0",
+      "dependencies": {
+        "erpnext": ">=15.0.0,<17.0.0"
+      },
+      "channel": "stable"
+    }
+  ]
+}

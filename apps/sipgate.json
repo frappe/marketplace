@@ -1,0 +1,15 @@
+{
+  "name": "sipgate",
+  "releases": [
+    {
+      "version": "15.0.0",
+      "branch": "version-15",
+      "commit": "b56e40c5c3c97e39f7a38c1cfaa1da1d1890ec8a",
+      "frappe_core": ">=15.89.0,<16.0.0",
+      "dependencies": {
+        "erpnext": ">=15.89.0,<16.0.0"
+      },
+      "channel": "stable"
+    }
+  ]
+}

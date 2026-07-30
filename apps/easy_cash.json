@@ -1,0 +1,15 @@
+{
+  "name": "easy_cash",
+  "releases": [
+    {
+      "version": "1.0.0",
+      "branch": "main",
+      "commit": "7b345ad393c2c8acd39648e862d43a2f50ee9f9f",
+      "frappe_core": ">=15.0.0,<17.0.0",
+      "dependencies": {
+        "erpnext": ">=15.0.0,<17.0.0"
+      },
+      "channel": "stable"
+    }
+  ]
+}

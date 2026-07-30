@@ -1,0 +1,35 @@
+{
+  "name": "eu_einvoice",
+  "releases": [
+    {
+      "version": "16.2.2",
+      "branch": "version-16",
+      "commit": "d60336627179ba7f990b48c5e526c1fd4313bb36",
+      "frappe_core": ">=16.0.0-dev,<17.0.0",
+      "dependencies": {
+        "erpnext": ">=16.0.0-dev,<17.0.0"
+      },
+      "channel": "stable"
+    },
+    {
+      "version": "16.0.0-dev",
+      "branch": "develop",
+      "commit": "e67191ca0038762f2c11ba945c8df3300ec4913c",
+      "frappe_core": ">=16.0.0-dev,<17.0.0",
+      "dependencies": {
+        "erpnext": ">=16.0.0-dev,<17.0.0"
+      },
+      "channel": "nightly"
+    },
+    {
+      "version": "15.16.2",
+      "branch": "version-15",
+      "commit": "610af9479729fecddfeb2885c7813ded58b009ee",
+      "frappe_core": ">=15.47.0,<16.0.0",
+      "dependencies": {
+        "erpnext": ">=15.45.0,<16.0.0"
+      },
+      "channel": "stable"
+    }
+  ]
+}

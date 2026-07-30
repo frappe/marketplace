@@ -1,0 +1,21 @@
+{
+  "name": "education",
+  "releases": [
+    {
+      "version": "17.0.0-dev",
+      "branch": "develop",
+      "commit": "71aada478bf682f6d034fd4caa6f2f5438b5ace9",
+      "frappe_core": ">=17.0.0-dev,<18.0.0",
+      "dependencies": {},
+      "channel": "nightly"
+    },
+    {
+      "version": "16.0.1",
+      "branch": "version-16",
+      "commit": "1c29e646bf943c2a5f696cb81cb48c8a072cbebc",
+      "frappe_core": ">=16.0.0,<17.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    }
+  ]
+}

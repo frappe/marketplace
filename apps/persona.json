@@ -1,0 +1,13 @@
+{
+  "name": "persona",
+  "releases": [
+    {
+      "version": "0.0.1",
+      "branch": "version-16",
+      "commit": "8a19a4e40318cc3805cb48fba5fd387ef3fbeb9a",
+      "frappe_core": ">=16.0.0,<17.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    }
+  ]
+}

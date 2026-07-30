@@ -1,0 +1,13 @@
+{
+  "name": "vat_compliance",
+  "releases": [
+    {
+      "version": "2.0.1",
+      "branch": "version-16",
+      "commit": "4e88a533003542a4c85a4ea7cede39dd1302b7f1",
+      "frappe_core": ">=16.0.0,<=17.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    }
+  ]
+}

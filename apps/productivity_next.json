@@ -1,0 +1,13 @@
+{
+  "name": "productivity_next",
+  "releases": [
+    {
+      "version": "16.0.0",
+      "branch": "version-16",
+      "commit": "1bfd3e1045597b7adb9e44cfb9bb6715696f7859",
+      "frappe_core": ">=16.0.0-dev,<=17.0.0-dev",
+      "dependencies": {},
+      "channel": "stable"
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "name": "ksa_compliance",
+  "releases": [
+    {
+      "version": "0.61.8",
+      "branch": "develop",
+      "commit": "b4162cc6c9c0f0814f94be0cf3b4b1a4e45a9011",
+      "frappe_core": ">=15.0.0,<17.0.0",
+      "dependencies": {},
+      "channel": "nightly"
+    },
+    {
+      "version": "0.61.4",
+      "branch": "master",
+      "commit": "24968b4e7e6846b968421f385311a999ca3cfd0f",
+      "frappe_core": ">=15.0.0,<17.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    }
+  ]
+}

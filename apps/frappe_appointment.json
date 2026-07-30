@@ -1,0 +1,29 @@
+{
+  "name": "frappe_appointment",
+  "releases": [
+    {
+      "version": "1.1.1",
+      "branch": "version-16",
+      "commit": "c552a8c9c44353813e197358fb72dd4ce893bcd5",
+      "frappe_core": ">=15.0.0,<17.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    },
+    {
+      "version": "0.0.1",
+      "branch": "develop",
+      "commit": "786ff0bc6294897ba9d68640cca5d0b05f73d1d2",
+      "frappe_core": ">=15.0.0,<17.0.0",
+      "dependencies": {},
+      "channel": "nightly"
+    },
+    {
+      "version": "0.0.1",
+      "branch": "main",
+      "commit": "4c6926422c9fc4c63b1edaea396039bc5ec45829",
+      "frappe_core": ">=15.0.0,<17.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    }
+  ]
+}

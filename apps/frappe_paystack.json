@@ -1,0 +1,15 @@
+{
+  "name": "frappe_paystack",
+  "releases": [
+    {
+      "version": "15.0.2",
+      "branch": "version-15",
+      "commit": "9677735fdb5c5a6bdc1333f1f6459640482535d5",
+      "frappe_core": ">=16.0.0,<=17.0.0",
+      "dependencies": {
+        "erpnext": ">=16.0.0,<=17.0.0"
+      },
+      "channel": "stable"
+    }
+  ]
+}

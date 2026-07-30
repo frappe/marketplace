@@ -1,0 +1,13 @@
+{
+  "name": "aql_quality_assurance",
+  "releases": [
+    {
+      "version": "1.0.0",
+      "branch": "develop",
+      "commit": "57df7980830e0907b2803ad94bac87af62d8510a",
+      "frappe_core": ">=15.0.0,<17.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    }
+  ]
+}
