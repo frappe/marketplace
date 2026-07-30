@@ -17,7 +17,7 @@ Marketplace page.
   changed release, stopping at the first failure. `validation/utils/` holds
   their shared plumbing (cloning a release at its commit, diffing two
   registry revisions). `validation/tests/` covers the schema, diff and clone
-  logic.
+  logic - the code that gates every PR.
 - `tools/` — maintenance, not CI-gated. `add_release.py` appends a release
   from an app checkout; `migrate_registry.py` was the one-shot split of the
   old branch-scoped `apps.json`.
