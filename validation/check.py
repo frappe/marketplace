@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
-Orchestrates the marketplace app PR check: run the index and release schema
-checks once per changed/new app, then find which of its releases changed
+Orchestrates the marketplace app PR check: run the schema check once per
+changed/new app, then find which of its releases changed
 (utils/diff.py) and run semgrep and get-app checks against each, in that
 order, stopping at the first failure. A schema-failed app's releases are
 skipped entirely. Exits non-zero if anything fails.
@@ -25,7 +25,7 @@ from urllib.parse import quote, urlparse
 
 sys.path.insert(0, str(Path(__file__).parent))
 from get_app_check import GetAppValidator
-from schema_check import ReleaseSchemaValidator, SchemaValidator
+from schema_check import SchemaValidator
 from semgrep_check import SemgrepValidator
 from utils.clone import clone_release
 from utils.diff import find_changed_releases, load_registry
@@ -37,13 +37,11 @@ def changed_apps(old_apps: dict[str, dict], new_apps: dict[str, dict]) -> dict[s
 
 
 def check_app_schema(name: str, app: dict, section: Section) -> bool:
-    """Gate a changed app's index entry and releases before anything is cloned."""
+    """Gate a changed app's schema before any of its releases are cloned."""
     print(f"\n=== Checking {name} (schema) ===", flush=True)
-    passed = True
-    for validator in (SchemaValidator(app), ReleaseSchemaValidator(app)):
-        result = validator.run()
-        section.checks.append(_result(validator, result))
-        passed = passed and result
+    validator = SchemaValidator(app)
+    passed = validator.run()
+    section.checks.append(_result(validator, passed))
     return passed
 
 

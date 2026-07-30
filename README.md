@@ -16,8 +16,7 @@ Marketplace page.
   `semgrep_check.py` -> `get_app_check.py`, in that order, against each
   changed release, stopping at the first failure. `validation/utils/` holds
   their shared plumbing (cloning a release at its commit, diffing two
-  registry revisions). `validation/tests/` covers the schema, diff and clone
-  logic - the code that gates every PR.
+  registry revisions).
 - `tools/` — maintenance, not CI-gated. `add_release.py` appends a release
   from an app checkout; `migrate_registry.py` was the one-shot split of the
   old branch-scoped `apps.json`.
@@ -118,8 +117,8 @@ Each entry in that file's `releases`:
 | `branch` | Yes | Branch the commit is on; pilot tracks it for later updates |
 | `commit` | Yes | Full 40-character SHA, reachable from `branch` |
 | `frappe_core` | Yes | Frappe version range this release requires, e.g. `>=15.0.0,<17.0.0` — must come from `[tool.bench.frappe-dependencies].frappe` in the app's `pyproject.toml`; releases without it are rejected |
-| `dependencies` | Yes | Other marketplace apps this release requires, as `{name: version-range}` — `{}` is fine |
-| `channel` | Yes | `stable` or `nightly`. Pilot installs the newest compatible `stable` release, and only falls back to `nightly` when no stable release fits the bench's Frappe version |
+| `dependencies` | Yes | Other marketplace apps this release requires, as `{name: version-range}` — `{}` is fine, but the key must exist |
+| `channel` | No | `stable` (default) or `nightly`. Pilot installs the newest compatible `stable` release, and only falls back to `nightly` when no stable release fits the bench's Frappe version |
 
 `channel` describes the **code line**, not the branch name. Use `nightly` for a
 rolling dev branch that exists *alongside* cut release branches — `develop` in an
