@@ -753,24 +753,6 @@
     "releases": "apps/builder.json"
   },
   {
-    "name": "drive",
-    "title": "Drive",
-    "description": "Delightful, open source file storage, and sharing solution",
-    "repo": "https://github.com/frappe/drive",
-    "logo_url": "https://cloud.frappe.io/files/drive.png",
-    "website": "https://frappe.io/drive",
-    "documentation": "https://docs.frappe.io/drive",
-    "categories": [
-      "Collaboration",
-      "Files",
-      "Productivity",
-      "Storage"
-    ],
-    "category": "Applications",
-    "stars": 715,
-    "releases": "apps/drive.json"
-  },
-  {
     "name": "mint",
     "title": "Mint",
     "description": "Better bank reconciliation for ERPNext",
