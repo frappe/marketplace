@@ -1,0 +1,13 @@
+{
+  "name": "suite",
+  "releases": [
+    {
+      "version": "0.0.1",
+      "branch": "develop",
+      "commit": "df0b1065f497f225cc3226ba31c50954ded6973a",
+      "frappe_core": ">=16.0.0,<18.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    }
+  ]
+}

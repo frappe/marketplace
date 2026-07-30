@@ -1791,5 +1791,20 @@
     "category": "Applications",
     "stars": 501,
     "releases": "apps/health.json"
+  },
+  {
+    "name": "suite",
+    "title": "Frappe Suite",
+    "description": "Original, intentionally designed productivity tools",
+    "repo": "https://github.com/frappe/suite",
+    "logo_url": "https://raw.githubusercontent.com/frappe/suite/develop/frontend/public/logo.svg",
+    "website": "https://frappe.io",
+    "documentation": "https://docs.frappe.io",
+    "categories": [
+      "Productivity"
+    ],
+    "category": "Applications",
+    "stars": 56,
+    "releases": "apps/suite.json"
   }
 ]
