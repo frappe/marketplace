@@ -1,0 +1,13 @@
+{
+  "name": "eps",
+  "releases": [
+    {
+      "version": "0.0.1",
+      "branch": "version-16",
+      "commit": "9ad8f3ba57cb66b4a5a8e2919c7dcaa12d544ad8",
+      "frappe_core": ">=16.0.0,<17.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    }
+  ]
+}

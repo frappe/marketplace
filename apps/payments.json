@@ -1,0 +1,29 @@
+{
+  "name": "payments",
+  "releases": [
+    {
+      "version": "0.0.1",
+      "branch": "version-16",
+      "commit": "cca07d9f9392e2ea0e521c5975151db9e4b6c321",
+      "frappe_core": ">=16.0.0,<17.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    },
+    {
+      "version": "0.0.1",
+      "branch": "version-15",
+      "commit": "9885a6e500104f1f160add47d55b370773e67a81",
+      "frappe_core": ">=15.0.0,<16.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    },
+    {
+      "version": "0.0.1",
+      "branch": "develop",
+      "commit": "aa3516827fe51d5557975b74e574e3bca9a3070d",
+      "frappe_core": ">=17.0.0-dev,<18.0.0",
+      "dependencies": {},
+      "channel": "nightly"
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "name": "leave_calendar",
+  "releases": [
+    {
+      "version": "1.0.0",
+      "branch": "version-15",
+      "commit": "5a89e09bc534a09955d0b4203ca5b9db198b0515",
+      "frappe_core": ">=15.0.0",
+      "dependencies": {
+        "erpnext": ">=15.0.0",
+        "hrms": ">=15.0.0"
+      },
+      "channel": "stable"
+    },
+    {
+      "version": "1.0.0",
+      "branch": "master",
+      "commit": "7f6e6aab07db3236c13a32996adeb1e9d026bac2",
+      "frappe_core": ">=15.0.0",
+      "dependencies": {
+        "erpnext": ">=15.0.0",
+        "hrms": ">=15.0.0"
+      },
+      "channel": "stable"
+    }
+  ]
+}

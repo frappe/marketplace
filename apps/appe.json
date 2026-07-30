@@ -1,0 +1,21 @@
+{
+  "name": "appe",
+  "releases": [
+    {
+      "version": "0.0.1",
+      "branch": "develop",
+      "commit": "978dcaff83f1ccb47f3f5ca68dd945e3c6c3c05d",
+      "frappe_core": ">=14.0.0,<=16.0.0",
+      "dependencies": {},
+      "channel": "nightly"
+    },
+    {
+      "version": "0.0.1",
+      "branch": "master",
+      "commit": "418d35c468f9c07f0e53fdd5b5eeeaaa5ad89c8f",
+      "frappe_core": ">=14.0.0,<=16.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    }
+  ]
+}

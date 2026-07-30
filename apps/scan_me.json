@@ -1,0 +1,13 @@
+{
+  "name": "scan_me",
+  "releases": [
+    {
+      "version": "2.3.2",
+      "branch": "develop",
+      "commit": "780f3802422076a14a195ccd2a8eed2e60b2f54c",
+      "frappe_core": ">=14.0.0,<=17.0.0-dev",
+      "dependencies": {},
+      "channel": "stable"
+    }
+  ]
+}

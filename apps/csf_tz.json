@@ -1,0 +1,21 @@
+{
+  "name": "csf_tz",
+  "releases": [
+    {
+      "version": "15.2.0",
+      "branch": "version-16",
+      "commit": "92e0b9fd48bb0553bc676be5619c11f3baeb43f9",
+      "frappe_core": ">=16.0.0,<17.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    },
+    {
+      "version": "15.2.0",
+      "branch": "version-15",
+      "commit": "aa3727b4679ddefef360ec9d5b79f095d07f419a",
+      "frappe_core": ">=15.0.0,<16.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    }
+  ]
+}

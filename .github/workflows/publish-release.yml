@@ -1,0 +1,100 @@
+name: Publish Release
+
+# Reusable workflow app owners call from their own repo to advertise a
+# commit. It only opens a PR here — the marketplace checks still gate the
+# merge, so nothing reaches the registry unchecked.
+#
+# In the app repo:
+#
+#   jobs:
+#     publish:
+#       uses: frappe/marketplace/.github/workflows/publish-release.yml@main
+#       with:
+#         app: helpdesk
+#         branch: main
+#         channel: stable
+#       secrets:
+#         registry_token: ${{ secrets.MARKETPLACE_PR_TOKEN }}
+#
+# `registry_token` is a token that can push a branch to a fork of this repo
+# and open a PR (a fine-grained PAT or a GitHub App installation token).
+
+on:
+  workflow_call:
+    inputs:
+      app:
+        description: Registry app name (must match apps/<app>.json)
+        required: true
+        type: string
+      branch:
+        description: Branch the commit lives on
+        required: true
+        type: string
+      commit:
+        description: Commit to advertise; defaults to the caller's SHA
+        required: false
+        type: string
+        default: ""
+      channel:
+        description: stable or nightly
+        required: false
+        type: string
+        default: stable
+    secrets:
+      registry_token:
+        required: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Check out the app at the commit to advertise
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.commit || github.sha }}
+          path: app
+
+      - name: Check out the registry
+        uses: actions/checkout@v4
+        with:
+          repository: frappe/marketplace
+          token: ${{ secrets.registry_token }}
+          path: registry
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install dependencies
+        run: pip install packaging
+
+      - name: Add the release entry
+        env:
+          APP: ${{ inputs.app }}
+          BRANCH: ${{ inputs.branch }}
+          COMMIT: ${{ inputs.commit || github.sha }}
+          CHANNEL: ${{ inputs.channel }}
+        run: python3 registry/tools/add_release.py --app-dir app --registry registry
+
+      - name: Open the pull request
+        env:
+          GH_TOKEN: ${{ secrets.registry_token }}
+          APP: ${{ inputs.app }}
+          COMMIT: ${{ inputs.commit || github.sha }}
+        working-directory: registry
+        run: |
+          if git diff --quiet; then
+            echo "Release already advertised — nothing to publish."
+            exit 0
+          fi
+          short="${COMMIT:0:8}"
+          branch="publish/$APP-$short"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$branch"
+          git commit -qam "feat($APP): advertise $short"
+          git push -q origin "$branch"
+          gh pr create --title "feat($APP): advertise $short" \
+            --body "Automated release published from ${GITHUB_REPOSITORY}@${COMMIT}." \
+            --base main --head "$branch"

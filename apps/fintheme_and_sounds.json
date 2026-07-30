@@ -1,0 +1,21 @@
+{
+  "name": "fintheme_and_sounds",
+  "releases": [
+    {
+      "version": "1.0.0",
+      "branch": "develop",
+      "commit": "98acb72219b191707967daf382abd41fafdc3711",
+      "frappe_core": ">=15.0.0,<16.0.0",
+      "dependencies": {},
+      "channel": "nightly"
+    },
+    {
+      "version": "1.0.0",
+      "branch": "main",
+      "commit": "4898173d873c35158d64160d5feddc75e59336d8",
+      "frappe_core": ">=15.0.0,<16.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    }
+  ]
+}

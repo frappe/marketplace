@@ -1,0 +1,15 @@
+{
+  "name": "meeting_management",
+  "releases": [
+    {
+      "version": "0.0.1",
+      "branch": "version-16",
+      "commit": "94bb87b6487f83cdcda89fab924de17c22747c94",
+      "frappe_core": ">=16.0.0,<17.0.0",
+      "dependencies": {
+        "erpnext": ">=16.0.0,<17.0.0"
+      },
+      "channel": "stable"
+    }
+  ]
+}

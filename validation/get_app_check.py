@@ -16,6 +16,7 @@ from __future__ import annotations
 import re
 import sys
 import tempfile
+import tomllib
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -56,9 +57,9 @@ def frappe_branch_for(frappe_core: str) -> str:
 class GetAppValidator(Validator):
     name = "get-app validator"
 
-    def __init__(self, target: dict, clone_dir: Path) -> None:
+    def __init__(self, release: dict, clone_dir: Path) -> None:
         super().__init__()
-        self.target = target
+        self.target = release
         self.clone_dir = clone_dir
 
     def fail(self, message: str, **details) -> None:
@@ -71,6 +72,7 @@ class GetAppValidator(Validator):
             self.fail("No frappe_core declared — cannot determine which Frappe version to validate against")
             return
 
+        self._reject_untruthful_metadata(frappe_core)
         try:
             self._install_and_check(frappe_core)
         except AppValidationError as exc:
@@ -82,6 +84,34 @@ class GetAppValidator(Validator):
             # etc.) must still surface as a failed check, not crash the
             # whole CI run for every remaining target.
             self.fail(f"get-app validation crashed unexpectedly: {exc!r}")
+
+    def _reject_untruthful_metadata(self, frappe_core: str) -> None:
+        """The advertised version and frappe_core must match the code at this commit."""
+        pyproject = self.clone_dir / "pyproject.toml"
+        if not pyproject.is_file():
+            self.fail("No pyproject.toml at the advertised commit")
+            return
+
+        toml = tomllib.loads(pyproject.read_text())
+        project = toml.get("project", {})
+        declared = project.get("version") or self._dynamic_version(project.get("name", ""))
+        advertised = self.target.get("version")
+        if declared and declared != advertised:
+            self.fail(f"advertised version {advertised!r} but the commit declares {declared!r}")
+
+        in_repo = toml.get("tool", {}).get("bench", {}).get("frappe-dependencies", {}).get("frappe")
+        if in_repo and in_repo != frappe_core:
+            self.fail(f"advertised frappe_core {frappe_core!r} but the commit declares {in_repo!r}")
+
+    def _dynamic_version(self, project_name: str) -> str:
+        """__version__ from <module>/__init__.py, for apps using dynamic versioning."""
+        init = self.clone_dir / project_name / "__init__.py"
+        if not project_name or not init.is_file():
+            return ""
+        for line in init.read_text().splitlines():
+            if line.startswith("__version__"):
+                return line.split("=", 1)[-1].strip().strip("\"'")
+        return ""
 
     def _install_and_check(self, frappe_core: str) -> None:
         branch = frappe_branch_for(frappe_core)
@@ -100,6 +130,6 @@ class GetAppValidator(Validator):
             (bench.apps_path / app_name).symlink_to(self.clone_dir)
 
             app = App(
-                AppConfig(name=app_name, repo=self.target["repo"], branch=self.target["target"]), bench
+                AppConfig(name=app_name, repo=self.target["repo"], branch=self.target["branch"]), bench
             )
             InstallValidator(app).validate()

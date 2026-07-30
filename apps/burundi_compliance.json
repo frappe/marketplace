@@ -1,0 +1,29 @@
+{
+  "name": "burundi_compliance",
+  "releases": [
+    {
+      "version": "0.0.1",
+      "branch": "version-16",
+      "commit": "cf139f5428065d4e812ef960716eced662b1b9bd",
+      "frappe_core": ">=16.0.0,<17.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    },
+    {
+      "version": "0.0.1",
+      "branch": "version-15",
+      "commit": "44f9d91b16d58ffa15cf34f3c63655928e8b4f8a",
+      "frappe_core": ">=15.0.0,<16.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    },
+    {
+      "version": "0.0.1",
+      "branch": "develop",
+      "commit": "8811a09f1e44bb6c90e4e13806983a90ee41d68a",
+      "frappe_core": ">=16.0.0,<17.0.0",
+      "dependencies": {},
+      "channel": "nightly"
+    }
+  ]
+}

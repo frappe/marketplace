@@ -1,0 +1,13 @@
+{
+  "name": "frappe_msg91_integration",
+  "releases": [
+    {
+      "version": "1.0.0",
+      "branch": "develop",
+      "commit": "81542f86c0c1de9d49c968be3f157feb3c76e3bb",
+      "frappe_core": ">=16.0.0,<17.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    }
+  ]
+}

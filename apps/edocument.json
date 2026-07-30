@@ -1,0 +1,35 @@
+{
+  "name": "edocument",
+  "releases": [
+    {
+      "version": "0.0.1",
+      "branch": "version-16",
+      "commit": "7b394a4b8cc559417cafadff83dcec430520a056",
+      "frappe_core": ">=15.0.0",
+      "dependencies": {
+        "erpnext": ">=15.0.0"
+      },
+      "channel": "stable"
+    },
+    {
+      "version": "0.0.1",
+      "branch": "version-15",
+      "commit": "0610f7a739f641a78c243fca5837feca4547e777",
+      "frappe_core": ">=15.0.0",
+      "dependencies": {
+        "erpnext": ">=15.0.0"
+      },
+      "channel": "stable"
+    },
+    {
+      "version": "0.0.1",
+      "branch": "develop",
+      "commit": "b8d3f50e9e867c87dee7141d165cec37d7eb958e",
+      "frappe_core": ">=15.0.0",
+      "dependencies": {
+        "erpnext": ">=15.0.0"
+      },
+      "channel": "nightly"
+    }
+  ]
+}

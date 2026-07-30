@@ -1,0 +1,21 @@
+{
+  "name": "mint",
+  "releases": [
+    {
+      "version": "1.5.3",
+      "branch": "develop",
+      "commit": "80d663d19cbc94867852cbdbaa358b3c0fabfa7f",
+      "frappe_core": ">=15.0.0,<=17.0.0-dev",
+      "dependencies": {},
+      "channel": "nightly"
+    },
+    {
+      "version": "1.5.3",
+      "branch": "main",
+      "commit": "1afb09293cba0c020a7b25fcedb3d3be38db507d",
+      "frappe_core": ">=15.0.0,<=17.0.0-dev",
+      "dependencies": {},
+      "channel": "stable"
+    }
+  ]
+}

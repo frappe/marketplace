@@ -1,0 +1,13 @@
+{
+  "name": "drive",
+  "releases": [
+    {
+      "version": "0.3.0",
+      "branch": "develop",
+      "commit": "cd3438d1ab0b0fc1b8c10e282639ec0bd2ee7d82",
+      "frappe_core": ">=15.0.0-dev,<=17.0.0-dev",
+      "dependencies": {},
+      "channel": "stable"
+    }
+  ]
+}

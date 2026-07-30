@@ -1,0 +1,29 @@
+{
+  "name": "india_compliance",
+  "releases": [
+    {
+      "version": "17.0.0-dev",
+      "branch": "develop",
+      "commit": "8f915f3b15e62421c40450d870432e33487efa67",
+      "frappe_core": ">=17.0.0-dev,<18.0.0",
+      "dependencies": {},
+      "channel": "nightly"
+    },
+    {
+      "version": "16.8.1",
+      "branch": "version-16",
+      "commit": "d420e883a302901349ac184bec8e96f83f2fb240",
+      "frappe_core": ">=16.0.0,<17.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    },
+    {
+      "version": "15.31.0",
+      "branch": "version-15",
+      "commit": "eb33b9e312c7486d09f76eaf957700633e5a4c4d",
+      "frappe_core": ">=15.0.0,<16.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    }
+  ]
+}

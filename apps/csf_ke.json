@@ -1,0 +1,38 @@
+{
+  "name": "csf_ke",
+  "releases": [
+    {
+      "version": "16.9.0",
+      "branch": "version-16",
+      "commit": "1d65dde7ae58e58e7ac06cd35740bd255618ddbe",
+      "frappe_core": ">=16.0.0,<17.0.0",
+      "dependencies": {
+        "erpnext": ">=16.0.0,<17.0.0",
+        "hrms": ">=16.0.0,<17.0.0"
+      },
+      "channel": "stable"
+    },
+    {
+      "version": "16.7.2",
+      "branch": "develop",
+      "commit": "6fcdf468fc8addc169f6305d738b1f98cf9a429e",
+      "frappe_core": ">=16.0.0,<17.0.0",
+      "dependencies": {
+        "erpnext": ">=16.0.0,<17.0.0",
+        "hrms": ">=16.0.0,<17.0.0"
+      },
+      "channel": "nightly"
+    },
+    {
+      "version": "2.18.0",
+      "branch": "version-15",
+      "commit": "8f9d86f937d6106f88e0b3badc38fd5e71cba9f8",
+      "frappe_core": ">=15.0.0,<16.0.0",
+      "dependencies": {
+        "erpnext": ">=15.0.0,<16.0.0",
+        "hrms": ">=15.0.0,<16.0.0"
+      },
+      "channel": "stable"
+    }
+  ]
+}

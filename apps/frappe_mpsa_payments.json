@@ -1,0 +1,13 @@
+{
+  "name": "frappe_mpsa_payments",
+  "releases": [
+    {
+      "version": "0.0.1",
+      "branch": "version-16",
+      "commit": "11a720a13c161b1c09c16feff9b02675c9cdc4d2",
+      "frappe_core": ">=16.0.0,<17.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    }
+  ]
+}

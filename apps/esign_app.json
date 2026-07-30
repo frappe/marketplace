@@ -1,0 +1,13 @@
+{
+  "name": "esign_app",
+  "releases": [
+    {
+      "version": "0.0.1",
+      "branch": "version-16",
+      "commit": "d2e5104004d9e8992f9f648c51878950b4136998",
+      "frappe_core": ">=15.0.0,<17.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    }
+  ]
+}

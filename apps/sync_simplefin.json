@@ -1,0 +1,25 @@
+{
+  "name": "sync_simplefin",
+  "releases": [
+    {
+      "version": "1.0.4",
+      "branch": "develop",
+      "commit": "64198b3df3b0ea04d7f9658ea126c0bc855720b9",
+      "frappe_core": ">=16.0.0,<17.0.0",
+      "dependencies": {
+        "erpnext": ">=16.0.0,<17.0.0"
+      },
+      "channel": "nightly"
+    },
+    {
+      "version": "1.0.3",
+      "branch": "master",
+      "commit": "3ffad16c647941495979b3fe94ece06bf9c9f9cd",
+      "frappe_core": ">=16.0.0,<17.0.0",
+      "dependencies": {
+        "erpnext": ">=16.0.0,<17.0.0"
+      },
+      "channel": "stable"
+    }
+  ]
+}

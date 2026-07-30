@@ -1,0 +1,13 @@
+{
+  "name": "navari_cams_biometric",
+  "releases": [
+    {
+      "version": "0.0.1",
+      "branch": "version-16",
+      "commit": "c4ae899db389649b9bc5da52173f6424f28e390e",
+      "frappe_core": ">=16.0.0,<17.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    }
+  ]
+}

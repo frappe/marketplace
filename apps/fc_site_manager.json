@@ -1,0 +1,13 @@
+{
+  "name": "fc_site_manager",
+  "releases": [
+    {
+      "version": "0.0.1",
+      "branch": "develop",
+      "commit": "c14caefee822b2ef7a1f93604a35c0779a77afde",
+      "frappe_core": ">=14.0.0,<18.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    }
+  ]
+}

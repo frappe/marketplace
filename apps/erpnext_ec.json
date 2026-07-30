@@ -1,0 +1,13 @@
+{
+  "name": "erpnext_ec",
+  "releases": [
+    {
+      "version": "1.0.0",
+      "branch": "main",
+      "commit": "2455217a72076a33f29641a3dc54b72e95d72c6a",
+      "frappe_core": ">=12.0.0,<16.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    }
+  ]
+}

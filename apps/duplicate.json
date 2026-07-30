@@ -1,0 +1,13 @@
+{
+  "name": "duplicate",
+  "releases": [
+    {
+      "version": "0.0.1",
+      "branch": "main",
+      "commit": "439d863d7c116b9ef360d895a1c15508d65539e4",
+      "frappe_core": ">=15.0.0,<16.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    }
+  ]
+}

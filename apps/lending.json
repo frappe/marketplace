@@ -1,0 +1,25 @@
+{
+  "name": "lending",
+  "releases": [
+    {
+      "version": "17.0.0-dev",
+      "branch": "develop",
+      "commit": "ee9269ba08b72fd22295a993986d6502ce1bc399",
+      "frappe_core": ">=17.0.0-dev,<18.0.0",
+      "dependencies": {
+        "erpnext": ">=17.0.0-dev,<18.0.0"
+      },
+      "channel": "nightly"
+    },
+    {
+      "version": "16.3.0",
+      "branch": "version-16",
+      "commit": "9c1a9d424111ea2446ea0b10b6d1100f735777b6",
+      "frappe_core": ">=16.0.0,<17.0.0",
+      "dependencies": {
+        "erpnext": ">=16.0.0,<17.0.0"
+      },
+      "channel": "stable"
+    }
+  ]
+}

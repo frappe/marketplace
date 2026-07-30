@@ -1,0 +1,21 @@
+{
+  "name": "erpnext_indonesia_localization",
+  "releases": [
+    {
+      "version": "1.4.1",
+      "branch": "develop",
+      "commit": "82d5be95f3c89b9c58cdc05e0bbd6d319c72f5ac",
+      "frappe_core": ">=14.0.0,<17.0.0",
+      "dependencies": {},
+      "channel": "nightly"
+    },
+    {
+      "version": "1.4.1",
+      "branch": "master",
+      "commit": "b0a26a1fdcbb23f69e4b043565a96e78eddc766d",
+      "frappe_core": ">=14.0.0,<17.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    }
+  ]
+}

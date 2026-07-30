@@ -1,0 +1,45 @@
+{
+  "name": "erpnext_mexico_compliance",
+  "releases": [
+    {
+      "version": "0.14.0",
+      "branch": "version-16",
+      "commit": "9c238ddc54bc2ccc1487bb1cfce16b46bac1f23b",
+      "frappe_core": ">=16.0.0,<17.0.0",
+      "dependencies": {
+        "erpnext": ">=16.0.0,<17.0.0"
+      },
+      "channel": "stable"
+    },
+    {
+      "version": "0.10.0",
+      "branch": "version-15",
+      "commit": "c3fc411eb6f7dff427619d8c7438f2b8d2104189",
+      "frappe_core": ">=15.0.0,<16.0.0",
+      "dependencies": {
+        "erpnext": ">=15.0.0,<16.0.0"
+      },
+      "channel": "stable"
+    },
+    {
+      "version": "0.1.1",
+      "branch": "develop",
+      "commit": "d7c0d240a1635986a0895c0f8bf5e4cb0f0c93c6",
+      "frappe_core": ">=15.0.0,<16.0.0",
+      "dependencies": {
+        "erpnext": ">=15.0.0,<16.0.0"
+      },
+      "channel": "nightly"
+    },
+    {
+      "version": "develop",
+      "branch": "main",
+      "commit": "35cb469bf295b4c031df98ca1543ed52a5019a37",
+      "frappe_core": ">=16.0.0,<17.0.0",
+      "dependencies": {
+        "erpnext": ">=16.0.0,<17.0.0"
+      },
+      "channel": "stable"
+    }
+  ]
+}

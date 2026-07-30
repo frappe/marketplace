@@ -1,0 +1,21 @@
+{
+  "name": "erpnext_s3_integration",
+  "releases": [
+    {
+      "version": "0.0.1",
+      "branch": "version-16",
+      "commit": "66f50ca3376dc8f26faad7392f9f67ddf82cce46",
+      "frappe_core": ">=16.0.0,<17.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    },
+    {
+      "version": "0.0.1",
+      "branch": "develop",
+      "commit": "c854c631aec208b145e1519947c24b1d93734efe",
+      "frappe_core": ">=16.0.0,<17.0.0",
+      "dependencies": {},
+      "channel": "nightly"
+    }
+  ]
+}

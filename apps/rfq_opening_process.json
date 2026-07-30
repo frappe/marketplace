@@ -1,0 +1,29 @@
+{
+  "name": "rfq_opening_process",
+  "releases": [
+    {
+      "version": "0.0.1",
+      "branch": "version-16",
+      "commit": "d2065cbaaae4d5434df29af772846c661b80a3e5",
+      "frappe_core": ">=16.0.0,<17.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    },
+    {
+      "version": "0.0.1",
+      "branch": "version-15",
+      "commit": "acaa6785fa4575ea9a7956b4f4471f3c641e83cc",
+      "frappe_core": ">=15.0.0,<16.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    },
+    {
+      "version": "0.0.1",
+      "branch": "develop",
+      "commit": "904ff6dd6c26863333c6dfbd7a26fd9be422bc9a",
+      "frappe_core": ">=16.0.0,<17.0.0",
+      "dependencies": {},
+      "channel": "nightly"
+    }
+  ]
+}

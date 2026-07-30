@@ -1,0 +1,25 @@
+{
+  "name": "lms",
+  "releases": [
+    {
+      "version": "2.60.1",
+      "branch": "main",
+      "commit": "08389b00652a6272dd95a00544cb1946f01fcaea",
+      "frappe_core": ">=14.0.0,<=17.0.0-dev",
+      "dependencies": {
+        "payments": ">=0.0.1,<1.0.0"
+      },
+      "channel": "stable"
+    },
+    {
+      "version": "2.45.2",
+      "branch": "develop",
+      "commit": "5a4f3914c7cc44bf090f7a72649ed37abdffe2a0",
+      "frappe_core": ">=14.0.0,<=17.0.0-dev",
+      "dependencies": {
+        "payments": ">=0.0.1,<1.0.0"
+      },
+      "channel": "nightly"
+    }
+  ]
+}

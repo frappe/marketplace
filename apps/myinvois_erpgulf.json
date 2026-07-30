@@ -1,0 +1,13 @@
+{
+  "name": "myinvois_erpgulf",
+  "releases": [
+    {
+      "version": "3.0.1",
+      "branch": "main",
+      "commit": "650166080fdc2370da62e7780273e8bed22f8ea5",
+      "frappe_core": ">=14.0.0,<17.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    }
+  ]
+}

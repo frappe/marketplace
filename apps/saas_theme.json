@@ -1,0 +1,13 @@
+{
+  "name": "saas_theme",
+  "releases": [
+    {
+      "version": "0.0.1",
+      "branch": "version-16",
+      "commit": "ac90315929634814218cf33fceafecf9aec30a60",
+      "frappe_core": ">=16.0.0,<17.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    }
+  ]
+}

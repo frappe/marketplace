@@ -1,0 +1,13 @@
+{
+  "name": "go1_cms",
+  "releases": [
+    {
+      "version": "0.0.1",
+      "branch": "master",
+      "commit": "7f68d05502ef88f6ea7190ddf4e1a46314ed75b0",
+      "frappe_core": ">=15.0.0,<=17.0.0-dev",
+      "dependencies": {},
+      "channel": "stable"
+    }
+  ]
+}

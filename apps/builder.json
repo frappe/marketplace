@@ -1,0 +1,21 @@
+{
+  "name": "builder",
+  "releases": [
+    {
+      "version": "1.32.0",
+      "branch": "master",
+      "commit": "34ee4ee01ca447c8732e9d417fb96048996723e9",
+      "frappe_core": ">=15.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    },
+    {
+      "version": "1.0.0-dev",
+      "branch": "develop",
+      "commit": "fe305cbfc3dedeb043bc7d83c1f719ed3724fcda",
+      "frappe_core": ">=15.0.0",
+      "dependencies": {},
+      "channel": "nightly"
+    }
+  ]
+}

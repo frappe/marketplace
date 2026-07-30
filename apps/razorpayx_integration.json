@@ -1,0 +1,25 @@
+{
+  "name": "razorpayx_integration",
+  "releases": [
+    {
+      "version": "16.0.0-dev",
+      "branch": "develop",
+      "commit": "047864dc247b61c164f34e4425e10843a7dbbab1",
+      "frappe_core": ">=15.0.0,<16.0.0",
+      "dependencies": {
+        "erpnext": ">=15.0.0,<16.0.0"
+      },
+      "channel": "nightly"
+    },
+    {
+      "version": "15.0.1",
+      "branch": "version-15",
+      "commit": "72f312c969779de5b897dbc4ce702c10c439dee2",
+      "frappe_core": ">=15.0.0,<16.0.0",
+      "dependencies": {
+        "erpnext": ">=15.0.0,<16.0.0"
+      },
+      "channel": "stable"
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "name": "sales_warehouse_selector",
+  "releases": [
+    {
+      "version": "0.0.1",
+      "branch": "main",
+      "commit": "20146e9d2e80fd50aaf7eb7293544d6356312e0d",
+      "frappe_core": ">=15.0.0,<17.0.0",
+      "dependencies": {
+        "erpnext": ">=15.0.0,<17.0.0"
+      },
+      "channel": "stable"
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "name": "hrms",
+  "releases": [
+    {
+      "version": "17.0.0-dev",
+      "branch": "develop",
+      "commit": "fd430b654630becd4ae5298089450c9b2abd3753",
+      "frappe_core": ">=17.0.0-dev,<18.0.0",
+      "dependencies": {
+        "erpnext": ">=17.0.0-dev,<18.0.0"
+      },
+      "channel": "nightly"
+    },
+    {
+      "version": "16.15.0",
+      "branch": "version-16",
+      "commit": "1924234884731e389ecc4e5500653fcd59666911",
+      "frappe_core": ">=16.0.0,<17.0.0",
+      "dependencies": {
+        "erpnext": ">=16.0.0,<17.0.0"
+      },
+      "channel": "stable"
+    },
+    {
+      "version": "15.63.2",
+      "branch": "version-15",
+      "commit": "896c7996bc1b61bdbe254a19cf3b6f2ba848e912",
+      "frappe_core": ">=15.0.0,<16.0.0",
+      "dependencies": {
+        "erpnext": ">=15.0.0,<16.0.0"
+      },
+      "channel": "stable"
+    }
+  ]
+}

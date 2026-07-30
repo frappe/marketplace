@@ -1,0 +1,21 @@
+{
+  "name": "zikpro_invoice_ocr",
+  "releases": [
+    {
+      "version": "0.2.0",
+      "branch": "version-16",
+      "commit": "53e4c3269f0a9e785126ace671a6accc99b06036",
+      "frappe_core": ">=15.0.0,<17.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    },
+    {
+      "version": "0.2.0",
+      "branch": "main",
+      "commit": "e9388e5d69c8d932280a32e112b68d82693ed5d7",
+      "frappe_core": ">=15.0.0,<17.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    }
+  ]
+}

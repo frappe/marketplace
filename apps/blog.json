@@ -1,0 +1,21 @@
+{
+  "name": "blog",
+  "releases": [
+    {
+      "version": "0.0.1",
+      "branch": "version-16",
+      "commit": "64bea2772218557c608b651bc1e9b743fe6ab130",
+      "frappe_core": ">=16.0.0,<17.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    },
+    {
+      "version": "0.0.1",
+      "branch": "develop",
+      "commit": "ed1ed4019c7f167c41b80f8ea92da60680c2112d",
+      "frappe_core": ">=17.0.0-dev,<18.0.0",
+      "dependencies": {},
+      "channel": "nightly"
+    }
+  ]
+}

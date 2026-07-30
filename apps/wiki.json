@@ -1,0 +1,13 @@
+{
+  "name": "wiki",
+  "releases": [
+    {
+      "version": "3.0.0",
+      "branch": "develop",
+      "commit": "df34ebf388a8d55cecb140e969bba757bd2e5218",
+      "frappe_core": ">=16.0.0-dev,<=17.0.0-dev",
+      "dependencies": {},
+      "channel": "stable"
+    }
+  ]
+}

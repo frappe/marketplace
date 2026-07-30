@@ -1,0 +1,35 @@
+{
+  "name": "erpnext_shipping",
+  "releases": [
+    {
+      "version": "16.0.0",
+      "branch": "version-16",
+      "commit": "88ebac37158d87e7e8c6c49343c7601db9d73093",
+      "frappe_core": ">=16.0.0,<17.0.0",
+      "dependencies": {
+        "erpnext": ">=16.0.0,<17.0.0"
+      },
+      "channel": "stable"
+    },
+    {
+      "version": "16.0.0",
+      "branch": "develop",
+      "commit": "88ebac37158d87e7e8c6c49343c7601db9d73093",
+      "frappe_core": ">=16.0.0,<17.0.0",
+      "dependencies": {
+        "erpnext": ">=16.0.0,<17.0.0"
+      },
+      "channel": "nightly"
+    },
+    {
+      "version": "15.2.0",
+      "branch": "version-15",
+      "commit": "b83e3c1b4d28a56bfe4c6fe6f6f9bc01f9a5f0e2",
+      "frappe_core": ">=15.0.0,<16.0.0",
+      "dependencies": {
+        "erpnext": ">=15.0.0,<16.0.0"
+      },
+      "channel": "stable"
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "name": "biometric_integration",
+  "releases": [
+    {
+      "version": "0.0.1",
+      "branch": "master",
+      "commit": "23fac3d4250a8f4ffe7d0bc2a458538cbdcdb807",
+      "frappe_core": ">=15.0.0,<=17.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    }
+  ]
+}

@@ -25,14 +25,14 @@ jobs:
       # Runs on every PR (no `paths:` filter) so it can be a required status
       # check on main - a required check that only triggers on some paths
       # never reports on other PRs and blocks them forever. This step keeps
-      # the job itself fast/green for PRs that don't touch apps.json instead.
-      - name: Check whether apps.json changed
+      # the job itself fast/green for PRs that don't touch the registry.
+      - name: Check whether the registry changed
         id: diff
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
-          if git diff --name-only "$BASE_SHA" "$HEAD_SHA" | grep -qx "apps.json"; then
+          if git diff --name-only "$BASE_SHA" "$HEAD_SHA" | grep -qE '^(apps\.json|apps/[^/]+\.json)$'; then
             echo "changed=true" >> "$GITHUB_OUTPUT"
           else
             echo "changed=false" >> "$GITHUB_OUTPUT"
@@ -73,16 +73,18 @@ jobs:
         # is at fault.
         run: pip install git+https://github.com/frappe/pilot@develop
 
-      - name: Get base apps.json
+      # A worktree, not `git show`: the base side is now a directory
+      # (apps.json plus apps/<name>.json), so the whole tree is needed.
+      - name: Materialise the base registry
         if: steps.diff.outputs.changed == 'true'
-        run: git show ${{ github.event.pull_request.base.sha }}:apps.json > /tmp/apps_before.json
+        run: git worktree add --detach /tmp/base-registry ${{ github.event.pull_request.base.sha }}
 
-      - name: Check changed marketplace apps
+      - name: Check changed marketplace releases
         if: steps.diff.outputs.changed == 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          python3 validation/check.py /tmp/apps_before.json apps.json \
+          python3 validation/check.py /tmp/base-registry . \
             --report /tmp/report.md --commit "${{ github.event.pull_request.head.sha }}" \
             --run-url "$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
 

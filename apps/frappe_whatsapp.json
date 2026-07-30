@@ -1,0 +1,13 @@
+{
+  "name": "frappe_whatsapp",
+  "releases": [
+    {
+      "version": "1.0.12",
+      "branch": "master",
+      "commit": "8441c3820c98828aa1f53faf47e7392d7d270748",
+      "frappe_core": ">=14.0.0,<=17.0.0-dev",
+      "dependencies": {},
+      "channel": "stable"
+    }
+  ]
+}

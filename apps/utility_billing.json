@@ -1,0 +1,21 @@
+{
+  "name": "utility_billing",
+  "releases": [
+    {
+      "version": "0.0.1",
+      "branch": "version-16",
+      "commit": "ecfb8b000027885663f07e3dd4c1ef1a4a5af7d2",
+      "frappe_core": ">=15.0.0,<17.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    },
+    {
+      "version": "0.0.1",
+      "branch": "develop",
+      "commit": "380f6305350e4f7d90e745d48e2360170001a4db",
+      "frappe_core": ">=15.0.0,<17.0.0",
+      "dependencies": {},
+      "channel": "nightly"
+    }
+  ]
+}

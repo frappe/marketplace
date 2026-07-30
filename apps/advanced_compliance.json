@@ -1,0 +1,25 @@
+{
+  "name": "advanced_compliance",
+  "releases": [
+    {
+      "version": "1.0.0",
+      "branch": "version-15",
+      "commit": "d4d5807708a6a31534b40bc00d042ef7f737a563",
+      "frappe_core": ">=15.0.0",
+      "dependencies": {
+        "erpnext": ">=15.0.0"
+      },
+      "channel": "stable"
+    },
+    {
+      "version": "1.0.0",
+      "branch": "main",
+      "commit": "1e8c416ed607e07ca508ea1d5e29c252caaaaef1",
+      "frappe_core": ">=15.0.0",
+      "dependencies": {
+        "erpnext": ">=15.0.0"
+      },
+      "channel": "stable"
+    }
+  ]
+}

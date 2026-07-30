@@ -1,0 +1,13 @@
+{
+  "name": "nl_attendance_timesheet",
+  "releases": [
+    {
+      "version": "0.0.1",
+      "branch": "version-16",
+      "commit": "194842d60a1f47a98bc01f624afb94df74ee5621",
+      "frappe_core": ">=16,<17",
+      "dependencies": {},
+      "channel": "stable"
+    }
+  ]
+}
