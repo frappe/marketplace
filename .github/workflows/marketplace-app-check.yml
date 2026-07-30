@@ -66,10 +66,12 @@ jobs:
 
       - name: Install pilot
         if: steps.diff.outputs.changed == 'true'
-        # Pinned to a release tag, not @main — a floating ref here means a
-        # pilot change and a bug in this script could land at the same time,
-        # making failures here much harder to diagnose. Bump deliberately.
-        run: pip install git+https://github.com/frappe/pilot@v0.0.9-pre-alpha
+        # Tracks pilot's develop branch, so the get-app validator here is
+        # always the one bench get-app actually runs. The trade is that a
+        # pilot change can turn this job red without anything in this repo
+        # changing — check pilot's recent commits before assuming the app
+        # is at fault.
+        run: pip install git+https://github.com/frappe/pilot@develop
 
       - name: Get base apps.json
         if: steps.diff.outputs.changed == 'true'
