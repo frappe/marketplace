@@ -69,8 +69,12 @@ def main() -> None:
     for app in selected:
         raw_path = raw_directory / f"{app['name']}.json"
         if raw_path.exists() and not args.refresh:
-            print(f"\n### {app['name']} — already audited, skipping (--refresh to redo)")
-            audits.append(AppAudit.from_dict(json.loads(raw_path.read_text())))
+            # Re-rendered, not re-validated: reporting changes reach reports
+            # that already cost an hour of cloning and installing to produce.
+            print(f"\n### {app['name']} — already audited, re-rendering (--refresh to revalidate)")
+            audit = AppAudit.from_dict(json.loads(raw_path.read_text()))
+            _write_report(audit, args.reports, registry_commit)
+            audits.append(audit)
             continue
         print(f"\n### {app['name']} ({app['repo']})")
         audit = auditor.audit_app(app)

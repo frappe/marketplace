@@ -11,7 +11,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
 
 from tools.audit import file_issues, registry
 from tools.audit.report import group_findings, render
-from tools.audit.runner import AppAudit, CheckOutcome, ReleaseAudit, _readable
+from tools.audit.runner import AppAudit, CheckOutcome, ReleaseAudit, _is_environment_failure, _readable
 from tools.audit.workspace import CloneCache, FrappeCache, python_version_for
 
 
@@ -98,12 +98,12 @@ def audit_with(*releases: ReleaseAudit) -> AppAudit:
 
 
 def release_audit(commit: str, outcomes: list[CheckOutcome], **kwargs) -> ReleaseAudit:
+    kwargs.setdefault("frappe_core", ">=16.0.0,<17.0.0")
     return ReleaseAudit(
         version="1.0.0",
         branch="develop",
         commit=commit,
         channel="stable",
-        frappe_core=">=16.0.0,<17.0.0",
         outcomes=outcomes,
         **kwargs,
     )
@@ -161,6 +161,47 @@ class TestReadableMessages:
         ]
 
         assert cleaned[0].message == cleaned[1].message
+
+
+class TestEnvironmentFailures:
+    """A validation environment the audit could not build is its own problem,
+    not a finding against the app it was trying to check."""
+
+    def test_environment_outcomes_are_not_findings(self):
+        outcome = CheckOutcome(
+            check="ImportCheck",
+            status="environment",
+            message="Failed to install frappe into the validation env:\npypika wheel build failed",
+        )
+        audit = audit_with(release_audit("a" * 40, [outcome]))
+
+        assert group_findings(audit) == []
+        assert audit.is_clean
+
+    def test_environment_outcomes_are_reported_as_caveats(self):
+        outcome = CheckOutcome(check="ImportCheck", status="environment", message="pypika wheel build failed")
+        body = render(audit_with(release_audit("a" * 40, [outcome])))
+
+        assert "ImportCheck could not run" in body
+        assert "passed what could be checked" in body
+
+    def test_frappe_install_failure_is_classified_as_environment(self):
+        assert _is_environment_failure("Failed to install frappe into the validation env:\nboom")
+        assert not _is_environment_failure("'crm' failed to install:\nboom")
+
+
+class TestV2Targeting:
+    def test_release_pinned_below_v2_is_flagged(self):
+        audit = audit_with(release_audit("a" * 40, [], frappe_core=">=15.0.0,<16.0.0"))
+        assert "predates v2" in render(audit)
+
+    def test_release_supporting_v2_is_not_flagged(self):
+        audit = audit_with(release_audit("a" * 40, [], frappe_core=">=15.0.0,<17.0.0"))
+        assert "predates v2" not in render(audit)
+
+    def test_nightly_prerelease_range_counts_as_v2(self):
+        audit = audit_with(release_audit("a" * 40, [], frappe_core=">=17.0.0-dev,<18.0.0"))
+        assert "predates v2" not in render(audit)
 
 
 class TestRender:

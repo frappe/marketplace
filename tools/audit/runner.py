@@ -24,6 +24,15 @@ PASSED = "passed"
 FAILED = "failed"
 CRASHED = "crashed"
 SKIPPED = "skipped"
+ENVIRONMENT = "environment"
+
+# pilot raises these when the validation environment itself could not be
+# built - old frappe branches pull dependencies that no longer compile. The
+# app under audit has done nothing wrong, so they are caveats, not findings.
+ENVIRONMENT_FAILURES = (
+    "Failed to install frappe into the validation env",
+    "Failed to create temporary environment for validation",
+)
 
 # Checks that quietly no-op without an environment to resolve against, so a
 # run without one must not report them as passed.
@@ -35,6 +44,13 @@ class CheckOutcome:
     check: str
     status: str
     message: str = ""
+
+    @property
+    def is_environment_failure(self) -> bool:
+        """Also derived from the message, not just the status: results recorded
+        before this distinction existed are still on disk, and re-reading them
+        must not re-report the auditor's own failures as the app's."""
+        return self.status == ENVIRONMENT or _is_environment_failure(self.message)
 
 
 @dataclass
@@ -52,7 +68,15 @@ class ReleaseAudit:
 
     @property
     def failures(self) -> list[CheckOutcome]:
-        return [outcome for outcome in self.outcomes if outcome.status in (FAILED, CRASHED)]
+        return [
+            outcome
+            for outcome in self.outcomes
+            if outcome.status in (FAILED, CRASHED) and not outcome.is_environment_failure
+        ]
+
+    @property
+    def environment_failures(self) -> list[CheckOutcome]:
+        return [outcome for outcome in self.outcomes if outcome.is_environment_failure]
 
     @property
     def is_clean(self) -> bool:
@@ -139,12 +163,17 @@ def run_checks(app, *, skip: bool = False) -> list[CheckOutcome]:
             outcomes.append(CheckOutcome(check=name, status=PASSED))
             print(f"  {name}: passed")
         except AppValidationError as exc:
-            outcomes.append(CheckOutcome(check=name, status=FAILED, message=str(exc)))
-            print(f"  {name}: FAILED")
+            status = ENVIRONMENT if _is_environment_failure(str(exc)) else FAILED
+            outcomes.append(CheckOutcome(check=name, status=status, message=str(exc)))
+            print(f"  {name}: {'ENVIRONMENT' if status == ENVIRONMENT else 'FAILED'}")
         except Exception as exc:
             outcomes.append(CheckOutcome(check=name, status=CRASHED, message=f"{exc!r}"))
             print(f"  {name}: CRASHED — {exc!r}")
     return outcomes
+
+
+def _is_environment_failure(message: str) -> bool:
+    return any(message.startswith(prefix) for prefix in ENVIRONMENT_FAILURES)
 
 
 def _readable(outcome: CheckOutcome, workspace: Path, app_name: str) -> CheckOutcome:

@@ -4,7 +4,14 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from packaging.specifiers import InvalidSpecifier, SpecifierSet
+from packaging.version import Version
 from tools.audit.runner import CRASHED, AppAudit, ReleaseAudit
+
+# The audit runs the checks on the interpreter Frappe v2 uses. A release
+# pinned below this never claimed to run there, so its findings are reported
+# with that stated rather than dropped.
+V2_FRAPPE = Version("16.0.0")
 
 ISSUE_TITLE = "v2 marketplace validation concerns"
 ISSUE_LABEL = "v2 Marketplace Concerns"
@@ -76,9 +83,11 @@ def _release_row(audit: AppAudit, release: ReleaseAudit) -> str:
 def _result_text(release: ReleaseAudit) -> str:
     if release.clone_error:
         return f"{STATUS_ICONS['setup']} could not be checked out"
-    if release.is_clean:
-        return f"{STATUS_ICONS['clean']} passed"
-    return f"{STATUS_ICONS['issues']} {len(release.failures)} check(s) failed"
+    if release.failures:
+        return f"{STATUS_ICONS['issues']} {len(release.failures)} check(s) failed"
+    if release.environment_failures:
+        return f"{STATUS_ICONS['setup']} passed what could be checked"
+    return f"{STATUS_ICONS['clean']} passed"
 
 
 def _render_group(audit: AppAudit, group: Group) -> list[str]:
@@ -98,6 +107,17 @@ def _render_group(audit: AppAudit, group: Group) -> list[str]:
     ]
 
 
+def targets_v2(release: ReleaseAudit) -> bool:
+    """Whether this release claims to support the Frappe the checks ran on."""
+    try:
+        allowed = SpecifierSet(release.frappe_core, prereleases=True)
+    except InvalidSpecifier:
+        return True  # unreadable: assume it was meant for v2 rather than excuse it
+    return V2_FRAPPE in allowed or any(
+        Version(f"{major}.0.0") in allowed for major in range(V2_FRAPPE.major, V2_FRAPPE.major + 3)
+    )
+
+
 def _render_caveats(audit: AppAudit) -> list[str]:
     """Anything that weakened the run, so a reader can discount findings."""
     caveats = []
@@ -106,6 +126,18 @@ def _render_caveats(audit: AppAudit) -> list[str]:
             caveats.append(f"`{release.commit[:8]}`: checkout failed — {release.clone_error}")
         if release.dependency_error:
             caveats.append(f"`{release.commit[:8]}`: {release.dependency_error}")
+        if not targets_v2(release):
+            caveats.append(
+                f"`{release.commit[:8]}`: advertises `{release.frappe_core}`, so it predates v2 — "
+                "the checks still ran on the interpreter v2 uses, and a finding here may reflect "
+                "that gap rather than a problem with the release"
+            )
+        for outcome in release.environment_failures:
+            caveats.append(
+                f"`{release.commit[:8]}`: {outcome.check} could not run — the audit could not "
+                f"build a validation environment for `frappe {release.frappe_branch or release.branch}`, "
+                "which is the auditor's limitation, not the app's"
+            )
         if release.environment_error:
             caveats.append(
                 f"`{release.commit[:8]}`: no Frappe environment to resolve against "
