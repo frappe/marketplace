@@ -100,7 +100,11 @@ def _print_summary(audits: list[AppAudit], reports: Path) -> None:
     print(f"\n\nAudited {len(audits)} app(s). {len(with_findings)} have findings:\n")
     for audit in with_findings:
         failures = sum(len(release.failures) for release in audit.releases)
-        print(f"  {audit.name:30} {failures} failed check(s) across {len(audit.releases)} release(s)")
+        unchecked = sum(1 for release in audit.releases if release.clone_error)
+        detail = f"{failures} failed check(s) across {len(audit.releases)} release(s)"
+        if unchecked:
+            detail += f", {unchecked} release(s) could not be checked at all"
+        print(f"  {audit.name:30} {detail}")
     if with_findings:
         print(f"\nReview {reports}/<app>.md, then file with:")
         print(f"  python3 -m tools.audit.file_issues --apps {','.join(a.name for a in with_findings)}")

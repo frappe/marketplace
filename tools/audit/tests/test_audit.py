@@ -12,7 +12,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[3]))
 from tools.audit import file_issues, registry
 from tools.audit.report import group_findings, render
 from tools.audit.runner import AppAudit, CheckOutcome, ReleaseAudit, _readable
-from tools.audit.workspace import python_version_for
+from tools.audit.workspace import CloneCache, FrappeCache, python_version_for
 
 
 def app(name: str, repo: str, releases: list[dict]) -> dict:
@@ -193,6 +193,19 @@ class TestRender:
         assert "uv venv failed" in body
         assert "ghost" in body
         assert "could not be checked out" in body
+
+
+class TestCacheRoots:
+    """Cached paths are symlinked into a temporary workspace, so a relative
+    root would dangle there rather than resolve back to the cache."""
+
+    def test_clone_cache_root_is_absolute(self, tmp_path, monkeypatch):
+        monkeypatch.chdir(tmp_path)
+        assert CloneCache(Path(".audit-cache/clones")).root.is_absolute()
+
+    def test_frappe_cache_root_is_absolute(self, tmp_path, monkeypatch):
+        monkeypatch.chdir(tmp_path)
+        assert FrappeCache(Path(".audit-cache/frappe")).root.is_absolute()
 
 
 class TestPythonSelection:

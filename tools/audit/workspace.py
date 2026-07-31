@@ -69,7 +69,9 @@ class CloneCache:
     """Repo checkouts, keyed by commit, shared across the whole run."""
 
     def __init__(self, root: Path) -> None:
-        self.root = root
+        # Absolute: these paths become symlink targets inside a temporary
+        # workspace, where a relative one resolves against the wrong directory.
+        self.root = root.resolve()
         self.root.mkdir(parents=True, exist_ok=True)
 
     def get(self, name: str, repo: str, branch: str, commit: str) -> Path:
@@ -98,7 +100,7 @@ class FrappeCache:
     """
 
     def __init__(self, root: Path, *, build_environment: bool = True) -> None:
-        self.root = root
+        self.root = root.resolve()  # symlinked into each workspace; see CloneCache
         self.root.mkdir(parents=True, exist_ok=True)
         self.build_environment = build_environment
         self._environment_errors: dict[str, str] = {}
@@ -202,7 +204,9 @@ class ReleaseWorkspace:
 
 
 def _link(target: Path, link: Path) -> None:
-    link.symlink_to(target)
+    if not target.exists():
+        raise RuntimeError(f"cannot link {link.name} into the workspace: {target} does not exist")
+    link.symlink_to(target.resolve())
 
 
 def _run(argv: list[str], env: dict | None = None, timeout: int | None = None) -> None:
