@@ -44,6 +44,7 @@ class ReleaseAudit:
     commit: str
     channel: str
     frappe_core: str
+    frappe_branch: str = ""
     clone_error: str = ""
     environment_error: str = ""
     dependency_error: str = ""
@@ -114,6 +115,7 @@ class Auditor:
         workspace = ReleaseWorkspace(release, dependencies, self.clones, self.frappe)
         try:
             with workspace as (app, bench):
+                audit.frappe_branch = workspace.frappe_branch
                 audit.environment_error = workspace.environment_error
                 outcomes = run_checks(app, skip=bool(workspace.environment_error))
                 audit.outcomes = [_readable(outcome, bench.path, app.config.name) for outcome in outcomes]

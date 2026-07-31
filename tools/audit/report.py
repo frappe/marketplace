@@ -47,8 +47,8 @@ def render(audit: AppAudit, *, registry_commit: str = "") -> str:
         "",
         "## Releases reviewed",
         "",
-        "| Version | Channel | Branch | Commit | Result |",
-        "| --- | --- | --- | --- | --- |",
+        "| Version | Channel | Branch | Commit | Checked against | Result |",
+        "| --- | --- | --- | --- | --- | --- |",
     ]
     lines += [_release_row(audit, release) for release in audit.releases]
     lines += ["", "## Findings", ""]
@@ -66,9 +66,10 @@ def render(audit: AppAudit, *, registry_commit: str = "") -> str:
 
 def _release_row(audit: AppAudit, release: ReleaseAudit) -> str:
     link = f"[`{release.commit[:8]}`]({audit.repo}/commit/{release.commit})"
+    frappe = f"frappe `{release.frappe_branch}`" if release.frappe_branch else "—"
     return (
         f"| `{release.version}` | {release.channel or '—'} | `{release.branch}` | "
-        f"{link} | {_result_text(release)} |"
+        f"{link} | {frappe} | {_result_text(release)} |"
     )
 
 

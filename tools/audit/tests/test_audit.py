@@ -208,6 +208,26 @@ class TestCacheRoots:
         assert FrappeCache(Path(".audit-cache/frappe")).root.is_absolute()
 
 
+class TestFrappeBranch:
+    def test_declared_branch_is_used_when_it_exists(self, tmp_path, monkeypatch):
+        cache = FrappeCache(tmp_path)
+        monkeypatch.setattr(FrappeCache, "_exists", staticmethod(lambda branch: True))
+        assert cache.branch_for(">=16.0.0,<17.0.0") == "version-16"
+
+    def test_uncut_next_major_falls_back_to_develop(self, tmp_path, monkeypatch):
+        cache = FrappeCache(tmp_path)
+        monkeypatch.setattr(FrappeCache, "_exists", staticmethod(lambda branch: False))
+        assert cache.branch_for(">=17.0.0-dev,<18.0.0") == "develop"
+
+    def test_branch_existence_is_looked_up_once(self, tmp_path, monkeypatch):
+        cache = FrappeCache(tmp_path)
+        calls = []
+        monkeypatch.setattr(FrappeCache, "_exists", staticmethod(lambda branch: calls.append(branch) or True))
+        cache.branch_for(">=16.0.0,<17.0.0")
+        cache.branch_for(">=16.2.0,<17.0.0")
+        assert calls == ["version-16"]
+
+
 class TestPythonSelection:
     def test_newest_version_the_checkout_allows_wins(self, tmp_path):
         (tmp_path / "pyproject.toml").write_text('[project]\nrequires-python = ">=3.10,<3.13"\n')
@@ -217,8 +237,11 @@ class TestPythonSelection:
         (tmp_path / "pyproject.toml").write_text('[project]\nrequires-python = ">=3.14,<3.15"\n')
         assert python_version_for(tmp_path) == "3.14"
 
-    def test_unreadable_or_missing_requirement_falls_back_to_newest(self, tmp_path):
-        assert python_version_for(tmp_path) == "3.14"
+    def test_branch_predating_pyproject_gets_the_oldest_python(self, tmp_path):
+        # frappe v14 and earlier pull dependencies that no longer build on 3.14.
+        assert python_version_for(tmp_path) == "3.10"
+
+    def test_unreadable_requirement_falls_back_to_newest(self, tmp_path):
         (tmp_path / "pyproject.toml").write_text('[project]\nrequires-python = "not a specifier"\n')
         assert python_version_for(tmp_path) == "3.14"
 
