@@ -12,9 +12,9 @@
       "channel": "nightly"
     },
     {
-      "version": "16.15.0",
+      "version": "16.18.1",
       "branch": "version-16",
-      "commit": "1924234884731e389ecc4e5500653fcd59666911",
+      "commit": "a4768b441cff346def505e27f2a2229ee1e05b9b",
       "frappe_core": ">=16.0.0,<17.0.0",
       "dependencies": {
         "erpnext": ">=16.0.0,<17.0.0"
