@@ -1,0 +1,163 @@
+"""Rendering an app's audit as the markdown that becomes its issue body."""
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+
+from packaging.specifiers import InvalidSpecifier, SpecifierSet
+from packaging.version import Version
+from tools.audit.runner import CRASHED, AppAudit, ReleaseAudit
+
+# The audit runs the checks on the interpreter Frappe v2 uses. A release
+# pinned below this never claimed to run there, so its findings are reported
+# with that stated rather than dropped.
+V2_FRAPPE = Version("16.0.0")
+
+ISSUE_TITLE = "v2 marketplace validation concerns"
+ISSUE_LABEL = "v2 Marketplace Concerns"
+MAX_BODY_CHARS = 60000  # GitHub rejects issue bodies over 65536
+
+STATUS_ICONS = {"clean": "✅", "issues": "❌", "setup": "⚠️"}
+
+
+@dataclass
+class Group:
+    """One distinct finding, and every release commit that produced it."""
+
+    check: str
+    status: str
+    message: str
+    commits: list[str]
+
+
+def group_findings(audit: AppAudit) -> list[Group]:
+    """Findings across all releases, deduplicated by (check, status, message)."""
+    grouped: dict[tuple[str, str, str], Group] = {}
+    for release in audit.releases:
+        for outcome in release.failures:
+            key = (outcome.check, outcome.status, outcome.message)
+            group = grouped.get(key)
+            if group is None:
+                group = Group(check=outcome.check, status=outcome.status, message=outcome.message, commits=[])
+                grouped[key] = group
+            group.commits.append(release.commit)
+    return sorted(grouped.values(), key=lambda group: (-len(group.commits), group.check))
+
+
+def render(audit: AppAudit, *, registry_commit: str = "") -> str:
+    """The issue body: what was validated, then what came back."""
+    lines = [
+        "Ran the `bench get-app` install-time validators from "
+        "[pilot](https://github.com/frappe/pilot) against every release this app "
+        f"advertises in the [marketplace registry](https://github.com/frappe/marketplace/blob/main/apps/{audit.name}.json), "
+        "to find what would block it on Frappe v2 benches.",
+        "",
+        "## Releases reviewed",
+        "",
+        "| Version | Channel | Branch | Commit | Checked against | Result |",
+        "| --- | --- | --- | --- | --- | --- |",
+    ]
+    lines += [_release_row(audit, release) for release in audit.releases]
+    lines += ["", "## Findings", ""]
+
+    groups = group_findings(audit)
+    if not groups:
+        lines.append("Every check passed on every reviewed commit. Nothing to fix — filed for the record.")
+    for group in groups:
+        lines += _render_group(audit, group)
+
+    lines += _render_caveats(audit)
+    lines += ["", "---", _footer(audit, registry_commit)]
+    return _cap("\n".join(lines) + "\n")
+
+
+def _release_row(audit: AppAudit, release: ReleaseAudit) -> str:
+    link = f"[`{release.commit[:8]}`]({audit.repo}/commit/{release.commit})"
+    frappe = f"frappe `{release.frappe_branch}`" if release.frappe_branch else "—"
+    return (
+        f"| `{release.version}` | {release.channel or '—'} | `{release.branch}` | "
+        f"{link} | {frappe} | {_result_text(release)} |"
+    )
+
+
+def _result_text(release: ReleaseAudit) -> str:
+    if release.clone_error:
+        return f"{STATUS_ICONS['setup']} could not be checked out"
+    if release.failures:
+        return f"{STATUS_ICONS['issues']} {len(release.failures)} check(s) failed"
+    if release.environment_failures:
+        return f"{STATUS_ICONS['setup']} passed what could be checked"
+    return f"{STATUS_ICONS['clean']} passed"
+
+
+def _render_group(audit: AppAudit, group: Group) -> list[str]:
+    heading = f"### {group.check}"
+    if group.status == CRASHED:
+        heading += " — check crashed"
+    commits = ", ".join(f"[`{commit[:8]}`]({audit.repo}/commit/{commit})" for commit in group.commits)
+    return [
+        heading,
+        "",
+        f"Affects {len(group.commits)} reviewed commit(s): {commits}",
+        "",
+        "```",
+        group.message.strip(),
+        "```",
+        "",
+    ]
+
+
+def targets_v2(release: ReleaseAudit) -> bool:
+    """Whether this release claims to support the Frappe the checks ran on."""
+    try:
+        allowed = SpecifierSet(release.frappe_core, prereleases=True)
+    except InvalidSpecifier:
+        return True  # unreadable: assume it was meant for v2 rather than excuse it
+    return V2_FRAPPE in allowed or any(
+        Version(f"{major}.0.0") in allowed for major in range(V2_FRAPPE.major, V2_FRAPPE.major + 3)
+    )
+
+
+def _render_caveats(audit: AppAudit) -> list[str]:
+    """Anything that weakened the run, so a reader can discount findings."""
+    caveats = []
+    for release in audit.releases:
+        if release.clone_error:
+            caveats.append(f"`{release.commit[:8]}`: checkout failed — {release.clone_error}")
+        if release.dependency_error:
+            caveats.append(f"`{release.commit[:8]}`: {release.dependency_error}")
+        if not targets_v2(release):
+            caveats.append(
+                f"`{release.commit[:8]}`: advertises `{release.frappe_core}`, so it predates v2 — "
+                "the checks still ran on the interpreter v2 uses, and a finding here may reflect "
+                "that gap rather than a problem with the release"
+            )
+        for outcome in release.environment_failures:
+            caveats.append(
+                f"`{release.commit[:8]}`: {outcome.check} could not run — the audit could not "
+                f"build a validation environment for `frappe {release.frappe_branch or release.branch}`, "
+                "which is the auditor's limitation, not the app's"
+            )
+        if release.environment_error:
+            caveats.append(
+                f"`{release.commit[:8]}`: no Frappe environment to resolve against "
+                f"({release.environment_error}) — dependency resolution was not exercised"
+            )
+    if not caveats:
+        return []
+    return ["", "## Caveats", ""] + [f"- {caveat}" for caveat in caveats]
+
+
+def _footer(audit: AppAudit, registry_commit: str) -> str:
+    registry = f" · registry `{registry_commit[:8]}`" if registry_commit else ""
+    return (
+        f"<sub>Generated by `tools/audit` in frappe/marketplace on {audit.generated_at}{registry}. "
+        "Re-running the same commits reproduces this report.</sub>"
+    )
+
+
+def _cap(body: str) -> str:
+    if len(body) <= MAX_BODY_CHARS:
+        return body
+    notice = "\n\n> Report truncated — re-run `tools/audit/run.py` for the full list of findings.\n"
+    return body[: MAX_BODY_CHARS - len(notice)] + notice
