@@ -1835,5 +1835,21 @@
     "category": "Applications",
     "stars": 0,
     "releases": "apps/buzz.json"
+  },
+  {
+    "name": "commera",
+    "title": "Commera",
+    "description": "Open Source E-commerce Platform, powered by ERPNext",
+    "repo": "https://github.com/bwhtech/commera",
+    "logo_url": "https://raw.githubusercontent.com/bwhtech/commera/develop/commera/public/images/commera.svg",
+    "website": "https://github.com/bwhtech/commera",
+    "documentation": "https://docs.bwh.tech/commera",
+    "categories": [
+      "E-Commerce",
+      "Business"
+    ],
+    "category": "Applications",
+    "stars": 0,
+    "releases": "apps/commera.json"
   }
 ]
