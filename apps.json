@@ -1851,5 +1851,21 @@
     "category": "Integrations",
     "stars": 0,
     "releases": "apps/bwh_shipping.json"
+  },
+  {
+    "name": "bwh_payments",
+    "title": "BWH Payments",
+    "description": "Payment gateway integrations for Frappe/ERPNext: Stripe, Razorpay, Tabby and Telr",
+    "repo": "https://github.com/bwhtech/bwh_payments",
+    "logo_url": "https://raw.githubusercontent.com/bwhtech/bwh_payments/develop/bwh_payments/public/images/bwh_payments.svg",
+    "website": "https://github.com/bwhtech/bwh_payments",
+    "documentation": "https://docs.bwh.tech/bwh-payments/get-started/overview",
+    "categories": [
+      "Integrations",
+      "Payments"
+    ],
+    "category": "Integrations",
+    "stars": 0,
+    "releases": "apps/bwh_payments.json"
   }
 ]
