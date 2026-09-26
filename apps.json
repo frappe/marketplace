@@ -1851,5 +1851,20 @@
     "category": "Integrations",
     "stars": 0,
     "releases": "apps/bwh_shipping.json"
+  },
+  {
+    "name": "passkeys",
+    "title": "Passkeys",
+    "description": "Passwordless sign-in and approvals with passkeys",
+    "repo": "https://github.com/Andrometiq/frappe-passkeys",
+    "logo_url": "https://raw.githubusercontent.com/Andrometiq/frappe-passkeys/358a91b8addce1c64aa885d5539231dea51b7e5b/.github/logo-512.png",
+    "website": "https://andrometiq.com/software/passkey/",
+    "documentation": "https://github.com/Andrometiq/frappe-passkeys/tree/develop/docs",
+    "categories": [
+      "Security"
+    ],
+    "category": "Extensions",
+    "stars": 0,
+    "releases": "apps/passkeys.json"
   }
 ]
