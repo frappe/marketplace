@@ -1,0 +1,21 @@
+{
+  "name": "passkeys",
+  "releases": [
+    {
+      "version": "15.0.2",
+      "branch": "version-15",
+      "commit": "43a5d83213e69c71c1c99b75014a28e946b736ac",
+      "frappe_core": ">=15.108.0,<16.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    },
+    {
+      "version": "16.0.2",
+      "branch": "version-16",
+      "commit": "358a91b8addce1c64aa885d5539231dea51b7e5b",
+      "frappe_core": ">=16.18.3,<17.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    }
+  ]
+}
