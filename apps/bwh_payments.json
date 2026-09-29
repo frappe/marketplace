@@ -1,0 +1,13 @@
+{
+  "name": "bwh_payments",
+  "releases": [
+    {
+      "version": "0.0.1",
+      "branch": "develop",
+      "commit": "c71cc44c3d1f54dc9f4ee011073cd698be08092c",
+      "frappe_core": ">=16.0.0-dev,<18.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    }
+  ]
+}

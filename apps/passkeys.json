@@ -2,17 +2,17 @@
   "name": "passkeys",
   "releases": [
     {
-      "version": "16.0.3",
+      "version": "16.0.4",
       "branch": "version-16",
-      "commit": "4c0f890c8ca6e3d4cf2377da3299f3d688e6a9fb",
+      "commit": "a8cad061af10af141d6eaf13b3e9d1fae2fb1746",
       "frappe_core": ">=16.18.3,<17.0.0",
       "dependencies": {},
       "channel": "stable"
     },
     {
-      "version": "15.0.3",
+      "version": "15.0.4",
       "branch": "version-15",
-      "commit": "ebf457674bee1b36ab7a3ee7ead2998d304e7f3b",
+      "commit": "8d9afa91ca01867007e6150ba4b0f73fe65b1982",
       "frappe_core": ">=15.108.0,<16.0.0",
       "dependencies": {},
       "channel": "stable"
