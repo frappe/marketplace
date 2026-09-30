@@ -19,7 +19,8 @@ Marketplace page.
   registry revisions).
 - `tools/` — maintenance, not CI-gated. `add_release.py` appends a release
   from an app checkout; `migrate_registry.py` was the one-shot split of the
-  old branch-scoped `apps.json`.
+  old branch-scoped `apps.json`; `audit/` re-checks releases that are already
+  published (see below).
 - `.github/workflows/marketplace-app-check.yml` — validates every PR that
   touches the registry.
 - `.github/workflows/publish-release.yml` — reusable workflow app owners call
@@ -51,6 +52,30 @@ It reads `version`, `frappe_core` and `dependencies` from your
 `pyproject.toml` at that commit, appends the release to `apps/<app>.json`, and
 opens the PR. To do it by hand, run `tools/add_release.py` (or edit the file)
 and open the PR yourself.
+
+## Auditing published releases
+
+The PR checks only ever see a release once, at the moment it is added. To
+re-check what is already in the registry — say, to find what blocks apps on a
+new Frappe major — `tools/audit/` runs pilot's install-time validators over
+every release an app advertises and writes one report per app.
+
+```bash
+pip install git+https://github.com/frappe/pilot@develop   # and: uv on PATH
+python3 -m tools.audit.run --first-party                  # or --app crm --app hrms, or --all
+python3 -m tools.audit.file_issues --apps crm,hrms --dry-run
+python3 -m tools.audit.file_issues --apps crm,hrms
+```
+
+Filing is a separate step on purpose: `run` writes `reports/<app>.md` for a
+human to read, and `file_issues` posts exactly those files, unchanged, as one
+issue per app labelled `v2 Marketplace Concerns`. Findings identical across
+several of an app's releases are reported once, listing every commit they
+affect, so an app gets one issue rather than one per release.
+
+Reports and clone caches are gitignored. Re-running skips apps already audited
+unless `--refresh` is passed; `--no-environment` trades the dependency
+resolution check for a much faster run.
 
 ## Contributing an app
 
