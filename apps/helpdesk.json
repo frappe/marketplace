@@ -2,10 +2,10 @@
   "name": "helpdesk",
   "releases": [
     {
-      "version": "1.28.1",
+      "version": "1.30.1",
       "branch": "main",
-      "commit": "7b4b400a50707f8ff06d030b36fbc24cf4a9daa0",
-      "frappe_core": ">=15.109.0,<17.0.0",
+      "commit": "1c3361cc0019deec6f84035a9352270b4e4eb5cb",
+      "frappe_core": ">=15.116.1,<17.0.0",
       "dependencies": {
         "telephony": ">=0.0.1,<1.0.0"
       },
@@ -14,7 +14,7 @@
     {
       "version": "1.22.2",
       "branch": "develop",
-      "commit": "0975880ebab41ee78fe9cb9c37adbccf737fc395",
+      "commit": "85d7d17f8d0a17990181fb9446cbc5fa33104998",
       "frappe_core": ">=16.0.0-dev,<18.0.0",
       "dependencies": {
         "telephony": ">=0.0.1,<1.0.0"

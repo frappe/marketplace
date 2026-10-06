@@ -2,9 +2,9 @@
   "name": "wiki",
   "releases": [
     {
-      "version": "3.0.0",
+      "version": "3.3.0",
       "branch": "develop",
-      "commit": "df34ebf388a8d55cecb140e969bba757bd2e5218",
+      "commit": "15c03ba015811ca5d8c26b123109eb40677bf91c",
       "frappe_core": ">=16.0.0-dev,<=17.0.0-dev",
       "dependencies": {},
       "channel": "stable"

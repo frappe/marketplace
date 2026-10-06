@@ -4,7 +4,7 @@
     {
       "version": "1.20.3",
       "branch": "version-15",
-      "commit": "3fc7d60c6b0c064e883e56c86d3c51af48511404",
+      "commit": "b7875f48d4bb3d10e016b2efd5e20ac76f409f45",
       "frappe_core": ">=15.0.0,<16.0.0",
       "dependencies": {
         "erpnext": ">=15.0.0,<16.0.0"
@@ -24,7 +24,7 @@
     {
       "version": "1.17.0",
       "branch": "version-16",
-      "commit": "0f6b39ba5971278edb3a9a5c7c4eef435fff6171",
+      "commit": "ce44161b2bd3dfa881d34ce2ed70a20f8cc9e2b7",
       "frappe_core": ">=16.0.0,<17.0.0",
       "dependencies": {
         "erpnext": ">=16.0.0,<17.0.0"
@@ -34,7 +34,7 @@
     {
       "version": "1.17.0",
       "branch": "develop",
-      "commit": "1ffca762dcdc0a188bb7f2cb9c5c82f8ab6c5ee2",
+      "commit": "da20ebaf87f67d1294da04f3c89400768b9994ae",
       "frappe_core": ">=16.0.0-dev,<=17.0.0-dev",
       "dependencies": {
         "erpnext": ">=16.0.0-dev,<=17.0.0-dev"
