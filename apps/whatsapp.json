@@ -1,0 +1,21 @@
+{
+  "name": "whatsapp",
+  "releases": [
+    {
+      "version": "1.1.1",
+      "branch": "main",
+      "commit": "7a950197ed2007aa83407bb6ee3ca9afe699d60c",
+      "frappe_core": ">=16.0.0-dev,<=17.0.0-dev",
+      "dependencies": {},
+      "channel": "stable"
+    },
+    {
+      "version": "1.0.0-dev",
+      "branch": "develop",
+      "commit": "4b373470c95cb545ffab3927eee9304a9c6d5f09",
+      "frappe_core": ">=16.0.0-dev,<=17.0.0-dev",
+      "dependencies": {},
+      "channel": "nightly"
+    }
+  ]
+}
