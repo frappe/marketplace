@@ -818,6 +818,22 @@
     "releases": "apps/crm.json"
   },
   {
+    "name": "whatsapp",
+    "title": "WhatsApp",
+    "description": "Official WhatsApp integration for Frappe apps, built on Meta's WhatsApp Business Cloud API",
+    "repo": "https://github.com/frappe/whatsapp",
+    "logo_url": null,
+    "website": "https://github.com/frappe/whatsapp",
+    "documentation": "https://github.com/frappe/whatsapp/blob/main/README.md",
+    "categories": [
+      "Communication",
+      "Integrations"
+    ],
+    "category": "Integrations",
+    "stars": 25,
+    "releases": "apps/whatsapp.json"
+  },
+  {
     "name": "erpnext",
     "title": "ERPNext",
     "description": "World's best free and open source ERP",

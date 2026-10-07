@@ -4,15 +4,17 @@
     {
       "version": "2.0.0-dev",
       "branch": "develop",
-      "commit": "54f5ddc6f90a466e24a5b032165c5cba4ee2488f",
+      "commit": "e9f91d4ff3faedac7c6951a7b2fc60d4e1c0b8e6",
       "frappe_core": ">=16.0.0-dev,<=17.0.0-dev",
-      "dependencies": {},
+      "dependencies": {
+        "whatsapp": ">=1.0.0-dev,<2.0.0"
+      },
       "channel": "nightly"
     },
     {
-      "version": "1.80.0",
+      "version": "1.86.0",
       "branch": "main",
-      "commit": "966705a95dbc6e66a8c3342bec6e78a3b397b402",
+      "commit": "deedce73c1eb48577e7f70e95df6bac1dc55c93f",
       "frappe_core": ">=15.0.0,<17.0.0",
       "dependencies": {},
       "channel": "stable"
