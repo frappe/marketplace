@@ -16,6 +16,7 @@ from __future__ import annotations
 import sys
 import tempfile
 import tomllib
+from dataclasses import dataclass, field
 from pathlib import Path
 
 from packaging.specifiers import InvalidSpecifier, Specifier, SpecifierSet
@@ -23,12 +24,15 @@ from packaging.version import InvalidVersion, Version
 
 sys.path.insert(0, str(Path(__file__).parent))
 from utils.base import Validator
+from utils.clone import checkout_commit
 
 from pilot.config import AppConfig, BenchConfig
 from pilot.core.app import App
 from pilot.core.app.validator import Validator as InstallValidator
+from pilot.core.app.validator.frappe_compatibility import FrappeCompatibilityCheck
 from pilot.core.bench import Bench
-from pilot.exceptions import AppValidationError, BenchError
+from pilot.exceptions import AppNotFoundError, AppValidationError, BenchError, DependencyResolutionError
+from pilot.integrations.marketplace import Marketplace
 from pilot.managers.environment import PythonEnvManager
 
 FRAPPE_REPO = "https://github.com/frappe/frappe"
@@ -74,10 +78,11 @@ def _lower_bound(specifier: Specifier) -> Version | None:
 class GetAppValidator(Validator):
     name = "get-app validator"
 
-    def __init__(self, release: dict, clone_dir: Path) -> None:
+    def __init__(self, release: dict, clone_dir: Path, registry: dict[str, dict] | None = None) -> None:
         super().__init__()
         self.target = release
         self.clone_dir = clone_dir
+        self.registry = registry or {}
 
     def fail(self, message: str, **details) -> None:
         """Report install output against the app's own name, not the temp checkout."""
@@ -144,6 +149,8 @@ class GetAppValidator(Validator):
             except BenchError as exc:
                 raise BenchError(f"Could not clone frappe@{branch}: {exc}") from exc
 
+            self.install_dependencies(bench, frappe_app)
+
             # The validator builds its throwaway venv on the bench's interpreter.
             bench.config.python_version = frappe_requires_python(frappe_app.path)
             PythonEnvManager(bench).create_venv()
@@ -155,3 +162,43 @@ class GetAppValidator(Validator):
                 AppConfig(name=app_name, repo=self.target["repo"], branch=self.target["branch"]), bench
             )
             InstallValidator(app).validate()
+
+    def install_dependencies(self, bench: Bench, frappe_app: App) -> None:
+        if not self.registry:
+            return
+
+        name = self.target["name"]
+        registry = {**self.registry, name: {**self.registry[name], "releases": [self.target]}}
+        try:
+            resolver = RegistryMarketplace(bench, frappe_app=frappe_app, apps=registry).find_app(name)
+            dependencies = resolver.resolve()[:-1]
+        except (AppNotFoundError, DependencyResolutionError) as exc:
+            raise AppValidationError(str(exc)) from exc
+
+        for dependency in dependencies:
+            if dependency.app == "frappe":
+                continue
+            try:
+                checkout_commit(
+                    dependency.repo, dependency.branch, dependency.commit, bench.apps_path / dependency.app
+                )
+            except RuntimeError as exc:
+                raise BenchError(f"Could not clone {dependency.app}@{dependency.commit[:8]}: {exc}") from exc
+
+
+@dataclass
+class RegistryMarketplace(Marketplace):
+    frappe_app: App | None = None
+    apps: dict[str, dict] = field(default_factory=dict)
+
+    def get_current_frappe_version(self) -> str:
+        return str(FrappeCompatibilityCheck._installed_version(self.frappe_app, "frappe"))
+
+    def _load_registry(self) -> list[dict]:
+        return [
+            {key: value for key, value in app.items() if key not in ("releases", "releases_path")}
+            for app in self.apps.values()
+        ]
+
+    def releases(self, app_name: str) -> tuple[dict, ...]:
+        return self._newest_first(self.apps.get(app_name, {}).get("releases", []))

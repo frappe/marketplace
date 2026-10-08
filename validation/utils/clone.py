@@ -11,12 +11,16 @@ def clone_release(repo: str, branch: str, commit: str, clone_dir: Path) -> None:
     commit and nothing else. The ancestry check is what stops a publisher
     pointing the registry at a fork or an unmerged PR commit.
     """
+    checkout_commit(repo, branch, commit, clone_dir)
+    _reject_commit_outside_branch(clone_dir, repo, branch, commit)
+
+
+def checkout_commit(repo: str, branch: str, commit: str, clone_dir: Path) -> None:
     clone_dir.mkdir(parents=True, exist_ok=True)
     _run(["git", "init", "-q", str(clone_dir)])
     _run(["git", "-C", str(clone_dir), "remote", "add", "origin", repo])
     _fetch_commit(clone_dir, branch, commit)
     _run(["git", "-C", str(clone_dir), "checkout", "-q", commit])
-    _reject_commit_outside_branch(clone_dir, repo, branch, commit)
 
 
 def _fetch_commit(clone_dir: Path, branch: str, commit: str) -> None:
