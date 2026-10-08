@@ -4,7 +4,7 @@
     {
       "version": "2.0.0-dev",
       "branch": "develop",
-      "commit": "e9f91d4ff3faedac7c6951a7b2fc60d4e1c0b8e6",
+      "commit": "76903e4409642dd69696e25f1be34e1f5f2efaf3",
       "frappe_core": ">=16.0.0-dev,<=17.0.0-dev",
       "dependencies": {
         "whatsapp": ">=1.0.0-dev,<2.0.0"
