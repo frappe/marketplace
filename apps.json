@@ -644,7 +644,7 @@
     "title": "Raven",
     "description": "Enterprise-first messaging platform that integrates with ERPNext",
     "repo": "https://github.com/frappe/raven",
-    "logo_url": "https://cloud.frappe.io/files/raven-logo.webp",
+    "logo_url": "https://cloud.frappe.io/files/icon-512x5121f918f.webp",
     "website": "https://ravenchat.ai",
     "documentation": "https://github.com/frappe/raven",
     "categories": [
