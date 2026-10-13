@@ -643,10 +643,10 @@
     "name": "raven",
     "title": "Raven",
     "description": "Enterprise-first messaging platform that integrates with ERPNext",
-    "repo": "https://github.com/The-Commit-Company/Raven",
+    "repo": "https://github.com/frappe/raven",
     "logo_url": "https://cloud.frappe.io/files/raven-logo.webp",
     "website": "https://ravenchat.ai",
-    "documentation": "https://github.com/The-Commit-Company/Raven",
+    "documentation": "https://github.com/frappe/raven",
     "categories": [
       "Communication"
     ],
