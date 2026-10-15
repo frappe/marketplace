@@ -1,0 +1,17 @@
+{
+  "name": "commera",
+  "releases": [
+    {
+      "version": "16.0.0-beta.4",
+      "branch": "version-16",
+      "commit": "4bf4bdf7b865df0ee04c2fbb2ae3498ce170b201",
+      "frappe_core": ">=16.0.0,<17.0.0",
+      "dependencies": {
+        "erpnext": ">=16.0.0,<17.0.0",
+        "bwh_payments": ">=0.0.1,<1.0.0",
+        "bwh_shipping": ">=0.0.1,<1.0.0"
+      },
+      "channel": "stable"
+    }
+  ]
+}
