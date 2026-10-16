@@ -1883,5 +1883,21 @@
     "category": "Integrations",
     "stars": 0,
     "releases": "apps/bwh_payments.json"
+  },
+  {
+    "name": "jarvis",
+    "title": "Jarvis",
+    "description": "AI teammate inside ERPNext. Connect chat subscriptions, AI provider APIs, or local models in an isolated runtime. Every action respects the user's ERPNext permissions.",
+    "repo": "https://github.com/aerele/jarvis",
+    "logo_url": "https://cloud.frappe.io/files/Jarvis_icon.webp",
+    "website": "https://jarvis.aerele.in/",
+    "documentation": "https://jarvis-docs.aerele.in/",
+    "categories": [
+      "AI",
+      "Productivity"
+    ],
+    "category": "Applications",
+    "stars": 0,
+    "releases": "apps/jarvis.json"
   }
 ]
