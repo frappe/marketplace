@@ -2,6 +2,14 @@
   "name": "gameplan",
   "releases": [
     {
+      "version": "0.1.1",
+      "branch": "develop",
+      "commit": "d811d4f7fd2281124ccdd0f1f5b39150e75a1c2a",
+      "frappe_core": ">=16.0.0-dev",
+      "dependencies": {},
+      "channel": "stable"
+    },
+    {
       "version": "0.0.1",
       "branch": "develop",
       "commit": "861c78bd8e10c5a5a4c4cd3e2a7ae3d2c7a07fb4",
