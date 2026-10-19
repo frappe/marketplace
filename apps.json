@@ -646,7 +646,7 @@
     "repo": "https://github.com/frappe/raven",
     "logo_url": "https://cloud.frappe.io/files/icon-512x5121f918f.webp",
     "website": "https://ravenchat.ai",
-    "documentation": "https://github.com/frappe/raven",
+    "documentation": "https://docs.frappe.io/raven",
     "categories": [
       "Communication"
     ],
