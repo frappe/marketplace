@@ -2,6 +2,16 @@
   "name": "lms",
   "releases": [
     {
+      "version": "2.67.0",
+      "branch": "main",
+      "commit": "47ddeca87490c6d660797f7812ffe9c110bda8fa",
+      "frappe_core": ">=15.121.0,<17.0.0",
+      "dependencies": {
+        "payments": ">=0.0.1,<1.0.0"
+      },
+      "channel": "stable"
+    },
+    {
       "version": "2.64.0",
       "branch": "main",
       "commit": "7c46bb8f4976222b3f6aa84368551c424edaa194",
