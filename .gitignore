@@ -10,3 +10,7 @@ venv/
 dist/
 build/
 .DS_Store
+
+# tools/audit output and its clone cache
+reports/
+.audit-cache/
