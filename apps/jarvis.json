@@ -1,0 +1,21 @@
+{
+  "name": "jarvis",
+  "releases": [
+    {
+      "version": "16.5.1",
+      "branch": "version-16",
+      "commit": "6601dfc6332435df71e2506fa6520c037b8d80d2",
+      "frappe_core": ">=16.0.0,<17.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    },
+    {
+      "version": "15.5.1",
+      "branch": "version-15",
+      "commit": "3cf6ac5c50d58bbef8053bf17198cc91b62fbd69",
+      "frappe_core": ">=15.0.0,<16.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    }
+  ]
+}
