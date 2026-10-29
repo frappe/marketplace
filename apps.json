@@ -1917,7 +1917,7 @@
   {
     "name": "churchit",
     "title": "Churchit",
-    "description": "Church management for Frappe: people, families, giving, ministries, events, missions, prayer and a public church website.",
+    "description": "A free and open-source church management application",
     "repo": "https://github.com/meichthys/churchit",
     "logo_url": "https://raw.githubusercontent.com/meichthys/churchit/version-16/churchit/public/icons/pwa/icon-512.png",
     "website": "https://churchit.app",
