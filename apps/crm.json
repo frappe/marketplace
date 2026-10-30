@@ -12,9 +12,9 @@
       "channel": "nightly"
     },
     {
-      "version": "1.86.0",
+      "version": "1.90.0",
       "branch": "main",
-      "commit": "deedce73c1eb48577e7f70e95df6bac1dc55c93f",
+      "commit": "36bd8859f2a6345a620477bc708d0546e8c3f08a",
       "frappe_core": ">=15.0.0,<17.0.0",
       "dependencies": {},
       "channel": "stable"
