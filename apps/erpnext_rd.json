@@ -1,0 +1,25 @@
+{
+  "name": "erpnext_rd",
+  "releases": [
+    {
+      "version": "0.5.2",
+      "branch": "version-16",
+      "commit": "13cfb59f58872674ca8bf7d9858774b0b6931224",
+      "frappe_core": ">=16.0.0,<17.0.0",
+      "dependencies": {
+        "erpnext": ">=16.0.0,<17.0.0"
+      },
+      "channel": "stable"
+    },
+    {
+      "version": "0.5.1",
+      "branch": "version-16",
+      "commit": "99d275b479f81a26f78f97ed2b46381a6b225e2f",
+      "frappe_core": ">=16.0.0,<17.0.0",
+      "dependencies": {
+        "erpnext": ">=16.0.0,<17.0.0"
+      },
+      "channel": "stable"
+    }
+  ]
+}
