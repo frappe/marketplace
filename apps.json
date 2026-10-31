@@ -1913,5 +1913,21 @@
     "category": "Applications",
     "stars": 0,
     "releases": "apps/kamra.json"
+  },
+  {
+    "name": "churchit",
+    "title": "Churchit",
+    "description": "A free and open-source church management application",
+    "repo": "https://github.com/meichthys/churchit",
+    "logo_url": "https://raw.githubusercontent.com/meichthys/churchit/version-16/churchit/public/icons/pwa/icon-512.png",
+    "website": "https://churchit.app",
+    "documentation": "https://churchit.app",
+    "categories": [
+      "Church",
+      "Non-Profit"
+    ],
+    "category": "Applications",
+    "stars": 0,
+    "releases": "apps/churchit.json"
   }
 ]
