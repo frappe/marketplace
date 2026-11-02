@@ -14,8 +14,8 @@
     {
       "version": "1.22.2",
       "branch": "develop",
-      "commit": "85d7d17f8d0a17990181fb9446cbc5fa33104998",
-      "frappe_core": ">=16.0.0-dev,<18.0.0",
+      "commit": "2b6dceca1cd32042ee8eb1fa54357be3d90015c8",
+      "frappe_core": ">=17.0.0-dev,<18.0.0",
       "dependencies": {
         "telephony": ">=0.0.1,<1.0.0"
       },
