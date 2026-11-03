@@ -116,8 +116,11 @@ jobs:
         if: steps.diff.outputs.changed == 'true'
         run: git worktree add --detach /tmp/base-registry ${{ github.event.pull_request.base.sha }}
 
+      # get-app runs the release's own install and build with no timeout of
+      # its own, so a hanging one would otherwise hold the runner for 6 hours.
       - name: Check changed marketplace releases
         if: steps.diff.outputs.changed == 'true'
+        timeout-minutes: 120
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # One bench per Frappe branch, set up on first use (validation/utils/bench.py).
