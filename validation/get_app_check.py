@@ -17,10 +17,13 @@ $PILOT_DIR pointing at a frappe/pilot checkout (see .github/workflows).
 
 from __future__ import annotations
 
+import re
 import subprocess
 import sys
 import tempfile
 import tomllib
+import urllib.error
+import urllib.request
 from pathlib import Path
 
 from packaging.specifiers import InvalidSpecifier, Specifier, SpecifierSet
@@ -39,6 +42,8 @@ from pilot.exceptions import AppValidationError, BenchError
 from pilot.managers.environment import PythonEnvManager
 
 FRAPPE_REPO = "https://github.com/frappe/frappe"
+FRAPPE_DEVELOP_VERSION_URL = "https://raw.githubusercontent.com/frappe/frappe/develop/frappe/__init__.py"
+LS_REMOTE_NO_MATCH = 2  # `git ls-remote --exit-code` found no matching ref
 MEMORY_LIMIT_BYTES = 1024**3  # benches run on small servers; past this, get-app risks the OOM killer
 
 
@@ -62,7 +67,54 @@ def frappe_branch_for(frappe_core: str) -> str:
             f"frappe_core {frappe_core!r} declares no lower bound, so there is no "
             "Frappe version to validate against — declare one, e.g. '>=15.0.0,<16.0.0'"
         )
-    return f"version-{max(floors).major}"
+    return frappe_branch_for_major(max(floors).major)
+
+
+def frappe_branch_for_major(major: int) -> str:
+    """version-N when frappe has it; develop only while develop is that major."""
+    branch = f"version-{major}"
+    if frappe_has_branch(branch):
+        return branch
+    develop = frappe_develop_major()
+    if develop == major:
+        return "develop"
+    raise AppValidationError(
+        f"frappe_core needs Frappe {major}, which has no {branch} branch and is not on develop "
+        f"(develop is Frappe {develop}) — check the range's lower bound"
+    )
+
+
+def frappe_has_branch(branch: str) -> bool:
+    """Raises on a failed lookup, so an outage is never read as "no such branch"."""
+    try:
+        result = subprocess.run(
+            ["git", "ls-remote", "--exit-code", FRAPPE_REPO, f"refs/heads/{branch}"],
+            capture_output=True,
+            text=True,
+            timeout=60,
+        )
+    except subprocess.TimeoutExpired as exc:
+        raise AppValidationError(f"Timed out looking up frappe@{branch}; run /rereview to try again") from exc
+    if result.returncode == LS_REMOTE_NO_MATCH:
+        return False
+    if result.returncode != 0:
+        raise AppValidationError(
+            f"Could not look up frappe@{branch} ({result.stderr.strip()}); run /rereview to try again"
+        )
+    return True
+
+
+def frappe_develop_major() -> int:
+    """Major of the Frappe on develop, from its __version__, e.g. '17.0.0-dev' -> 17."""
+    try:
+        with urllib.request.urlopen(FRAPPE_DEVELOP_VERSION_URL, timeout=30) as response:
+            source = response.read().decode()
+    except (urllib.error.URLError, TimeoutError) as exc:
+        raise AppValidationError(f"Could not read Frappe's develop version ({exc}); run /rereview to try again") from exc
+    match = re.search(r"^__version__\s*=\s*[\"']([^\"']+)", source, re.MULTILINE)
+    if not match:
+        raise AppValidationError(f"No __version__ in {FRAPPE_DEVELOP_VERSION_URL}")
+    return Version(match.group(1)).major
 
 
 def frappe_requires_python(frappe_path: Path) -> str:
