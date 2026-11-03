@@ -47,6 +47,11 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-22.04
+    # One publish per app branch at a time; a newer commit cancels an older
+    # one still running, so the rolling PR always ends on the newest commit.
+    concurrency:
+      group: marketplace-publish-${{ inputs.app }}-${{ inputs.branch }}
+      cancel-in-progress: true
 
     steps:
       - name: Check out the app at the commit to advertise
@@ -77,10 +82,15 @@ jobs:
           CHANNEL: ${{ inputs.channel }}
         run: python3 registry/tools/add_release.py --app-dir app --registry registry
 
-      - name: Open the pull request
+      # A rolling PR: one branch per app branch, rebuilt from main with the
+      # newest commit on every publish. A commit pushed while an older one is
+      # still open (or still being checked) updates that same PR instead of
+      # opening another, and the check's own concurrency cancels the old run.
+      - name: Open or update the pull request
         env:
           GH_TOKEN: ${{ secrets.registry_token }}
           APP: ${{ inputs.app }}
+          BRANCH: ${{ inputs.branch }}
           COMMIT: ${{ inputs.commit || github.sha }}
         working-directory: registry
         run: |
@@ -89,12 +99,18 @@ jobs:
             exit 0
           fi
           short="${COMMIT:0:8}"
-          branch="publish/$APP-$short"
+          branch="publish/$APP-${BRANCH//\//-}"
+          title="feat($APP): advertise $short from $BRANCH"
+          body="Automated release published from ${GITHUB_REPOSITORY}@${COMMIT}. Later publishes from \`$BRANCH\` update this PR in place."
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git checkout -b "$branch"
+          git checkout -B "$branch"
           git commit -qam "feat($APP): advertise $short"
-          git push -q origin "$branch"
-          gh pr create --title "feat($APP): advertise $short" \
-            --body "Automated release published from ${GITHUB_REPOSITORY}@${COMMIT}." \
-            --base main --head "$branch"
+          git push -qf origin "$branch"
+          number=$(gh pr list --head "$branch" --base main --state open --json number --jq '.[0].number // empty')
+          if [ -n "$number" ]; then
+            gh pr edit "$number" --title "$title" --body "$body"
+            echo "Updated #$number to $short."
+          else
+            gh pr create --title "$title" --body "$body" --base main --head "$branch"
+          fi
