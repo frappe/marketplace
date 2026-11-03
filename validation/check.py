@@ -2,9 +2,9 @@
 """
 Orchestrates the marketplace app PR check: run the schema check once per
 changed/new app, then find which of its releases changed
-(utils/diff.py) and run semgrep and get-app checks against each, in that
-order, stopping at the first failure. A schema-failed app's releases are
-skipped entirely. Exits non-zero if anything fails.
+(utils/diff.py) and run both the semgrep and get-app checks against each,
+whatever the other's outcome. A schema-failed app's releases are skipped
+entirely. Exits non-zero if anything fails.
 
 Run:
     python3 validation/check.py <old-registry-dir> <new-registry-dir>
@@ -73,23 +73,18 @@ def _clone(release: dict, clone_dir: Path, section: Section) -> bool:
 
 
 def _run_post_clone_checks(release: dict, clone_dir: Path, section: Section) -> bool:
-    """Run clone-dependent checks in order, stopping at the first failure."""
+    """Run every clone-dependent check, so one failing never hides another's findings."""
     repo, commit = release["repo"], release["commit"]
     checks = [
-        ("semgrep", SemgrepValidator(clone_dir, f"{repo}@{commit[:8]}")),
-        ("get-app", GetAppValidator(release, clone_dir)),
+        SemgrepValidator(clone_dir, f"{repo}@{commit[:8]}"),
+        GetAppValidator(release, clone_dir),
     ]
-    failed_at: str | None = None
-    for name, check in checks:
-        if failed_at is not None:
-            print(f"\n--- {check.name} ---\n  SKIPPED — {failed_at} failed for this release.")
-            section.checks.append(CheckResult(name=check.name, status="skipped"))
-            continue
+    results = []
+    for check in checks:
         passed = check.run()
         section.checks.append(_result(check, passed))
-        if not passed:
-            failed_at = name
-    return failed_at is None
+        results.append(passed)
+    return all(results)
 
 
 # The registry is contributor-supplied and nothing validates these as a git
