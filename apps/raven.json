@@ -2,6 +2,22 @@
   "name": "raven",
   "releases": [
     {
+      "version": "3.2.0",
+      "branch": "develop",
+      "commit": "cac684e279a9603127fbe4d5e83d61a17031eb3e",
+      "frappe_core": ">=15.111.0,<=17.0.0-dev",
+      "dependencies": {},
+      "channel": "nightly"
+    },
+    {
+      "version": "3.2.0",
+      "branch": "main",
+      "commit": "5a5e4c48e477831d82943ba241e20cc9fb6ce578",
+      "frappe_core": ">=15.111.0,<=17.0.0-dev",
+      "dependencies": {},
+      "channel": "stable"
+    },
+    {
       "version": "3.1.0",
       "branch": "develop",
       "commit": "4249329f983c810ad7c70f33571f5046fc82e7d3",
