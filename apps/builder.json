@@ -2,17 +2,17 @@
   "name": "builder",
   "releases": [
     {
-      "version": "1.35.1",
+      "version": "1.36.5",
       "branch": "master",
-      "commit": "37e958bc4f801d06d0438c21b97b42c45c4eaa51",
-      "frappe_core": ">=15.0.0,<18.0.0",
+      "commit": "a2918ac9556425523f1f8981f18583ae4cb6ca05",
+      "frappe_core": ">=15.121.3,<18.0.0",
       "dependencies": {},
       "channel": "stable"
     },
     {
       "version": "1.0.0-dev",
       "branch": "develop",
-      "commit": "1eaf347b0a6662dfa1601e2ac806c90b4e8e8a67",
+      "commit": "6fd5fd4f92bf738f34ca88701623d8809cd56237",
       "frappe_core": ">=15.0.0,<18.0.0",
       "dependencies": {},
       "channel": "nightly"
