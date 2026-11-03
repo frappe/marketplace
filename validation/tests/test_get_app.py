@@ -184,3 +184,21 @@ def test_failed_setup_is_not_retried_for_later_releases(monkeypatch, tmp_path):
         with pytest.raises(BenchError, match=r"Node\.js"):
             ValidationBench("version-16", tmp_path).get_fresh_bench()
     assert setups == ["version-16"]
+
+
+def test_restore_undoes_changes_and_additions(monkeypatch, tmp_path):
+    def initialize(self):
+        (self.snapshot_path / "sites").mkdir(parents=True)
+        (self.snapshot_path / "sites" / "apps.txt").write_text("frappe\n")
+
+    monkeypatch.setattr(ValidationBench, "initialize", initialize)
+    monkeypatch.setattr("utils.bench.Bench", lambda path: path)
+    bench = ValidationBench("version-16", tmp_path)
+
+    dirty = bench.get_fresh_bench()
+    (dirty / "sites" / "apps.txt").write_text("frappe\nwidgets\n")
+    (dirty / "apps").mkdir()
+    clean = bench.get_fresh_bench()
+
+    assert (clean / "sites" / "apps.txt").read_text() == "frappe\n"
+    assert not (clean / "apps").exists()

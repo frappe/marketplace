@@ -91,7 +91,7 @@ jobs:
           # they aren't needed here and otherwise fail the whole apt-get update.
           sudo rm -f /etc/apt/sources.list.d/microsoft*.list /etc/apt/sources.list.d/azure*.list
           sudo apt-get update -y
-          sudo apt-get install -y redis-server build-essential pkg-config python3-dev libmariadb-dev
+          sudo apt-get install -y redis-server build-essential pkg-config python3-dev libmariadb-dev rsync
           npm install -g yarn
           # Pilot caps asset builds with a `systemd-run --user` scope. Swap
           # would let a build past the cap, so the runner gets none.
