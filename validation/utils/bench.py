@@ -3,10 +3,12 @@
 Real Pilot benches that get-app installs releases into, one per Frappe branch.
 
 Each bench is set up once with `pilot init`'s own steps, on SQLite and with
-the Admin UI off since no site is ever created, then snapshotted. Its asset
-builds are capped at BUILD_MEMORY_LIMIT_MB through bench.toml's [build]
-memory_limit_mb, which pilot enforces with a systemd-run scope, so a build a
-small server cannot afford is killed here just as it would be there. Every
+the Admin UI off since no site is ever created, then snapshotted. Once set
+up, its asset builds are capped at BUILD_MEMORY_LIMIT_MB through bench.toml's
+[build] memory_limit_mb, which pilot enforces with a systemd-run scope, so an
+app build a small server cannot afford is killed here just as it would be
+there. Setup itself runs uncapped: it builds Frappe's own assets when Frappe
+publishes none, which is not the app's cost. Every
 release starts from a copy of the snapshot at the same path, so the venv's
 absolute paths stay valid and one release never sees another's install.
 Benches live under $VALIDATION_BENCHES_DIR (see .github/workflows).
@@ -79,7 +81,6 @@ class ValidationBench:
         def configure(config: BenchConfig) -> None:
             config.python_version = python
             config.admin.enabled = False
-            config.build.memory_limit_mb = BUILD_MEMORY_LIMIT_MB
 
         report(f"Setting up a Frappe {self.frappe_branch} bench at {self.path}...")
         bench = Bench.create_at(
@@ -91,6 +92,8 @@ class ValidationBench:
             configure=configure,
         )
         bench.initialize(on_progress=report)
+        bench.config.build.memory_limit_mb = BUILD_MEMORY_LIMIT_MB
+        bench.config.write(bench.path)
         # Copied aside then renamed, so a copy cut short never passes for a snapshot.
         partial = self.snapshot_path.with_name(f"{self.snapshot_path.name}.partial")
         shutil.rmtree(partial, ignore_errors=True)

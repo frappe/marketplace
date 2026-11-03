@@ -86,25 +86,37 @@ def test_build_killed_by_the_cap_is_a_memory_finding(get_app):
     assert "Publish prebuilt assets" in validator.findings[0].message
 
 
-def test_bench_caps_builds_and_skips_admin(monkeypatch, tmp_path):
+def test_bench_caps_app_builds_only_after_setup(monkeypatch, tmp_path):
     created = {}
 
     class FakeBench:
+        """Records the build cap as setup sees it and as bench.toml ends up with it."""
+
+        path = tmp_path / "frappe-version-16"
+
         def initialize(self, on_progress):
-            (tmp_path / "frappe-version-16").mkdir()
+            self.path.mkdir()
+            created["cap_during_setup"] = self.config.build.memory_limit_mb
+
+        def write(self, path):
+            created["written_cap"] = self.config.build.memory_limit_mb
+
+    bench = FakeBench()
 
     def create_at(path, name, **options):
         created.update(options)
-        return FakeBench()
+        bench.config = BenchConfig.default(name="validation")
+        options["configure"](bench.config)
+        bench.config.write = bench.write
+        return bench
 
     monkeypatch.setattr("utils.bench.frappe_requires_python", lambda branch: ">=3.10,<3.15")
     monkeypatch.setattr("utils.bench.Bench.create_at", create_at)
     ValidationBench("version-16", tmp_path).initialize()
 
-    config = BenchConfig.default(name="validation")
-    created["configure"](config)
-    assert (config.build.memory_limit_mb, config.admin.enabled, config.python_version) == (1024, False, ">=3.10,<3.15")
+    assert (bench.config.admin.enabled, bench.config.python_version) == (False, ">=3.10,<3.15")
     assert created["db_type"] == "sqlite"
+    assert (created["cap_during_setup"], created["written_cap"]) == (0, 1024)
     assert (tmp_path / "frappe-version-16.snapshot").is_dir()
 
 
