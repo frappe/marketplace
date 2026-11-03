@@ -3,6 +3,7 @@ import sys
 from pathlib import Path
 
 import pytest
+from packaging.version import Version
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 import get_app_check
@@ -13,8 +14,8 @@ from pilot.exceptions import AppValidationError
 
 @pytest.fixture
 def frappe(monkeypatch):
-    """Fake frappe remote: `branches` exist, develop is `develop` major, `ls_remote_code` overrides lookups."""
-    state = {"branches": {"version-15", "version-16"}, "develop": 17, "ls_remote_code": None}
+    """Fake frappe remote: `branches` exist, develop is at `develop`, `ls_remote_code` overrides lookups."""
+    state = {"branches": {"version-15", "version-16"}, "develop": Version("17.0.0-dev"), "ls_remote_code": None}
 
     def run(command, **kwargs):
         branch = command[-1].removeprefix("refs/heads/")
@@ -24,7 +25,7 @@ def frappe(monkeypatch):
         return subprocess.CompletedProcess(command, code, "", "fatal: unable to access")
 
     monkeypatch.setattr(get_app_check.subprocess, "run", run)
-    monkeypatch.setattr(get_app_check, "frappe_develop_major", lambda: state["develop"])
+    monkeypatch.setattr(get_app_check, "frappe_develop_version", lambda: state["develop"])
     return state
 
 
@@ -32,17 +33,24 @@ def test_existing_version_branch(frappe):
     assert frappe_branch_for(">=15.0.0,<17.0.0") == "version-15"
 
 
-def test_major_in_development_uses_develop(frappe):
-    assert frappe_branch_for(">=17.0.0-dev") == "develop"
+@pytest.mark.parametrize("frappe_core", [">=17.0.0-dev", ">=17.0.0-dev,<18.0.0"])
+def test_dev_floor_uses_develop(frappe, frappe_core):
+    assert frappe_branch_for(frappe_core) == "develop"
+
+
+@pytest.mark.parametrize("frappe_core", [">=17.0.0", "~=17.0"])
+def test_range_excluding_the_dev_build_fails(frappe, frappe_core):
+    with pytest.raises(AppValidationError, match="declare a dev floor"):
+        frappe_branch_for(frappe_core)
 
 
 def test_major_older_than_any_branch_fails(frappe):
-    with pytest.raises(AppValidationError, match="no version-10 branch"):
+    with pytest.raises(AppValidationError, match=r"no version-10 branch.*check the range"):
         frappe_branch_for(">=10.0.0")
 
 
 def test_major_beyond_develop_fails(frappe):
-    with pytest.raises(AppValidationError, match="develop is Frappe 17"):
+    with pytest.raises(AppValidationError, match="check the range's lower bound"):
         frappe_branch_for(">=71.0.0")
 
 

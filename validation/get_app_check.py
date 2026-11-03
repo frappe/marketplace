@@ -67,20 +67,24 @@ def frappe_branch_for(frappe_core: str) -> str:
             f"frappe_core {frappe_core!r} declares no lower bound, so there is no "
             "Frappe version to validate against — declare one, e.g. '>=15.0.0,<16.0.0'"
         )
-    return frappe_branch_for_major(max(floors).major)
+    return frappe_branch_for_major(max(floors).major, specifiers)
 
 
-def frappe_branch_for_major(major: int) -> str:
-    """version-N when frappe has it; develop only while develop is that major."""
+def frappe_branch_for_major(major: int, specifiers: SpecifierSet) -> str:
+    """version-N when frappe has it; develop only when develop is Frappe N and in the range."""
     branch = f"version-{major}"
     if frappe_has_branch(branch):
         return branch
-    develop = frappe_develop_major()
-    if develop == major:
+    develop = frappe_develop_version()
+    if develop.major == major and develop in specifiers:
         return "develop"
+    if develop.major == major:
+        fix = f"to validate against develop, declare a dev floor, e.g. '>={major}.0.0-dev'"
+    else:
+        fix = "check the range's lower bound"
     raise AppValidationError(
-        f"frappe_core needs Frappe {major}, which has no {branch} branch and is not on develop "
-        f"(develop is Frappe {develop}) — check the range's lower bound"
+        f"frappe_core {str(specifiers)!r} needs Frappe {major}, which has no {branch} branch, "
+        f"and develop ({develop}) does not fit it — {fix}"
     )
 
 
@@ -104,8 +108,8 @@ def frappe_has_branch(branch: str) -> bool:
     return True
 
 
-def frappe_develop_major() -> int:
-    """Major of the Frappe on develop, from its __version__, e.g. '17.0.0-dev' -> 17."""
+def frappe_develop_version() -> Version:
+    """The Frappe version on develop, from its __version__, e.g. '17.0.0-dev'."""
     try:
         with urllib.request.urlopen(FRAPPE_DEVELOP_VERSION_URL, timeout=30) as response:
             source = response.read().decode()
@@ -114,7 +118,7 @@ def frappe_develop_major() -> int:
     match = re.search(r"^__version__\s*=\s*[\"']([^\"']+)", source, re.MULTILINE)
     if not match:
         raise AppValidationError(f"No __version__ in {FRAPPE_DEVELOP_VERSION_URL}")
-    return Version(match.group(1)).major
+    return Version(match.group(1))
 
 
 def frappe_requires_python(frappe_path: Path) -> str:
