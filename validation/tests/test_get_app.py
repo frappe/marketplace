@@ -69,7 +69,7 @@ def test_listed_release_is_validated_before_get_app(get_app):
 
 def test_get_app_failure_is_reported(get_app):
     validator = get_app(FakeApp(error=AppValidationError("'widgets' has syntax errors")))
-    assert [finding.message for finding in validator.findings] == ["'widgets' has syntax errors"]
+    assert [finding.message for finding in validator.findings] == ["On Frappe version-16: 'widgets' has syntax errors"]
 
 
 def test_bench_setup_failure_is_reported(monkeypatch, tmp_path):
@@ -79,7 +79,7 @@ def test_bench_setup_failure_is_reported(monkeypatch, tmp_path):
     monkeypatch.setattr(get_app_check.ValidationBench, "get_fresh_bench", fail)
     validator = GetAppValidator(RELEASE, tmp_path)
     validator._get_app("version-16")
-    assert "Could not set up a Frappe version-16 bench" in validator.findings[0].message
+    assert validator.findings[0].message.startswith("On Frappe version-16: could not set up a bench")
 
 
 def test_build_killed_by_the_cap_is_a_memory_finding(get_app):
@@ -92,7 +92,9 @@ def test_build_killed_by_the_cap_is_a_memory_finding(get_app):
 def test_failure_without_an_oom_kill_keeps_pilots_message(get_app):
     error = BenchError("Command '/bench/env/bin/python' failed with exit code 1.")
     validator = get_app(FakeApp(error=error), oom_kills=(3, 3))
-    assert [(finding.rule, finding.message) for finding in validator.findings] == [("", str(error))]
+    assert [(finding.rule, finding.message) for finding in validator.findings] == [
+        ("", f"On Frappe version-16: {error}")
+    ]
 
 
 def test_repo_rejected_by_pilot_is_reported(get_app, monkeypatch, tmp_path):
@@ -102,7 +104,16 @@ def test_repo_rejected_by_pilot_is_reported(get_app, monkeypatch, tmp_path):
     monkeypatch.setattr(get_app_check.App, "from_repo", reject)
     validator = GetAppValidator(RELEASE, tmp_path)
     validator._get_app("version-16")
-    assert validator.findings[0].message == "'frappe' is the base framework, not an app"
+    assert validator.findings[0].message == "On Frappe version-16: 'frappe' is the base framework, not an app"
+
+
+def test_release_is_installed_on_every_frappe_major(monkeypatch, tmp_path):
+    branches = []
+    monkeypatch.setattr(get_app_check, "frappe_branches_for", lambda frappe_core: ["version-15", "version-16"])
+    monkeypatch.setattr(GetAppValidator, "_reject_untruthful_metadata", lambda self, frappe_core: None)
+    monkeypatch.setattr(GetAppValidator, "_get_app", lambda self, branch: branches.append(branch))
+    GetAppValidator({**RELEASE, "frappe_core": ">=15.0.0,<17.0.0"}, tmp_path).validate()
+    assert branches == ["version-15", "version-16"]
 
 
 def test_oom_kills_are_read_from_the_user_slice(monkeypatch, tmp_path):
@@ -184,3 +195,21 @@ def test_failed_setup_is_not_retried_for_later_releases(monkeypatch, tmp_path):
         with pytest.raises(BenchError, match=r"Node\.js"):
             ValidationBench("version-16", tmp_path).get_fresh_bench()
     assert setups == ["version-16"]
+
+
+def test_restore_undoes_changes_and_additions(monkeypatch, tmp_path):
+    def initialize(self):
+        (self.snapshot_path / "sites").mkdir(parents=True)
+        (self.snapshot_path / "sites" / "apps.txt").write_text("frappe\n")
+
+    monkeypatch.setattr(ValidationBench, "initialize", initialize)
+    monkeypatch.setattr("utils.bench.Bench", lambda path: path)
+    bench = ValidationBench("version-16", tmp_path)
+
+    dirty = bench.get_fresh_bench()
+    (dirty / "sites" / "apps.txt").write_text("frappe\nwidgets\n")
+    (dirty / "apps").mkdir()
+    clean = bench.get_fresh_bench()
+
+    assert (clean / "sites" / "apps.txt").read_text() == "frappe\n"
+    assert not (clean / "apps").exists()
