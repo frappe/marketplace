@@ -12,9 +12,9 @@ Marketplace page.
 - `apps/<name>.json` — one app's `releases`: each an immutable
   `branch` + `commit` pair with the app version, Frappe compatibility range,
   and dependencies on other marketplace apps.
-- `validation/` — the PR-gating checks: `check.py` runs `schema_check.py` ->
-  `semgrep_check.py` -> `get_app_check.py`, in that order, against each
-  changed release, stopping at the first failure. `validation/utils/` holds
+- `validation/` — the PR-gating checks: `check.py` runs `schema_check.py`
+  per changed app, then both `semgrep_check.py` and `get_app_check.py`
+  against each changed release, whatever the other's outcome. `validation/utils/` holds
   their shared plumbing (cloning a release at its commit, diffing two
   registry revisions).
 - `tools/` — maintenance, not CI-gated. `add_release.py` appends a release
@@ -138,8 +138,8 @@ advertised when.
 When your PR is opened, CI clones your repo at each changed release's
 `commit` — rejecting a commit that is not reachable from the declared
 `branch`, a version or `frappe_core` that disagrees with the commit's
-`pyproject.toml`, and anything short of a full SHA — then runs two checks, in
-order:
+`pyproject.toml`, and anything short of a full SHA — then runs two checks,
+both always, so one failing never hides the other's findings:
 
 1. **Semgrep scan.** **Blocking** findings (which fail the PR) include:
    - **Code injection** — `eval()`, `exec()`, `compile()`, `safe_eval()`
@@ -152,18 +152,28 @@ order:
    Non-blocking findings (WARNING severity) are reported but do not prevent
    merge — a Frappe reviewer will note them in the PR.
 
-2. **get-app validator** (only runs if semgrep passed). Installs the app
+2. **get-app validator**. Installs the app
    into a throwaway venv alongside a real Frappe checkout of the version
    your release's `frappe_core` advertises — the same install
    [`bench get-app`](https://github.com/frappe/pilot) itself performs. Catches
    broken repo structure, syntax errors, undeclared `[tool.bench.frappe-dependencies]`/`required_apps`
    mismatches, and missing imports/dependencies that only show up once the
-   app is actually installed. It also requires the prebuilt assets for the
-   release's `branch` and `commit`, which benches download instead of
-   building. Publish them with Pilot's `app-assets.yml` workflow on every
-   branch you release from (see
-   [Pilot's setup guide](https://github.com/frappe/pilot/blob/develop/docs/prebuilt-assets.md)),
-   and open the PR after the workflow run for that commit has finished.
+   app is actually installed. It then builds your assets with
+   [Pilot's own build](https://github.com/frappe/pilot/blob/develop/scripts/build-app-assets.sh),
+   as get-app does, and fails if the build fails. The whole get-app must
+   fit in 1 GiB — see [Memory limit](#memory-limit).
+
+### Memory limit
+
+Benches often run on small servers, so get-app — the Python install and the
+asset build — must peak under **1 GiB**. CI measures every process each step
+starts (PSS, so shared libraries count once). Going over is a **blocking**
+finding (`get-app-memory`) that shows each step's peak:
+
+| Step | Usual cause when heavy | Fix |
+| --- | --- | --- |
+| Python install | A dependency built from source because it has no wheel for Frappe's Python | Pin a version that ships wheels, or drop it |
+| Asset build | Large bundles or heavy build plugins | Split bundles, trim plugins |
 
 ### Reading the results
 
