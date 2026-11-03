@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """
-Decide whether a publish PR may merge without a reviewer.
+Decide whether a registry PR may merge without a reviewer.
 
 Only the change tools/add_release.py makes, by apps of a trusted GitHub
-organisation, qualifies: the PR comes from a `publish/` branch, changes
-exactly one apps/<app>.json, and in it only adds releases or replaces one with
-the same version and branch. The marketplace check validates exactly those
+organisation, qualifies, wherever the PR comes from: it changes exactly one
+apps/<app>.json, and in it only adds releases or replaces one with the same
+version and branch. The marketplace check validates exactly those
 (a new version, branch and commit), so an in-place edit of a release's other
 fields, or a removed release, which it never checks, waits for a person. The
 app must already be listed, and its owner is read from the base registry, so
@@ -14,8 +14,7 @@ a PR cannot make itself eligible by editing its own repo URL.
 Reads the two registries as data only; nothing from the PR runs.
 
 Usage:
-    python3 validation/auto_merge.py <base registry> <head registry> \\
-        --branch publish/lms-develop --changed-files changed.txt
+    python3 validation/auto_merge.py <base registry> <head registry> --changed-files changed.txt
 
 Prints why a PR is held, and writes mergeable=true|false to $GITHUB_OUTPUT.
 """
@@ -34,14 +33,11 @@ sys.path.insert(0, str(Path(__file__).parent))
 from utils.diff import release_identity
 
 TRUSTED_OWNERS = ("frappe",)
-PUBLISH_BRANCH_PREFIX = "publish/"
 RELEASES_FILE = re.compile(r"apps/([a-z][a-z0-9_]*)\.json")
 
 
-def get_merge_blockers(base: Path, head: Path, changed_files: list[str], branch: str) -> list[str]:
+def get_merge_blockers(base: Path, head: Path, changed_files: list[str]) -> list[str]:
     """Why the PR needs a reviewer; empty when it may merge on its own."""
-    if not branch.startswith(PUBLISH_BRANCH_PREFIX):
-        return [f"{branch!r} is not a publish branch"]
     match = RELEASES_FILE.fullmatch(changed_files[0]) if len(changed_files) == 1 else None
     if not match:
         return [f"it changes {changed_files}, not exactly one apps/<app>.json"]
@@ -100,12 +96,11 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("base", type=Path, help="registry at the PR's base branch")
     parser.add_argument("head", type=Path, help="registry at the PR's head commit")
-    parser.add_argument("--branch", required=True, help="the PR's head branch")
     parser.add_argument("--changed-files", type=Path, required=True, help="file listing the PR's changed paths")
     args = parser.parse_args()
 
     changed_files = args.changed_files.read_text().split()
-    blockers = get_merge_blockers(args.base, args.head, changed_files, args.branch)
+    blockers = get_merge_blockers(args.base, args.head, changed_files)
     for blocker in blockers:
         print(f"Held for review: {blocker}.")
     if not blockers:

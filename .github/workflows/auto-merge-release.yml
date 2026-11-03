@@ -1,8 +1,9 @@
 name: Auto-merge Release
 
-# Merges a publish PR once the marketplace check passes, but only a
-# release-only change by an app of a trusted organisation (frappe for now:
-# validation/auto_merge.py). Every other PR still waits for a person.
+# Merges a PR once the marketplace check passes, when it only adds or
+# replaces a release of an app owned by a trusted organisation (frappe for
+# now: validation/auto_merge.py). It does not matter where the PR comes from.
+# Every other PR still waits for a person.
 #
 # workflow_run always runs this file and the script from main, so a PR
 # cannot change the rules it is judged by, and nothing from the PR runs.
@@ -18,15 +19,12 @@ permissions:
 
 jobs:
   merge:
-    # Publish branches live in this repo; a fork's PR always needs a reviewer.
     if: >-
       github.event.workflow_run.event == 'pull_request' &&
-      github.event.workflow_run.conclusion == 'success' &&
-      startsWith(github.event.workflow_run.head_branch, 'publish/') &&
-      github.event.workflow_run.head_repository.full_name == github.repository
+      github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-22.04
     concurrency:
-      group: auto-merge-${{ github.event.workflow_run.head_branch }}
+      group: auto-merge-${{ github.event.workflow_run.head_repository.full_name }}-${{ github.event.workflow_run.head_branch }}
 
     steps:
       # The check passed for this exact commit. If a newer one was pushed
@@ -35,13 +33,13 @@ jobs:
         id: pr
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
           HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+        # By head commit, not branch name: fork branches can share a name.
         run: |
-          number=$(gh pr list --repo "$GITHUB_REPOSITORY" --head "$HEAD_BRANCH" --base main --state open \
-            --json number,headRefOid --jq '.[] | select(.headRefOid == env.HEAD_SHA) | .number')
+          number=$(gh pr list --repo "$GITHUB_REPOSITORY" --base main --state open --limit 500 \
+            --json number,headRefOid --jq '.[] | select(.headRefOid == env.HEAD_SHA) | .number' | head -n 1)
           if [ -z "$number" ]; then
-            echo "No open PR on $HEAD_BRANCH is at $HEAD_SHA any more — nothing to merge."
+            echo "No open PR is at $HEAD_SHA any more — nothing to merge."
             exit 0
           fi
           gh pr diff "$number" --repo "$GITHUB_REPOSITORY" --name-only > "$RUNNER_TEMP/changed-files"
@@ -57,6 +55,7 @@ jobs:
         if: steps.pr.outputs.number
         uses: actions/checkout@v4
         with:
+          repository: ${{ github.event.workflow_run.head_repository.full_name }}
           ref: ${{ github.event.workflow_run.head_sha }}
           path: head
           persist-credentials: false
@@ -64,9 +63,7 @@ jobs:
       - name: Check the change is release-only and trusted
         id: eligible
         if: steps.pr.outputs.number
-        env:
-          HEAD_BRANCH: ${{ github.event.workflow_run.head_branch }}
-        run: python3 base/validation/auto_merge.py base head --branch "$HEAD_BRANCH" --changed-files "$RUNNER_TEMP/changed-files"
+        run: python3 base/validation/auto_merge.py base head --changed-files "$RUNNER_TEMP/changed-files"
 
       # --match-head-commit makes GitHub refuse the merge if the PR moved on
       # after the check above.
