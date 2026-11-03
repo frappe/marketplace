@@ -55,7 +55,13 @@ class SemgrepValidator(Validator):
         self.label = label
 
     def validate(self) -> None:
-        findings = scan_target(self.clone_dir)
+        try:
+            findings = scan_target(self.clone_dir)
+        except (RuntimeError, json.JSONDecodeError, KeyError) as exc:
+            # A crashed scan is a failed check, not a crashed run: the
+            # get-app check after it must still report.
+            self.fail(f"semgrep scan crashed: {exc}")
+            return
         blocking = [f for f in findings if is_blocking(f)]
         print(f"  Scanned {self.label}: {len(findings)} finding(s), {len(blocking)} blocking.")
         for finding in findings:
