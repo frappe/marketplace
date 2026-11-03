@@ -58,11 +58,6 @@ PR to the newer commit instead of opening another; the older check is
 cancelled. Commits replaced before a merge are never advertised, which is
 fine: benches only install the newest.
 
-PRs for apps owned by the **frappe** GitHub organisation merge on their own
-once the checks pass, if they only add or replace a release of that app,
-from this repo or a fork (`.github/workflows/auto-merge-release.yml`). Every
-other app's PR waits for a reviewer.
-
 ## Contributing an app
 
 Add a metadata entry to `apps.json`, add `apps/<name>.json` with at least one
