@@ -2,11 +2,14 @@
 """
 Decide whether a publish PR may merge without a reviewer.
 
-Only release-only changes by apps of a trusted GitHub organisation qualify:
-the PR comes from a `publish/` branch, changes exactly one apps/<app>.json,
-and changes nothing in it but `releases`. The app must already be listed, and
-its owner is read from the base registry, so a PR cannot make itself
-eligible by editing its own repo URL. Every other PR waits for a person.
+Only the change tools/add_release.py makes, by apps of a trusted GitHub
+organisation, qualifies: the PR comes from a `publish/` branch, changes
+exactly one apps/<app>.json, and in it only adds releases or replaces one with
+the same version and branch. The marketplace check validates exactly those
+(a new version, branch and commit), so an in-place edit of a release's other
+fields, or a removed release, which it never checks, waits for a person. The
+app must already be listed, and its owner is read from the base registry, so
+a PR cannot make itself eligible by editing its own repo URL.
 
 Reads the two registries as data only; nothing from the PR runs.
 
@@ -23,8 +26,12 @@ import argparse
 import json
 import os
 import re
+import sys
 from pathlib import Path
 from urllib.parse import urlparse
+
+sys.path.insert(0, str(Path(__file__).parent))
+from utils.diff import release_identity
 
 TRUSTED_OWNERS = ("frappe",)
 PUBLISH_BRANCH_PREFIX = "publish/"
@@ -48,9 +55,28 @@ def get_merge_blockers(base: Path, head: Path, changed_files: list[str], branch:
     owner = get_github_owner(app.get("repo", ""))
     if owner not in TRUSTED_OWNERS:
         blockers.append(f"{name} is hosted by {owner or app.get('repo')!r}, not {' or '.join(TRUSTED_OWNERS)}")
-    if without_releases(read_json(base / changed_files[0])) != without_releases(read_json(head / changed_files[0])):
+    base_payload, head_payload = read_json(base / changed_files[0]), read_json(head / changed_files[0])
+    if without_releases(base_payload) != without_releases(head_payload):
         blockers.append(f"it changes more than the releases in {changed_files[0]}")
+    blockers += get_release_blockers(base_payload.get("releases", []), head_payload.get("releases", []))
     return blockers
+
+
+def get_release_blockers(base: list[dict], head: list[dict]) -> list[str]:
+    """Releases changed in a way the check does not validate: every new or changed release
+    must have a new identity, and a release may only go away when one with its version and
+    branch takes its place, as add_release does."""
+    base_identities = {release_identity(release) for release in base}
+    unchecked = [r for r in head if r not in base and release_identity(r) in base_identities]
+    replaced = {(r.get("version"), r.get("branch")) for r in head}
+    removed = [r for r in base if r not in head and (r.get("version"), r.get("branch")) not in replaced]
+    blockers = [f"it edits release {describe(r)} in place, which the check does not validate" for r in unchecked]
+    blockers += [f"it removes release {describe(r)}" for r in removed]
+    return blockers
+
+
+def describe(release: dict) -> str:
+    return f"{release.get('version')} on {release.get('branch')} at {str(release.get('commit'))[:8]}"
 
 
 def get_github_owner(repo: str) -> str:

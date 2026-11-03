@@ -91,3 +91,38 @@ def test_owner_is_read_from_the_base_registry(registries):
 )
 def test_github_owner(repo, owner):
     assert get_github_owner(repo) == owner
+
+
+def set_head_releases(head: Path, releases: list) -> None:
+    (head / "apps" / "lms.json").write_text(json.dumps({"name": "lms", "releases": releases}))
+
+
+def test_added_release_merges(registries):
+    base, head = registries
+    set_head_releases(head, [{**RELEASE, "version": "2.46.0", "commit": "c" * 40}, RELEASE])
+    assert get_merge_blockers(base, head, ["apps/lms.json"], BRANCH) == []
+
+
+def test_in_place_edit_of_a_release_needs_a_reviewer(registries):
+    """Same version, branch and commit: the check sees nothing new and validates nothing."""
+    base, head = registries
+    set_head_releases(head, [{**RELEASE, "frappe_core": ">=15.0.0,<18.0.0"}])
+    assert get_merge_blockers(base, head, ["apps/lms.json"], BRANCH) == [
+        "it edits release 2.45.2 on develop at aaaaaaaa in place, which the check does not validate"
+    ]
+
+
+def test_removed_release_needs_a_reviewer(registries):
+    base, head = registries
+    set_head_releases(head, [])
+    assert get_merge_blockers(base, head, ["apps/lms.json"], BRANCH) == [
+        "it removes release 2.45.2 on develop at aaaaaaaa"
+    ]
+
+
+def test_release_on_another_branch_cannot_replace_one(registries):
+    base, head = registries
+    set_head_releases(head, [{**RELEASE, "branch": "main", "commit": "c" * 40}])
+    assert get_merge_blockers(base, head, ["apps/lms.json"], BRANCH) == [
+        "it removes release 2.45.2 on develop at aaaaaaaa"
+    ]
