@@ -1,18 +1,16 @@
 #!/usr/bin/env python3
 """
-Run pilot's real get-app validator against a cloned app — the same checks
-(repo structure, syntax, dependency declarations, and a real `uv pip
-install` into a throwaway venv alongside a Frappe checkout) that
-`bench get-app` itself runs before installing an app. Catches install-
-breaking bugs (missing imports, undeclared dependencies) that pyproject/
-hooks.py inspection alone can't see.
+Run pilot's own get-app on the release, into a real bench on the Frappe
+version its frappe_core advertises: clone at the advertised commit, pilot's
+app validator (repo structure, syntax, dependency declarations, imports,
+Frappe compatibility), the install into the bench's venv, and the assets,
+prebuilt when the app publishes them, else built. Catches install-breaking
+bugs that pyproject/hooks.py inspection alone can't see. Asset builds run
+under the bench's memory cap (utils/bench.py), so one too heavy for a small
+bench fails here.
 
-Then builds the app's assets with Pilot's own build, as get-app does, and
-holds the whole get-app (install and build) to MEMORY_LIMIT_BYTES, so it
-fits on a small bench.
-
-Requires the `pilot` package installed, `uv` and Node.js on PATH, and
-$PILOT_DIR pointing at a frappe/pilot checkout (see .github/workflows).
+Requires the `pilot` package installed and what `pilot init` needs on the
+host (see .github/workflows and utils/bench.py).
 """
 
 from __future__ import annotations
@@ -20,7 +18,6 @@ from __future__ import annotations
 import re
 import subprocess
 import sys
-import tempfile
 import tomllib
 import urllib.error
 import urllib.request
@@ -30,25 +27,16 @@ from packaging.specifiers import InvalidSpecifier, Specifier, SpecifierSet
 from packaging.version import InvalidVersion, Version
 
 sys.path.insert(0, str(Path(__file__).parent))
-from utils.assets import build_assets
 from utils.base import Validator
-from utils.memory import PeakMemory
+from utils.bench import BUILD_MEMORY_LIMIT_MB, ValidationBench, report
 
-from pilot.config import AppConfig, BenchConfig
 from pilot.core.app import App
-from pilot.core.app.validator import Validator as InstallValidator
-from pilot.core.bench import Bench
 from pilot.exceptions import AppValidationError, BenchError
-from pilot.managers.environment import PythonEnvManager
 
 FRAPPE_REPO = "https://github.com/frappe/frappe"
 FRAPPE_DEVELOP_VERSION_URL = "https://raw.githubusercontent.com/frappe/frappe/develop/frappe/__init__.py"
 LS_REMOTE_NO_MATCH = 2  # `git ls-remote --exit-code` found no matching ref
-MEMORY_LIMIT_BYTES = 1024**3  # benches run on small servers; past this, get-app risks the OOM killer
-
-
-def mebibytes(size: int) -> str:
-    return f"{size / 1024**2:.0f} MiB"
+BUILD_OUT_OF_MEMORY = "Build ran out of memory"  # how pilot reports a build its cap killed
 
 
 def frappe_branch_for(frappe_core: str) -> str:
@@ -121,15 +109,6 @@ def frappe_develop_version() -> Version:
     return Version(match.group(1))
 
 
-def frappe_requires_python(frappe_path: Path) -> str:
-    """frappe's requires-python, e.g. '>=3.14,<3.15', as a uv Python request."""
-    project = tomllib.loads((frappe_path / "pyproject.toml").read_text()).get("project", {})
-    requires_python = project.get("requires-python")
-    if not requires_python:
-        raise AppValidationError(f"frappe at {frappe_path} declares no requires-python")
-    return requires_python
-
-
 def _lower_bound(specifier: Specifier) -> Version | None:
     if specifier.operator not in (">=", ">", "==", "~="):
         return None
@@ -164,52 +143,48 @@ class GetAppValidator(Validator):
             self.fail(str(exc))
             return
 
-        with PeakMemory() as install_memory:
-            self._install(frappe_branch)
-        with PeakMemory() as build_memory:
-            self._build_assets(frappe_branch)
-        self._check_memory(install=install_memory.peak_bytes, build=build_memory.peak_bytes)
+        self._get_app(frappe_branch)
 
-    def _install(self, frappe_branch: str) -> None:
+    def _get_app(self, frappe_branch: str) -> None:
         try:
-            self._install_and_check(frappe_branch)
-        except AppValidationError as exc:
-            self.fail(str(exc))
+            bench = ValidationBench(frappe_branch).get_fresh_bench()
+        except Exception as exc:
+            self.fail(f"Could not set up a Frappe {frappe_branch} bench to validate against: {exc}")
+            return
+
+        app = App.from_repo(bench, self.target["repo"], self.target["branch"])
+        try:
+            self.validate_listed_release(app)
+            app.install(commit=self.target["commit"], on_progress=report)
         except BenchError as exc:
-            self.fail(str(exc))
+            self.fail_install(exc)
         except Exception as exc:
             # Anything else (unexpected pilot API change, filesystem issue,
             # etc.) must still surface as a failed check, not crash the
             # whole CI run for every remaining target.
-            self.fail(f"get-app validation crashed unexpectedly: {exc!r}")
+            self.fail(f"get-app crashed unexpectedly: {exc!r}")
 
-    def _build_assets(self, frappe_branch: str) -> None:
-        """Build the app's assets with Pilot's own build, as get-app does."""
-        with tempfile.TemporaryDirectory() as out_dir:
-            try:
-                build = build_assets(self.clone_dir, frappe_branch, Path(out_dir))
-            except (RuntimeError, subprocess.TimeoutExpired) as exc:
-                self.fail(f"The asset build could not run: {exc}", rule="asset-build")
-                return
-        if build.returncode != 0:
-            self.fail(
-                f"The asset build failed (exit {build.returncode}), as get-app would:\n{build.log_tail}",
-                rule="asset-build",
-            )
+    def validate_listed_release(self, app: App) -> None:
+        """get-app validates only apps the live registry does not list, so a listed
+        app's new release is cloned at its commit and validated here first."""
+        if not app.is_marketplace:
+            return
+        app.clone(report)
+        app.checkout_commit(self.target["commit"])
+        app.validate()
 
-    def _check_memory(self, install: int, build: int) -> None:
-        """Steps run one after another, so get-app's peak is the larger of the two."""
-        steps = f"install {mebibytes(install)}, asset build {mebibytes(build)}"
-        print(f"  Peak memory during get-app: {steps}")
-        if max(install, build) > MEMORY_LIMIT_BYTES:
-            self.fail(
-                f"get-app peaked at {mebibytes(max(install, build))} ({steps}), over the "
-                f"{mebibytes(MEMORY_LIMIT_BYTES)} limit, so a small bench can be killed mid-install. "
-                "A heavy install is usually a Python dependency built from source (pin a version "
-                "that ships wheels); a heavy build, large bundles or build plugins",
-                severity="Major",
-                rule="get-app-memory",
-            )
+    def fail_install(self, exc: BenchError) -> None:
+        """Pilot's own message, except a killed build: its advice is for the bench's operator."""
+        if not str(exc).startswith(BUILD_OUT_OF_MEMORY):
+            self.fail(str(exc))
+            return
+        self.fail(
+            f"The asset build needed more than {BUILD_MEMORY_LIMIT_MB} MiB, so a small bench kills it "
+            "mid-install. Publish prebuilt assets for each release commit, split large bundles, or trim "
+            "heavy build plugins",
+            severity="Major",
+            rule="get-app-memory",
+        )
 
     def _reject_untruthful_metadata(self, frappe_core: str) -> None:
         """The advertised version and frappe_core must match the code at this commit."""
@@ -238,26 +213,3 @@ class GetAppValidator(Validator):
             if line.startswith("__version__"):
                 return line.split("=", 1)[-1].strip().strip("\"'")
         return ""
-
-    def _install_and_check(self, branch: str) -> None:
-        with tempfile.TemporaryDirectory() as tmp:
-            workdir = Path(tmp)
-            # No bench.toml: checks needing one skip themselves.
-            bench = Bench(BenchConfig.default(name="validation"), workdir)
-            bench.apps_path.mkdir(parents=True)
-
-            frappe_app = App(AppConfig(name="frappe", repo=FRAPPE_REPO, branch=branch), bench)
-            try:
-                frappe_app.clone()
-            except BenchError as exc:
-                raise BenchError(f"Could not clone frappe@{branch}: {exc}") from exc
-
-            # The validator builds its throwaway venv on the bench's interpreter.
-            bench.config.python_version = frappe_requires_python(frappe_app.path)
-            PythonEnvManager(bench).create_venv()
-
-            app_name = self.target["name"]
-            (bench.apps_path / app_name).symlink_to(self.clone_dir)
-
-            app = App(AppConfig(name=app_name, repo=self.target["repo"], branch=self.target["branch"]), bench)
-            InstallValidator(app).validate()
