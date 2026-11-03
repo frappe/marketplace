@@ -8,9 +8,10 @@ up, its asset builds are capped at BUILD_MEMORY_LIMIT_MB through bench.toml's
 [build] memory_limit_mb, which pilot enforces with a systemd-run scope, so an
 app build a small server cannot afford is killed here just as it would be
 there. Setup itself runs uncapped: it builds Frappe's own assets when Frappe
-publishes none, which is not the app's cost. Every
-release starts from a copy of the snapshot at the same path, so the venv's
-absolute paths stay valid and one release never sees another's install.
+publishes none, which is not the app's cost. Before
+every release the bench is synced back to the snapshot at the same path, so
+the venv's absolute paths stay valid and one release never sees another's
+install.
 Benches live under $VALIDATION_BENCHES_DIR (see .github/workflows).
 """
 
@@ -93,8 +94,7 @@ class ValidationBench:
             except Exception as exc:
                 self.setup_errors[self.snapshot_path] = exc
                 raise
-        shutil.rmtree(self.path, ignore_errors=True)
-        copy_tree(self.snapshot_path, self.path)
+        sync_tree(self.snapshot_path, self.path)
         return Bench(self.path)
 
     def initialize(self) -> None:
@@ -127,3 +127,9 @@ class ValidationBench:
 def copy_tree(source: Path, destination: Path) -> None:
     """`cp -a`: keeps symlinks, modes and the bench's node_modules quickly."""
     subprocess.run(["cp", "-a", str(source), str(destination)], check=True)
+
+
+def sync_tree(source: Path, destination: Path) -> None:
+    """Make `destination` match `source` exactly, rewriting only what differs. A release
+    touches little of a 1 GiB bench, so this takes about a second where a copy takes 14."""
+    subprocess.run(["rsync", "-a", "--delete", f"{source}/", f"{destination}/"], check=True)
