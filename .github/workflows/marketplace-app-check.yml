@@ -102,7 +102,12 @@ jobs:
         if: steps.diff.outputs.changed == 'true'
         # Editable, so pilot keeps its registry cache inside .pilot as on a
         # host install. packaging is this repo's own: pilot vendors its copy.
-        run: pip install packaging -e ./.pilot
+        # A checkout without VERSION is a dev build, which clones every app
+        # with its full history (frappe alone took 48s); a release clones
+        # with --depth 1, as benches do.
+        run: |
+          echo "ci-$(git -C .pilot rev-parse --short HEAD)" > .pilot/VERSION
+          pip install packaging -e ./.pilot
 
       # Pilot builds uncapped, with only a warning, where it cannot cap. The
       # memory check would then pass every app, so stop here instead.
