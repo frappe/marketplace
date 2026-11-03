@@ -1913,5 +1913,23 @@
     "category": "Applications",
     "stars": 0,
     "releases": "apps/kamra.json"
+  },
+  {
+    "name": "erpnext_rd",
+    "title": "RD Compliance",
+    "description": "Dominican Republic localization for ERPNext and Frappe HR: NCF and e-CF (DGII electronic invoicing), DGII tax reports, RNC registry and Dominican payroll",
+    "repo": "https://github.com/daniellora7/ERPNext-DR-Compilance",
+    "logo_url": "https://raw.githubusercontent.com/daniellora7/ERPNext-DR-Compilance/main/erpnext_rd/public/images/erpnext_rd_logo.svg",
+    "website": "https://github.com/daniellora7/ERPNext-DR-Compilance",
+    "documentation": "https://github.com/daniellora7/ERPNext-DR-Compilance/blob/main/docs/GUIA-DE-USO.md",
+    "categories": [
+      "Compliance",
+      "Localization",
+      "Accounting",
+      "Human Resources"
+    ],
+    "category": "Compliance",
+    "stars": 0,
+    "releases": "apps/erpnext_rd.json"
   }
 ]
