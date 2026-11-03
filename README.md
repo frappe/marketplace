@@ -154,8 +154,11 @@ both always, so one failing never hides the other's findings:
 
 2. **get-app validator**. Runs
    [Pilot](https://github.com/frappe/pilot)'s own get-app on your release, at
-   its advertised commit, into a real bench on the Frappe version your
-   `frappe_core` advertises. That is Pilot's app validation, the install into
+   its advertised commit, into a real bench on every Frappe major your
+   `frappe_core` admits: each `version-N` branch whose current Frappe is in
+   the range, and `develop` when its dev version is, so `>=15.0.0,<17.0.0`
+   runs on version-15 and version-16. Each finding names the branch it came
+   from. That is Pilot's app validation, the install into
    the bench and your assets: the prebuilt archive your CI publishes for the
    commit (on the GitHub release `assets-<branch>`, as
    `<app>-<commit>.tar.gz` with a `.sha256`) when there is one, else a build.
