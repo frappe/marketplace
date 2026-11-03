@@ -7,12 +7,18 @@ install` into a throwaway venv alongside a Frappe checkout) that
 breaking bugs (missing imports, undeclared dependencies) that pyproject/
 hooks.py inspection alone can't see.
 
-Requires the `pilot` package installed (see .github/workflows) and `uv` on
-PATH.
+Then builds the app's assets with Pilot's own build, as get-app does, and
+holds the whole get-app (install and build) to MEMORY_LIMIT_BYTES, so it
+fits on a small bench.
+
+Requires the `pilot` package installed, `uv` and Node.js on PATH, and
+$PILOT_DIR pointing at a frappe/pilot checkout (see .github/workflows).
 """
 
 from __future__ import annotations
 
+import re
+import subprocess
 import sys
 import tempfile
 import tomllib
@@ -24,19 +30,25 @@ from packaging.specifiers import InvalidSpecifier, Specifier, SpecifierSet
 from packaging.version import InvalidVersion, Version
 
 sys.path.insert(0, str(Path(__file__).parent))
+from utils.assets import build_assets
 from utils.base import Validator
+from utils.memory import PeakMemory
 
 from pilot.config import AppConfig, BenchConfig
 from pilot.core.app import App
 from pilot.core.app.validator import Validator as InstallValidator
 from pilot.core.bench import Bench
 from pilot.exceptions import AppValidationError, BenchError
-from pilot.integrations.git.base import GitProviderError
-from pilot.integrations.git.github import parse_github_owner_repo
 from pilot.managers.environment import PythonEnvManager
 
 FRAPPE_REPO = "https://github.com/frappe/frappe"
-ASSETS_SETUP_GUIDE = "https://github.com/frappe/pilot/blob/develop/docs/prebuilt-assets.md"
+FRAPPE_DEVELOP_VERSION_URL = "https://raw.githubusercontent.com/frappe/frappe/develop/frappe/__init__.py"
+LS_REMOTE_NO_MATCH = 2  # `git ls-remote --exit-code` found no matching ref
+MEMORY_LIMIT_BYTES = 1024**3  # benches run on small servers; past this, get-app risks the OOM killer
+
+
+def mebibytes(size: int) -> str:
+    return f"{size / 1024**2:.0f} MiB"
 
 
 def frappe_branch_for(frappe_core: str) -> str:
@@ -55,7 +67,58 @@ def frappe_branch_for(frappe_core: str) -> str:
             f"frappe_core {frappe_core!r} declares no lower bound, so there is no "
             "Frappe version to validate against — declare one, e.g. '>=15.0.0,<16.0.0'"
         )
-    return f"version-{max(floors).major}"
+    return frappe_branch_for_major(max(floors).major, specifiers)
+
+
+def frappe_branch_for_major(major: int, specifiers: SpecifierSet) -> str:
+    """version-N when frappe has it; develop only when develop is Frappe N and in the range."""
+    branch = f"version-{major}"
+    if frappe_has_branch(branch):
+        return branch
+    develop = frappe_develop_version()
+    if develop.major == major and develop in specifiers:
+        return "develop"
+    if develop.major == major:
+        fix = f"to validate against develop, declare a dev floor, e.g. '>={major}.0.0-dev'"
+    else:
+        fix = "check the range's lower bound"
+    raise AppValidationError(
+        f"frappe_core {str(specifiers)!r} needs Frappe {major}, which has no {branch} branch, "
+        f"and develop ({develop}) does not fit it — {fix}"
+    )
+
+
+def frappe_has_branch(branch: str) -> bool:
+    """Raises on a failed lookup, so an outage is never read as "no such branch"."""
+    try:
+        result = subprocess.run(
+            ["git", "ls-remote", "--exit-code", FRAPPE_REPO, f"refs/heads/{branch}"],
+            capture_output=True,
+            text=True,
+            timeout=60,
+        )
+    except subprocess.TimeoutExpired as exc:
+        raise AppValidationError(f"Timed out looking up frappe@{branch}; run /rereview to try again") from exc
+    if result.returncode == LS_REMOTE_NO_MATCH:
+        return False
+    if result.returncode != 0:
+        raise AppValidationError(
+            f"Could not look up frappe@{branch} ({result.stderr.strip()}); run /rereview to try again"
+        )
+    return True
+
+
+def frappe_develop_version() -> Version:
+    """The Frappe version on develop, from its __version__, e.g. '17.0.0-dev'."""
+    try:
+        with urllib.request.urlopen(FRAPPE_DEVELOP_VERSION_URL, timeout=30) as response:
+            source = response.read().decode()
+    except (urllib.error.URLError, TimeoutError) as exc:
+        raise AppValidationError(f"Could not read Frappe's develop version ({exc}); run /rereview to try again") from exc
+    match = re.search(r"^__version__\s*=\s*[\"']([^\"']+)", source, re.MULTILINE)
+    if not match:
+        raise AppValidationError(f"No __version__ in {FRAPPE_DEVELOP_VERSION_URL}")
+    return Version(match.group(1))
 
 
 def frappe_requires_python(frappe_path: Path) -> str:
@@ -95,9 +158,21 @@ class GetAppValidator(Validator):
             return
 
         self._reject_untruthful_metadata(frappe_core)
-        self._require_prebuilt_assets()
         try:
-            self._install_and_check(frappe_core)
+            frappe_branch = frappe_branch_for(frappe_core)
+        except AppValidationError as exc:
+            self.fail(str(exc))
+            return
+
+        with PeakMemory() as install_memory:
+            self._install(frappe_branch)
+        with PeakMemory() as build_memory:
+            self._build_assets(frappe_branch)
+        self._check_memory(install=install_memory.peak_bytes, build=build_memory.peak_bytes)
+
+    def _install(self, frappe_branch: str) -> None:
+        try:
+            self._install_and_check(frappe_branch)
         except AppValidationError as exc:
             self.fail(str(exc))
         except BenchError as exc:
@@ -107,6 +182,34 @@ class GetAppValidator(Validator):
             # etc.) must still surface as a failed check, not crash the
             # whole CI run for every remaining target.
             self.fail(f"get-app validation crashed unexpectedly: {exc!r}")
+
+    def _build_assets(self, frappe_branch: str) -> None:
+        """Build the app's assets with Pilot's own build, as get-app does."""
+        with tempfile.TemporaryDirectory() as out_dir:
+            try:
+                build = build_assets(self.clone_dir, frappe_branch, Path(out_dir))
+            except (RuntimeError, subprocess.TimeoutExpired) as exc:
+                self.fail(f"The asset build could not run: {exc}", rule="asset-build")
+                return
+        if build.returncode != 0:
+            self.fail(
+                f"The asset build failed (exit {build.returncode}), as get-app would:\n{build.log_tail}",
+                rule="asset-build",
+            )
+
+    def _check_memory(self, install: int, build: int) -> None:
+        """Steps run one after another, so get-app's peak is the larger of the two."""
+        steps = f"install {mebibytes(install)}, asset build {mebibytes(build)}"
+        print(f"  Peak memory during get-app: {steps}")
+        if max(install, build) > MEMORY_LIMIT_BYTES:
+            self.fail(
+                f"get-app peaked at {mebibytes(max(install, build))} ({steps}), over the "
+                f"{mebibytes(MEMORY_LIMIT_BYTES)} limit, so a small bench can be killed mid-install. "
+                "A heavy install is usually a Python dependency built from source (pin a version "
+                "that ships wheels); a heavy build, large bundles or build plugins",
+                severity="Major",
+                rule="get-app-memory",
+            )
 
     def _reject_untruthful_metadata(self, frappe_core: str) -> None:
         """The advertised version and frappe_core must match the code at this commit."""
@@ -126,31 +229,6 @@ class GetAppValidator(Validator):
         if in_repo and in_repo != frappe_core:
             self.fail(f"advertised frappe_core {frappe_core!r} but the commit declares {in_repo!r}")
 
-    def _require_prebuilt_assets(self) -> None:
-        """Benches download the assets the app's CI published for the commit and never build them."""
-        try:
-            owner, repository = parse_github_owner_repo(self.target["repo"])
-        except GitProviderError:
-            self.fail("Prebuilt assets are published on GitHub releases, so the repo must be on GitHub")
-            return
-
-        branch, commit = self.target["branch"], self.target["commit"]
-        tag = f"assets-{branch.replace('/', '-')}"
-        url = f"https://github.com/{owner}/{repository}/releases/download/{tag}/{self.target['name']}-{commit}.tar.gz.sha256"
-        try:
-            urllib.request.urlopen(urllib.request.Request(url, method="HEAD"), timeout=30).close()
-        except urllib.error.HTTPError:
-            self.fail(
-                f"No prebuilt assets published for {branch}@{commit[:8]}. Run Pilot's app-assets "
-                f"workflow on pushes to {branch} (setup guide: {ASSETS_SETUP_GUIDE}) and open "
-                "the PR once it has finished"
-            )
-        except urllib.error.URLError as exc:
-            self.fail(f"Could not check the prebuilt assets at {url} ({exc.reason})")
-        # A timeout while waiting for the response is raised as is, not wrapped in URLError.
-        except TimeoutError:
-            self.fail(f"Timed out checking the prebuilt assets at {url}; run /rereview to try again")
-
     def _dynamic_version(self, project_name: str) -> str:
         """__version__ from <module>/__init__.py, for apps using dynamic versioning."""
         init = self.clone_dir / project_name / "__init__.py"
@@ -161,8 +239,7 @@ class GetAppValidator(Validator):
                 return line.split("=", 1)[-1].strip().strip("\"'")
         return ""
 
-    def _install_and_check(self, frappe_core: str) -> None:
-        branch = frappe_branch_for(frappe_core)
+    def _install_and_check(self, branch: str) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             workdir = Path(tmp)
             # No bench.toml: checks needing one skip themselves.
@@ -182,7 +259,5 @@ class GetAppValidator(Validator):
             app_name = self.target["name"]
             (bench.apps_path / app_name).symlink_to(self.clone_dir)
 
-            app = App(
-                AppConfig(name=app_name, repo=self.target["repo"], branch=self.target["branch"]), bench
-            )
+            app = App(AppConfig(name=app_name, repo=self.target["repo"], branch=self.target["branch"]), bench)
             InstallValidator(app).validate()
