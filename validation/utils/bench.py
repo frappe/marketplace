@@ -24,6 +24,7 @@ import tomllib
 import urllib.error
 import urllib.request
 from pathlib import Path
+from typing import ClassVar
 
 from pilot.config import BenchConfig
 from pilot.core.bench import Bench
@@ -43,6 +44,19 @@ def benches_dir() -> Path:
     return Path(os.environ.get(BENCHES_DIR_ENV) or Path(tempfile.gettempdir()) / "marketplace-benches")
 
 
+def build_oom_kills() -> int:
+    """Processes the kernel has OOM-killed in this user's systemd scopes, where pilot's capped
+    builds run. memory.events counts the whole subtree, so it sees whichever process in a
+    build the cap killed. 0 where it cannot be read, as on macOS, which cannot cap builds."""
+    events = Path(f"/sys/fs/cgroup/user.slice/user-{os.getuid()}.slice/memory.events")
+    try:
+        lines = events.read_text().splitlines()
+    except OSError:
+        return 0
+    counts = dict(line.split(" ", 1) for line in lines)
+    return int(counts.get("oom_kill", 0))
+
+
 def frappe_requires_python(frappe_branch: str) -> str:
     """frappe's requires-python on `frappe_branch`, e.g. '>=3.14,<3.15', as a uv Python request."""
     url = FRAPPE_PYPROJECT_URL.format(branch=frappe_branch)
@@ -60,6 +74,9 @@ def frappe_requires_python(frappe_branch: str) -> str:
 class ValidationBench:
     """A bench on one Frappe branch, set up once and reset before each release."""
 
+    # Setup that failed once fails every release on that branch the same way: keep its error.
+    setup_errors: ClassVar[dict[Path, Exception]] = {}
+
     def __init__(self, frappe_branch: str, root: Path | None = None) -> None:
         root = root or benches_dir()
         self.frappe_branch = frappe_branch
@@ -68,8 +85,14 @@ class ValidationBench:
 
     def get_fresh_bench(self) -> Bench:
         """The bench as `pilot init` left it, with nothing from an earlier release."""
+        if error := self.setup_errors.get(self.snapshot_path):
+            raise error
         if not self.snapshot_path.is_dir():
-            self.initialize()
+            try:
+                self.initialize()
+            except Exception as exc:
+                self.setup_errors[self.snapshot_path] = exc
+                raise
         shutil.rmtree(self.path, ignore_errors=True)
         copy_tree(self.snapshot_path, self.path)
         return Bench(self.path)

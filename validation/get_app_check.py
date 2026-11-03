@@ -28,7 +28,7 @@ from packaging.version import InvalidVersion, Version
 
 sys.path.insert(0, str(Path(__file__).parent))
 from utils.base import Validator
-from utils.bench import BUILD_MEMORY_LIMIT_MB, ValidationBench, report
+from utils.bench import BUILD_MEMORY_LIMIT_MB, ValidationBench, build_oom_kills, report
 
 from pilot.core.app import App
 from pilot.exceptions import AppValidationError, BenchError
@@ -36,7 +36,6 @@ from pilot.exceptions import AppValidationError, BenchError
 FRAPPE_REPO = "https://github.com/frappe/frappe"
 FRAPPE_DEVELOP_VERSION_URL = "https://raw.githubusercontent.com/frappe/frappe/develop/frappe/__init__.py"
 LS_REMOTE_NO_MATCH = 2  # `git ls-remote --exit-code` found no matching ref
-BUILD_OUT_OF_MEMORY = "Build ran out of memory"  # how pilot reports a build its cap killed
 
 
 def frappe_branch_for(frappe_core: str) -> str:
@@ -152,12 +151,14 @@ class GetAppValidator(Validator):
             self.fail(f"Could not set up a Frappe {frappe_branch} bench to validate against: {exc}")
             return
 
-        app = App.from_repo(bench, self.target["repo"], self.target["branch"])
+        oom_kills = build_oom_kills()
         try:
+            app = App.from_repo(bench, self.target["repo"], self.target["branch"])
             self.validate_listed_release(app)
-            app.install(commit=self.target["commit"], on_progress=report)
+            # As pilot's own get-app: a marketplace app brings its dependencies, a bare repo does not.
+            app.install(commit=self.target["commit"], install_dependencies=app.is_marketplace, on_progress=report)
         except BenchError as exc:
-            self.fail_install(exc)
+            self.fail_install(exc, was_killed=build_oom_kills() > oom_kills)
         except Exception as exc:
             # Anything else (unexpected pilot API change, filesystem issue,
             # etc.) must still surface as a failed check, not crash the
@@ -173,9 +174,10 @@ class GetAppValidator(Validator):
         app.checkout_commit(self.target["commit"])
         app.validate()
 
-    def fail_install(self, exc: BenchError) -> None:
-        """Pilot's own message, except a killed build: its advice is for the bench's operator."""
-        if not str(exc).startswith(BUILD_OUT_OF_MEMORY):
+    def fail_install(self, exc: BenchError, was_killed: bool) -> None:
+        """Pilot's own message, unless the cap killed a build: pilot then reports only a failed
+        command, or advice meant for the bench's operator."""
+        if not was_killed:
             self.fail(str(exc))
             return
         self.fail(
