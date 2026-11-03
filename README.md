@@ -167,13 +167,15 @@ both always, so one failing never hides the other's findings:
 
 ### Memory limit
 
-Benches often run on small servers, so your asset build must fit in
-**1 GiB**. CI builds under the same cap Pilot puts on every build
-(`[build] memory_limit_mb` in `bench.toml`, enforced with `systemd-run`, no
-swap), so a build that goes over is killed, as it would be on a small bench.
-That is a **blocking** finding (`get-app-memory`). Prebuilt assets skip the
-build, so publishing them for every release commit avoids it; otherwise split
-large bundles or trim heavy build plugins.
+Marketplace requires apps with heavy builds to publish prebuilt assets for
+each release commit, for a faster install experience. CI builds your assets
+under a **1 GiB** cap (`[build] memory_limit_mb` in Pilot's `bench.toml`,
+enforced with `systemd-run`, no swap); a build that needs more is a
+**blocking** finding (`get-app-memory`). Publishing prebuilt assets skips the
+build: a GitHub release `assets-<branch>` with `<app>-<commit>.tar.gz` and
+its `.sha256`, as
+[Pilot's app assets workflow](https://github.com/frappe/pilot/blob/develop/.github/workflows/app-assets.yml)
+publishes.
 
 ### Reading the results
 
