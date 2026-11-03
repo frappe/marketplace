@@ -34,14 +34,14 @@ from pilot.core.app import App
 from pilot.exceptions import AppValidationError, BenchError
 
 FRAPPE_REPO = "https://github.com/frappe/frappe"
-FRAPPE_DEVELOP_VERSION_URL = "https://raw.githubusercontent.com/frappe/frappe/develop/frappe/__init__.py"
+FRAPPE_VERSION_URL = "https://raw.githubusercontent.com/frappe/frappe/{branch}/frappe/__init__.py"
 LS_REMOTE_NO_MATCH = 2  # `git ls-remote --exit-code` found no matching ref
 
 
-def frappe_branch_for(frappe_core: str) -> str:
-    """The frappe branch to validate against: the major version of the lowest
-    Frappe the range admits, e.g. '>=15.0.0,<17.0.0' -> 'version-15'. A range
-    with no lower bound is rejected rather than guessed at."""
+def frappe_branches_for(frappe_core: str) -> list[str]:
+    """Every frappe branch to validate against, one per Frappe major the range admits,
+    e.g. '>=15.0.0,<17.0.0' -> ['version-15', 'version-16']. A range with no lower
+    bound is rejected rather than guessed at."""
     try:
         specifiers = SpecifierSet(frappe_core, prereleases=True)
     except InvalidSpecifier as exc:
@@ -54,7 +54,14 @@ def frappe_branch_for(frappe_core: str) -> str:
             f"frappe_core {frappe_core!r} declares no lower bound, so there is no "
             "Frappe version to validate against — declare one, e.g. '>=15.0.0,<16.0.0'"
         )
-    return frappe_branch_for_major(max(floors).major, specifiers)
+    floor_major = max(floors).major
+    branches = [frappe_branch_for_major(floor_major, specifiers)]
+    for major in range(floor_major + 1, frappe_develop_version().major + 1):
+        branch = f"version-{major}" if frappe_has_branch(f"version-{major}") else "develop"
+        # The Frappe a bench on that branch gets today, not the major's first release.
+        if branch not in branches and frappe_branch_version(branch) in specifiers:
+            branches.append(branch)
+    return branches
 
 
 def frappe_branch_for_major(major: int, specifiers: SpecifierSet) -> str:
@@ -96,15 +103,23 @@ def frappe_has_branch(branch: str) -> bool:
 
 
 def frappe_develop_version() -> Version:
-    """The Frappe version on develop, from its __version__, e.g. '17.0.0-dev'."""
+    """The Frappe version on develop, e.g. '17.0.0-dev'."""
+    return frappe_branch_version("develop")
+
+
+def frappe_branch_version(branch: str) -> Version:
+    """The Frappe version on `branch`, from its __version__, e.g. '16.40.2'."""
+    url = FRAPPE_VERSION_URL.format(branch=branch)
     try:
-        with urllib.request.urlopen(FRAPPE_DEVELOP_VERSION_URL, timeout=30) as response:
+        with urllib.request.urlopen(url, timeout=30) as response:
             source = response.read().decode()
     except (urllib.error.URLError, TimeoutError) as exc:
-        raise AppValidationError(f"Could not read Frappe's develop version ({exc}); run /rereview to try again") from exc
+        raise AppValidationError(
+            f"Could not read Frappe's {branch} version ({exc}); run /rereview to try again"
+        ) from exc
     match = re.search(r"^__version__\s*=\s*[\"']([^\"']+)", source, re.MULTILINE)
     if not match:
-        raise AppValidationError(f"No __version__ in {FRAPPE_DEVELOP_VERSION_URL}")
+        raise AppValidationError(f"No __version__ in {url}")
     return Version(match.group(1))
 
 
@@ -137,18 +152,21 @@ class GetAppValidator(Validator):
 
         self._reject_untruthful_metadata(frappe_core)
         try:
-            frappe_branch = frappe_branch_for(frappe_core)
+            frappe_branches = frappe_branches_for(frappe_core)
         except AppValidationError as exc:
             self.fail(str(exc))
             return
 
-        self._get_app(frappe_branch)
+        for frappe_branch in frappe_branches:
+            self._get_app(frappe_branch)
 
     def _get_app(self, frappe_branch: str) -> None:
+        """get-app on a bench on `frappe_branch`; each finding names the branch it came from."""
+        on_branch = f"On Frappe {frappe_branch}: "
         try:
             bench = ValidationBench(frappe_branch).get_fresh_bench()
         except Exception as exc:
-            self.fail(f"Could not set up a Frappe {frappe_branch} bench to validate against: {exc}")
+            self.fail(f"{on_branch}could not set up a bench to validate against: {exc}")
             return
 
         oom_kills = build_oom_kills()
@@ -158,12 +176,12 @@ class GetAppValidator(Validator):
             # As pilot's own get-app: a marketplace app brings its dependencies, a bare repo does not.
             app.install(commit=self.target["commit"], install_dependencies=app.is_marketplace, on_progress=report)
         except BenchError as exc:
-            self.fail_install(exc, was_killed=build_oom_kills() > oom_kills)
+            self.fail_install(on_branch, exc, was_killed=build_oom_kills() > oom_kills)
         except Exception as exc:
             # Anything else (unexpected pilot API change, filesystem issue,
             # etc.) must still surface as a failed check, not crash the
             # whole CI run for every remaining target.
-            self.fail(f"get-app crashed unexpectedly: {exc!r}")
+            self.fail(f"{on_branch}get-app crashed unexpectedly: {exc!r}")
 
     def validate_listed_release(self, app: App) -> None:
         """get-app validates only apps the live registry does not list, so a listed
@@ -174,14 +192,14 @@ class GetAppValidator(Validator):
         app.checkout_commit(self.target["commit"])
         app.validate()
 
-    def fail_install(self, exc: BenchError, was_killed: bool) -> None:
+    def fail_install(self, on_branch: str, exc: BenchError, was_killed: bool) -> None:
         """Pilot's own message, unless the cap killed a build: pilot then reports only a failed
         command, or advice meant for the bench's operator."""
         if not was_killed:
-            self.fail(str(exc))
+            self.fail(f"{on_branch}{exc}")
             return
         self.fail(
-            f"The asset build needed more than {BUILD_MEMORY_LIMIT_MB} MiB. Marketplace requires apps with "
+            f"{on_branch}the asset build needed more than {BUILD_MEMORY_LIMIT_MB} MiB. Marketplace requires apps with "
             "heavy builds to publish prebuilt assets for each release commit, for a faster install "
             "experience (a GitHub release `assets-<branch>` with `<app>-<commit>.tar.gz` and its `.sha256`)",
             severity="Major",
