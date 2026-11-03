@@ -48,9 +48,15 @@ jobs:
 ```
 
 It reads `version`, `frappe_core` and `dependencies` from your
-`pyproject.toml` at that commit, appends the release to `apps/<app>.json`, and
+`pyproject.toml` at that commit, adds the release to `apps/<app>.json`, and
 opens the PR. To do it by hand, run `tools/add_release.py` (or edit the file)
 and open the PR yourself.
+
+Each app branch has **one rolling PR**, on `publish/<app>-<branch>`. A publish
+while that PR is open, or while its check is still running, updates the same
+PR to the newer commit instead of opening another; the older check is
+cancelled. Commits replaced before a merge are never advertised, which is
+fine: benches only install the newest.
 
 ## Contributing an app
 
