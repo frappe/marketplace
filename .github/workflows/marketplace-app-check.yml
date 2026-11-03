@@ -64,14 +64,30 @@ jobs:
         if: steps.diff.outputs.changed == 'true'
         run: uv tool install semgrep
 
+      # Tracks pilot's develop branch, so the get-app validator and asset
+      # build here are always the ones benches actually run. The trade is
+      # that a pilot change can turn this job red without anything in this
+      # repo changing — check pilot's recent commits before assuming the app
+      # is at fault. One checkout serves both, so they never drift apart.
+      - name: Check out pilot
+        if: steps.diff.outputs.changed == 'true'
+        uses: actions/checkout@v4
+        with:
+          repository: frappe/pilot
+          ref: develop
+          path: .pilot
+
+      # Pilot's asset build, which the get-app check runs on every release.
+      - uses: actions/setup-node@v4
+        if: steps.diff.outputs.changed == 'true'
+        with:
+          node-version: "24"
+
       - name: Install pilot
         if: steps.diff.outputs.changed == 'true'
-        # Tracks pilot's develop branch, so the get-app validator here is
-        # always the one bench get-app actually runs. The trade is that a
-        # pilot change can turn this job red without anything in this repo
-        # changing — check pilot's recent commits before assuming the app
-        # is at fault. packaging is this repo's own: pilot vendors its copy.
-        run: pip install packaging git+https://github.com/frappe/pilot@develop
+        # packaging is this repo's own: pilot vendors its copy. psutil tracks
+        # get-app's peak memory (validation/utils/memory.py).
+        run: pip install packaging psutil ./.pilot
 
       # A worktree, not `git show`: the base side is now a directory
       # (apps.json plus apps/<name>.json), so the whole tree is needed.
@@ -83,6 +99,7 @@ jobs:
         if: steps.diff.outputs.changed == 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PILOT_DIR: ${{ github.workspace }}/.pilot
         run: |
           python3 validation/check.py /tmp/base-registry . \
             --report /tmp/report.md --commit "${{ github.event.pull_request.head.sha }}" \
