@@ -181,9 +181,9 @@ class GetAppValidator(Validator):
             self.fail(str(exc))
             return
         self.fail(
-            f"The asset build needed more than {BUILD_MEMORY_LIMIT_MB} MiB, so a small bench kills it "
-            "mid-install. Publish prebuilt assets for each release commit, split large bundles, or trim "
-            "heavy build plugins",
+            f"The asset build needed more than {BUILD_MEMORY_LIMIT_MB} MiB. Marketplace requires apps with "
+            "heavy builds to publish prebuilt assets for each release commit, for a faster install "
+            "experience (a GitHub release `assets-<branch>` with `<app>-<commit>.tar.gz` and its `.sha256`)",
             severity="Major",
             rule="get-app-memory",
         )

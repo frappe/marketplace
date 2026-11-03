@@ -86,7 +86,7 @@ def test_build_killed_by_the_cap_is_a_memory_finding(get_app):
     error = BenchError("Command '/bench/env/bin/python' failed with exit code 1.")
     validator = get_app(FakeApp(error=error), oom_kills=(3, 4))
     assert [finding.rule for finding in validator.findings] == ["get-app-memory"]
-    assert "Publish prebuilt assets" in validator.findings[0].message
+    assert "Marketplace requires apps with heavy builds to publish prebuilt assets" in validator.findings[0].message
 
 
 def test_failure_without_an_oom_kill_keeps_pilots_message(get_app):
