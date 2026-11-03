@@ -152,28 +152,30 @@ both always, so one failing never hides the other's findings:
    Non-blocking findings (WARNING severity) are reported but do not prevent
    merge — a Frappe reviewer will note them in the PR.
 
-2. **get-app validator**. Installs the app
-   into a throwaway venv alongside a real Frappe checkout of the version
-   your release's `frappe_core` advertises — the same install
-   [`bench get-app`](https://github.com/frappe/pilot) itself performs. Catches
-   broken repo structure, syntax errors, undeclared `[tool.bench.frappe-dependencies]`/`required_apps`
-   mismatches, and missing imports/dependencies that only show up once the
-   app is actually installed. It then builds your assets with
-   [Pilot's own build](https://github.com/frappe/pilot/blob/develop/scripts/build-app-assets.sh),
-   as get-app does, and fails if the build fails. The whole get-app must
-   fit in 1 GiB — see [Memory limit](#memory-limit).
+2. **get-app validator**. Runs
+   [Pilot](https://github.com/frappe/pilot)'s own get-app on your release, at
+   its advertised commit, into a real bench on the Frappe version your
+   `frappe_core` advertises. That is Pilot's app validation, the install into
+   the bench and your assets: the prebuilt archive your CI publishes for the
+   commit (on the GitHub release `assets-<branch>`, as
+   `<app>-<commit>.tar.gz` with a `.sha256`) when there is one, else a build.
+   Catches broken repo structure, syntax errors, undeclared
+   `[tool.bench.frappe-dependencies]`/`required_apps` mismatches, Frappe
+   version mismatches, and missing imports/dependencies that only show up
+   once the app is actually installed. An asset build must fit in 1 GiB —
+   see [Memory limit](#memory-limit).
 
 ### Memory limit
 
-Benches often run on small servers, so get-app — the Python install and the
-asset build — must peak under **1 GiB**. CI measures every process each step
-starts (PSS, so shared libraries count once). Going over is a **blocking**
-finding (`get-app-memory`) that shows each step's peak:
-
-| Step | Usual cause when heavy | Fix |
-| --- | --- | --- |
-| Python install | A dependency built from source because it has no wheel for Frappe's Python | Pin a version that ships wheels, or drop it |
-| Asset build | Large bundles or heavy build plugins | Split bundles, trim plugins |
+Marketplace requires apps with heavy builds to publish prebuilt assets for
+each release commit, for a faster install experience. CI builds your assets
+under a **1 GiB** cap (`[build] memory_limit_mb` in Pilot's `bench.toml`,
+enforced with `systemd-run`, no swap); a build that needs more is a
+**blocking** finding (`get-app-memory`). Publishing prebuilt assets skips the
+build: a GitHub release `assets-<branch>` with `<app>-<commit>.tar.gz` and
+its `.sha256`, as
+[Pilot's app assets workflow](https://github.com/frappe/pilot/blob/develop/.github/workflows/app-assets.yml)
+publishes.
 
 ### Reading the results
 
