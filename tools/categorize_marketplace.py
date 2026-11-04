@@ -43,6 +43,7 @@ KNOWN: dict[str, str] = {
     "non_profit": "Applications",
     "lending": "Applications",
     "agriculture": "Applications",
+    "jarvis": "Applications",
     # Extensions
     "payments": "Extensions",
     # Integrations
