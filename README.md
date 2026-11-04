@@ -58,6 +58,18 @@ PR to the newer commit instead of opening another; the older check is
 cancelled. Commits replaced before a merge are never advertised, which is
 fine: benches only install the newest.
 
+A registry PR, from anyone and for any app, merges on its own once the
+marketplace check passes, if it only makes changes the check validated
+(`.github/workflows/auto-merge-registry.yml`, rules in
+`validation/auto_merge.py`): it touches only `apps.json` and
+`apps/<app>.json`, and adds a new app, adds releases, or replaces a release
+with the same version and branch. A PR that changes any field of a listed
+app's `apps.json` entry, adds an app that claims the Featured category, moves
+a branch to a commit that is not ahead of the advertised one, edits or
+removes a release, removes an app, or conflicts with `main` waits for a
+reviewer. A PR whose check passed but that is not merged gets the
+`held-for-review` label; the run's log says why.
+
 ## Contributing an app
 
 Add a metadata entry to `apps.json`, add `apps/<name>.json` with at least one
