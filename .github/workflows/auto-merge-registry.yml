@@ -2,7 +2,8 @@ name: Auto-merge Registry
 
 # Merges a registry PR, from anyone and for any app, once the marketplace
 # check passes, when the change is one the check validated: see
-# validation/auto_merge.py. Every other PR still waits for a person.
+# validation/auto_merge.py. Every other PR still waits for a person, and
+# is labelled held-for-review when its passing check could not merge it.
 #
 # workflow_run always runs this file and the script from main, so a PR
 # cannot change the rules it is judged by, and nothing from the PR runs.
@@ -14,6 +15,7 @@ on:
 
 permissions:
   contents: write
+  issues: write # to create the held-for-review label
   pull-requests: write
 
 jobs:
@@ -82,11 +84,28 @@ jobs:
         run: python3 main/validation/auto_merge.py base head --changed-files "$RUNNER_TEMP/changed-files"
 
       # --match-head-commit makes GitHub refuse the merge if the PR moved on
-      # after the check above.
+      # after the check above. A label left by an earlier held run goes first.
       - name: Merge
+        id: merge
         if: steps.eligible.outputs.mergeable == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NUMBER: ${{ steps.pr.outputs.number }}
           HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
-        run: gh pr merge "$NUMBER" --repo "$GITHUB_REPOSITORY" --merge --match-head-commit "$HEAD_SHA"
+        run: |
+          if gh pr view "$NUMBER" --repo "$GITHUB_REPOSITORY" --json labels --jq '.labels[].name' | grep -qx held-for-review; then
+            gh pr edit "$NUMBER" --repo "$GITHUB_REPOSITORY" --remove-label held-for-review
+          fi
+          gh pr merge "$NUMBER" --repo "$GITHUB_REPOSITORY" --merge --match-head-commit "$HEAD_SHA"
+
+      # Held by the rules, a conflict with main, a failed merge or a crash
+      # above: the reason is in this run's log.
+      - name: Label the PR held for review
+        if: ${{ !cancelled() && steps.pr.outputs.number && steps.merge.outcome != 'success' }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NUMBER: ${{ steps.pr.outputs.number }}
+        run: |
+          gh label create held-for-review --repo "$GITHUB_REPOSITORY" --force --color D93F0B \
+            --description "Passed the marketplace check but needs a reviewer to merge"
+          gh pr edit "$NUMBER" --repo "$GITHUB_REPOSITORY" --add-label held-for-review

@@ -66,6 +66,8 @@ marketplace check passes, if it only makes changes the check validated
 with the same version and branch. A PR that changes a listed app's repo or
 releases path, moves a branch to a commit that is not ahead of the advertised
 one, edits or removes a release, or removes an app waits for a reviewer.
+So does one that conflicts with `main`. A PR whose check passed but that is
+not merged gets the `held-for-review` label; the run's log says why.
 
 ## Contributing an app
 
