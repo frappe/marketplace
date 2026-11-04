@@ -7,6 +7,8 @@ A release is identified by (version, branch, commit); the commit makes that
 key unique, so a changed release is simply one the base revision never
 advertised. If the app is new or its repo changed, the code location itself
 moved, so every release is emitted even when the entries are identical.
+Otherwise each release carries "baseline_commit", the commit the base
+revision advertised on its branch, so the scan can report only new findings.
 
 load_registry() reads a registry directory (apps.json plus apps/<name>.json)
 into one dict per app: the index entry, its releases inlined under
@@ -43,8 +45,16 @@ def release_identity(release: dict) -> tuple:
 
 
 def changed_releases(old_app: dict, app: dict) -> list[dict]:
-    published = {release_identity(release) for release in old_app.get("releases", [])}
-    return [r for r in app.get("releases", []) if release_identity(r) not in published]
+    old_releases = old_app.get("releases", [])
+    published = {release_identity(release) for release in old_releases}
+    advertised = {}
+    for release in old_releases:
+        advertised.setdefault(release.get("branch"), release.get("commit"))
+    return [
+        {**release, "baseline_commit": advertised.get(release.get("branch"))}
+        for release in app.get("releases", [])
+        if release_identity(release) not in published
+    ]
 
 
 def find_changed_releases(old_apps: dict[str, dict], new_apps: dict[str, dict]) -> list[dict]:

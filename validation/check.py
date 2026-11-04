@@ -3,8 +3,9 @@
 Orchestrates the marketplace app PR check: run the schema check once per
 changed/new app, then find which of its releases changed
 (utils/diff.py) and run both the semgrep and get-app checks against each,
-whatever the other's outcome. A schema-failed app's releases are skipped
-entirely. Exits non-zero if anything fails.
+whatever the other's outcome. Semgrep reports only findings the release's
+baseline commit lacks, when it has one. A schema-failed app's releases are
+skipped entirely. Exits non-zero if anything fails.
 
 Run:
     python3 validation/check.py <old-registry-dir> <new-registry-dir>
@@ -56,7 +57,11 @@ def check_release(release: dict, section: Section) -> bool:
         clone_dir = Path(tmp) / "app"
         if not _clone(release, clone_dir, section):
             return False
-        return _run_post_clone_checks(release, clone_dir, section)
+        baseline_commit = release.get("baseline_commit")
+        baseline_dir = Path(tmp) / "baseline" if baseline_commit else None
+        if baseline_dir and not _clone({**release, "commit": baseline_commit}, baseline_dir, section):
+            return False
+        return _run_post_clone_checks(release, clone_dir, baseline_dir, section)
 
 
 def _clone(release: dict, clone_dir: Path, section: Section) -> bool:
@@ -72,11 +77,13 @@ def _clone(release: dict, clone_dir: Path, section: Section) -> bool:
         return False
 
 
-def _run_post_clone_checks(release: dict, clone_dir: Path, section: Section) -> bool:
+def _run_post_clone_checks(
+    release: dict, clone_dir: Path, baseline_dir: Path | None, section: Section
+) -> bool:
     """Run every clone-dependent check, so one failing never hides another's findings."""
     repo, commit = release["repo"], release["commit"]
     checks = [
-        SemgrepValidator(clone_dir, f"{repo}@{commit[:8]}"),
+        SemgrepValidator(clone_dir, f"{repo}@{commit[:8]}", baseline_dir),
         GetAppValidator(release, clone_dir),
     ]
     results = []
