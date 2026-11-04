@@ -50,7 +50,9 @@ def set_head_releases(head: Path, releases: list) -> None:
     (head / "apps" / "lms.json").write_text(json.dumps({"name": "lms", "releases": releases}))
 
 
-@pytest.mark.parametrize("changed", [["apps/lms.json"], ["apps/easy_cash.json"], ["apps/lms.json", "apps/easy_cash.json"]])
+@pytest.mark.parametrize(
+    "changed", [["apps/lms.json"], ["apps/easy_cash.json"], ["apps/lms.json", "apps/easy_cash.json"]]
+)
 def test_new_releases_of_any_app_merge(registries, changed):
     assert blockers(*registries, changed) == []
 
@@ -69,7 +71,10 @@ def test_files_outside_the_registry_need_a_reviewer(registries, changed, outside
 
 def test_new_app_merges(registries):
     base, head = registries
-    write_index(head, [*read_index(head), {"name": "newapp", "repo": "https://github.com/x/newapp", "releases": "apps/newapp.json"}])
+    write_index(
+        head,
+        [*read_index(head), {"name": "newapp", "repo": "https://github.com/x/newapp", "releases": "apps/newapp.json"}],
+    )
     (head / "apps" / "newapp.json").write_text(json.dumps({"name": "newapp", "releases": [RELEASE]}))
     assert blockers(base, head, ["apps.json", "apps/newapp.json"]) == []
 
@@ -83,6 +88,7 @@ def test_new_app_merges(registries):
         ("stars", 999999),
         ("repo", "https://github.com/attacker/lms"),
         ("releases", "apps/other.json"),
+        ("developer_contact", "attacker@example.com"),
     ],
 )
 def test_change_to_a_listed_apps_entry_needs_a_reviewer(registries, field, value):
@@ -92,6 +98,20 @@ def test_change_to_a_listed_apps_entry_needs_a_reviewer(registries, field, value
     index[0][field] = value
     write_index(head, index)
     assert blockers(base, head, ["apps.json"]) == [f"it changes lms's {field} in apps.json"]
+
+
+@pytest.mark.parametrize(
+    ("base_contact", "head_contact"), [("dev@frappe.io", "attacker@example.com"), ("dev@frappe.io", None)]
+)
+def test_developer_contact_change_or_removal_needs_a_reviewer(registries, base_contact, head_contact):
+    base, head = registries
+    for root, contact in ((base, base_contact), (head, head_contact)):
+        index = read_index(root)
+        index[0] = {key: value for key, value in index[0].items() if key != "developer_contact"}
+        if contact:
+            index[0]["developer_contact"] = contact
+        write_index(root, index)
+    assert blockers(base, head, ["apps.json"]) == ["it changes lms's developer_contact in apps.json"]
 
 
 def test_every_changed_field_is_named(registries):
