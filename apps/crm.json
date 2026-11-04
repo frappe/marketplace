@@ -21,9 +21,9 @@
     },
     {
       "version": "0.0.1",
-      "branch": "version-15",
-      "commit": "a5bf6246cc234c4faecf2f507dad5263902e741d",
-      "frappe_core": ">=15.0.0,<17.0.0",
+      "branch": "version-16",
+      "commit": "c587a42b654d346630443a1d3ad948063e8f5a30",
+      "frappe_core": ">=16.0.0,<17.0.0",
       "dependencies": {},
       "channel": "stable"
     }
