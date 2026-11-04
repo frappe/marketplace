@@ -2,6 +2,16 @@
   "name": "helpdesk",
   "releases": [
     {
+      "version": "16.0.0",
+      "branch": "version-16",
+      "commit": "3eeb8f872421939672ff803a6570e909e05b1040",
+      "frappe_core": ">=16.0.0,<17.0.0",
+      "dependencies": {
+        "telephony": ">=0.0.1,<1.0.0"
+      },
+      "channel": "stable"
+    },
+    {
       "version": "1.32.0",
       "branch": "main",
       "commit": "82db245043aa8110fc27d7fc4ff90227fbbec87e",
