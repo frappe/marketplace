@@ -1,0 +1,15 @@
+{
+  "name": "kamra",
+  "releases": [
+    {
+      "version": "2.6.11",
+      "branch": "main",
+      "commit": "70fdffded84c2aa53a448875bec76dda4e496919",
+      "frappe_core": ">=16.0.0-dev,<17.0.0",
+      "dependencies": {
+        "payments": ">=0.0.1,<1.0.0"
+      },
+      "channel": "stable"
+    }
+  ]
+}

@@ -615,7 +615,7 @@
     "repo": "https://github.com/buildswithpaul/Frappe_Assistant_Core",
     "logo_url": "https://cloud.frappe.io/files/FAC-Resized.webp",
     "website": "https://promantia.in/",
-    "documentation": "https://github.com/promantia-ai/Frappe_Assistant_Core/blob/main/docs/README.md",
+    "documentation": "https://docs.assistantcore.cloud",
     "categories": [
       "AI"
     ],
@@ -646,7 +646,7 @@
     "repo": "https://github.com/frappe/raven",
     "logo_url": "https://cloud.frappe.io/files/icon-512x5121f918f.webp",
     "website": "https://ravenchat.ai",
-    "documentation": "https://github.com/frappe/raven",
+    "documentation": "https://docs.frappe.io/raven",
     "categories": [
       "Communication"
     ],
@@ -1869,6 +1869,21 @@
     "releases": "apps/bwh_shipping.json"
   },
   {
+    "name": "passkeys",
+    "title": "Passkeys",
+    "description": "Passwordless sign-in and approvals with passkeys",
+    "repo": "https://github.com/Andrometiq/frappe-passkeys",
+    "logo_url": "https://raw.githubusercontent.com/Andrometiq/frappe-passkeys/358a91b8addce1c64aa885d5539231dea51b7e5b/.github/logo-512.png",
+    "website": "https://andrometiq.com/software/passkey/",
+    "documentation": "https://andrometiq.github.io/frappe-passkeys/",
+    "categories": [
+      "Security"
+    ],
+    "category": "Extensions",
+    "stars": 0,
+    "releases": "apps/passkeys.json"
+  },
+  {
     "name": "bwh_payments",
     "title": "BWH Payments",
     "description": "Payment gateway integrations for Frappe/ERPNext: Stripe, Razorpay, Tabby and Telr",
@@ -1883,5 +1898,36 @@
     "category": "Integrations",
     "stars": 0,
     "releases": "apps/bwh_payments.json"
+  },
+  {
+    "name": "kamra",
+    "title": "Kamra PMS",
+    "description": "Open-source property management system for hotels and short-term rentals",
+    "repo": "https://github.com/Kamra-PMS/kamra-pms",
+    "logo_url": "https://raw.githubusercontent.com/Kamra-PMS/kamra-pms/main/branding/png/kamra-mark-512.png",
+    "website": "https://kamrapms.com",
+    "documentation": "https://kamrapms.com/docs/",
+    "categories": [
+      "Hospitality"
+    ],
+    "category": "Applications",
+    "stars": 0,
+    "releases": "apps/kamra.json"
+  },
+  {
+    "name": "churchit",
+    "title": "Churchit",
+    "description": "A free and open-source church management application",
+    "repo": "https://github.com/meichthys/churchit",
+    "logo_url": "https://raw.githubusercontent.com/meichthys/churchit/version-16/churchit/public/icons/pwa/icon-512.png",
+    "website": "https://churchit.app",
+    "documentation": "https://churchit.app",
+    "categories": [
+      "Church",
+      "Non-Profit"
+    ],
+    "category": "Applications",
+    "stars": 0,
+    "releases": "apps/churchit.json"
   }
 ]

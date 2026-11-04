@@ -12,9 +12,9 @@ Marketplace page.
 - `apps/<name>.json` — one app's `releases`: each an immutable
   `branch` + `commit` pair with the app version, Frappe compatibility range,
   and dependencies on other marketplace apps.
-- `validation/` — the PR-gating checks: `check.py` runs `schema_check.py` ->
-  `semgrep_check.py` -> `get_app_check.py`, in that order, against each
-  changed release, stopping at the first failure. `validation/utils/` holds
+- `validation/` — the PR-gating checks: `check.py` runs `schema_check.py`
+  per changed app, then both `semgrep_check.py` and `get_app_check.py`
+  against each changed release, whatever the other's outcome. `validation/utils/` holds
   their shared plumbing (cloning a release at its commit, diffing two
   registry revisions).
 - `tools/` — maintenance, not CI-gated. `add_release.py` appends a release
@@ -48,9 +48,15 @@ jobs:
 ```
 
 It reads `version`, `frappe_core` and `dependencies` from your
-`pyproject.toml` at that commit, appends the release to `apps/<app>.json`, and
+`pyproject.toml` at that commit, adds the release to `apps/<app>.json`, and
 opens the PR. To do it by hand, run `tools/add_release.py` (or edit the file)
 and open the PR yourself.
+
+Each app branch has **one rolling PR**, on `publish/<app>-<branch>`. A publish
+while that PR is open, or while its check is still running, updates the same
+PR to the newer commit instead of opening another; the older check is
+cancelled. Commits replaced before a merge are never advertised, which is
+fine: benches only install the newest.
 
 ## Contributing an app
 
@@ -138,8 +144,8 @@ advertised when.
 When your PR is opened, CI clones your repo at each changed release's
 `commit` — rejecting a commit that is not reachable from the declared
 `branch`, a version or `frappe_core` that disagrees with the commit's
-`pyproject.toml`, and anything short of a full SHA — then runs two checks, in
-order:
+`pyproject.toml`, and anything short of a full SHA — then runs two checks,
+both always, so one failing never hides the other's findings:
 
 1. **Semgrep scan.** **Blocking** findings (which fail the PR) include:
    - **Code injection** — `eval()`, `exec()`, `compile()`, `safe_eval()`
@@ -152,18 +158,33 @@ order:
    Non-blocking findings (WARNING severity) are reported but do not prevent
    merge — a Frappe reviewer will note them in the PR.
 
-2. **get-app validator** (only runs if semgrep passed). Installs the app
-   into a throwaway venv alongside a real Frappe checkout of the version
-   your release's `frappe_core` advertises — the same install
-   [`bench get-app`](https://github.com/frappe/pilot) itself performs. Catches
-   broken repo structure, syntax errors, undeclared `[tool.bench.frappe-dependencies]`/`required_apps`
-   mismatches, and missing imports/dependencies that only show up once the
-   app is actually installed. It also requires the prebuilt assets for the
-   release's `branch` and `commit`, which benches download instead of
-   building. Publish them with Pilot's `app-assets.yml` workflow on every
-   branch you release from (see
-   [gameplan's workflow](https://github.com/frappe/gameplan/blob/develop/.github/workflows/assets.yml)),
-   and open the PR after the workflow run for that commit has finished.
+2. **get-app validator**. Runs
+   [Pilot](https://github.com/frappe/pilot)'s own get-app on your release, at
+   its advertised commit, into a real bench on every Frappe major your
+   `frappe_core` admits: each `version-N` branch whose current Frappe is in
+   the range, and `develop` when its dev version is, so `>=15.0.0,<17.0.0`
+   runs on version-15 and version-16. Each finding names the branch it came
+   from. That is Pilot's app validation, the install into
+   the bench and your assets: the prebuilt archive your CI publishes for the
+   commit (on the GitHub release `assets-<branch>`, as
+   `<app>-<commit>.tar.gz` with a `.sha256`) when there is one, else a build.
+   Catches broken repo structure, syntax errors, undeclared
+   `[tool.bench.frappe-dependencies]`/`required_apps` mismatches, Frappe
+   version mismatches, and missing imports/dependencies that only show up
+   once the app is actually installed. An asset build must fit in 1 GiB —
+   see [Memory limit](#memory-limit).
+
+### Memory limit
+
+Marketplace requires apps with heavy builds to publish prebuilt assets for
+each release commit, for a faster install experience. CI builds your assets
+under a **1 GiB** cap (`[build] memory_limit_mb` in Pilot's `bench.toml`,
+enforced with `systemd-run`, no swap); a build that needs more is a
+**blocking** finding (`get-app-memory`). Publishing prebuilt assets skips the
+build: a GitHub release `assets-<branch>` with `<app>-<commit>.tar.gz` and
+its `.sha256`, as
+[Pilot's app assets workflow](https://github.com/frappe/pilot/blob/develop/.github/workflows/app-assets.yml)
+publishes.
 
 ### Reading the results
 
