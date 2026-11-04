@@ -4,7 +4,7 @@
     {
       "version": "16.0.0",
       "branch": "version-16",
-      "commit": "0bddeebfbebc2bd19bffcebb6b99594fa720756a",
+      "commit": "27f2129315e2c2615490d7bd96177aef422542fe",
       "frappe_core": ">=16.0.0,<17.0.0",
       "dependencies": {
         "payments": ">=0.0.1,<1.0.0"
