@@ -1,20 +1,23 @@
 #!/usr/bin/env python3
 """
-Run pilot's real get-app validator against a cloned app — the same checks
-(repo structure, syntax, dependency declarations, and a real `uv pip
-install` into a throwaway venv alongside a Frappe checkout) that
-`bench get-app` itself runs before installing an app. Catches install-
-breaking bugs (missing imports, undeclared dependencies) that pyproject/
-hooks.py inspection alone can't see.
+Run pilot's own get-app on the release, into a real bench on the Frappe
+version its frappe_core advertises: clone at the advertised commit, pilot's
+app validator (repo structure, syntax, dependency declarations, imports,
+Frappe compatibility), the install into the bench's venv, and the assets,
+prebuilt when the app publishes them, else built. Catches install-breaking
+bugs that pyproject/hooks.py inspection alone can't see. Asset builds run
+under the bench's memory cap (utils/bench.py), so one too heavy for a small
+bench fails here.
 
-Requires the `pilot` package installed (see .github/workflows) and `uv` on
-PATH.
+Requires the `pilot` package installed and what `pilot init` needs on the
+host (see .github/workflows and utils/bench.py).
 """
 
 from __future__ import annotations
 
+import re
+import subprocess
 import sys
-import tempfile
 import tomllib
 import urllib.error
 import urllib.request
@@ -25,24 +28,20 @@ from packaging.version import InvalidVersion, Version
 
 sys.path.insert(0, str(Path(__file__).parent))
 from utils.base import Validator
+from utils.bench import BUILD_MEMORY_LIMIT_MB, ValidationBench, build_oom_kills, report
 
-from pilot.config import AppConfig, BenchConfig
 from pilot.core.app import App
-from pilot.core.app.validator import Validator as InstallValidator
-from pilot.core.bench import Bench
 from pilot.exceptions import AppValidationError, BenchError
-from pilot.integrations.git.base import GitProviderError
-from pilot.integrations.git.github import parse_github_owner_repo
-from pilot.managers.environment import PythonEnvManager
 
 FRAPPE_REPO = "https://github.com/frappe/frappe"
-ASSETS_SETUP_GUIDE = "https://github.com/frappe/pilot/blob/develop/docs/prebuilt-assets.md"
+FRAPPE_VERSION_URL = "https://raw.githubusercontent.com/frappe/frappe/{branch}/frappe/__init__.py"
+LS_REMOTE_NO_MATCH = 2  # `git ls-remote --exit-code` found no matching ref
 
 
-def frappe_branch_for(frappe_core: str) -> str:
-    """The frappe branch to validate against: the major version of the lowest
-    Frappe the range admits, e.g. '>=15.0.0,<17.0.0' -> 'version-15'. A range
-    with no lower bound is rejected rather than guessed at."""
+def frappe_branches_for(frappe_core: str) -> list[str]:
+    """Every frappe branch to validate against, one per Frappe major the range admits,
+    e.g. '>=15.0.0,<17.0.0' -> ['version-15', 'version-16']. A range with no lower
+    bound is rejected rather than guessed at."""
     try:
         specifiers = SpecifierSet(frappe_core, prereleases=True)
     except InvalidSpecifier as exc:
@@ -55,16 +54,73 @@ def frappe_branch_for(frappe_core: str) -> str:
             f"frappe_core {frappe_core!r} declares no lower bound, so there is no "
             "Frappe version to validate against — declare one, e.g. '>=15.0.0,<16.0.0'"
         )
-    return f"version-{max(floors).major}"
+    floor_major = max(floors).major
+    branches = [frappe_branch_for_major(floor_major, specifiers)]
+    for major in range(floor_major + 1, frappe_develop_version().major + 1):
+        branch = f"version-{major}" if frappe_has_branch(f"version-{major}") else "develop"
+        # The Frappe a bench on that branch gets today, not the major's first release.
+        if branch not in branches and frappe_branch_version(branch) in specifiers:
+            branches.append(branch)
+    return branches
 
 
-def frappe_requires_python(frappe_path: Path) -> str:
-    """frappe's requires-python, e.g. '>=3.14,<3.15', as a uv Python request."""
-    project = tomllib.loads((frappe_path / "pyproject.toml").read_text()).get("project", {})
-    requires_python = project.get("requires-python")
-    if not requires_python:
-        raise AppValidationError(f"frappe at {frappe_path} declares no requires-python")
-    return requires_python
+def frappe_branch_for_major(major: int, specifiers: SpecifierSet) -> str:
+    """version-N when frappe has it; develop only when develop is Frappe N and in the range."""
+    branch = f"version-{major}"
+    if frappe_has_branch(branch):
+        return branch
+    develop = frappe_develop_version()
+    if develop.major == major and develop in specifiers:
+        return "develop"
+    if develop.major == major:
+        fix = f"to validate against develop, declare a dev floor, e.g. '>={major}.0.0-dev'"
+    else:
+        fix = "check the range's lower bound"
+    raise AppValidationError(
+        f"frappe_core {str(specifiers)!r} needs Frappe {major}, which has no {branch} branch, "
+        f"and develop ({develop}) does not fit it — {fix}"
+    )
+
+
+def frappe_has_branch(branch: str) -> bool:
+    """Raises on a failed lookup, so an outage is never read as "no such branch"."""
+    try:
+        result = subprocess.run(
+            ["git", "ls-remote", "--exit-code", FRAPPE_REPO, f"refs/heads/{branch}"],
+            capture_output=True,
+            text=True,
+            timeout=60,
+        )
+    except subprocess.TimeoutExpired as exc:
+        raise AppValidationError(f"Timed out looking up frappe@{branch}; run /rereview to try again") from exc
+    if result.returncode == LS_REMOTE_NO_MATCH:
+        return False
+    if result.returncode != 0:
+        raise AppValidationError(
+            f"Could not look up frappe@{branch} ({result.stderr.strip()}); run /rereview to try again"
+        )
+    return True
+
+
+def frappe_develop_version() -> Version:
+    """The Frappe version on develop, e.g. '17.0.0-dev'."""
+    return frappe_branch_version("develop")
+
+
+def frappe_branch_version(branch: str) -> Version:
+    """The Frappe version on `branch`, from its __version__, e.g. '16.40.2'."""
+    url = FRAPPE_VERSION_URL.format(branch=branch)
+    try:
+        with urllib.request.urlopen(url, timeout=30) as response:
+            source = response.read().decode()
+    except (urllib.error.URLError, TimeoutError) as exc:
+        raise AppValidationError(
+            f"Could not read Frappe's {branch} version ({exc}); run /rereview to try again"
+        ) from exc
+    match = re.search(r"^__version__\s*=\s*[\"']([^\"']+)", source, re.MULTILINE)
+    if not match:
+        raise AppValidationError(f"No __version__ in {url}")
+    return Version(match.group(1))
 
 
 def _lower_bound(specifier: Specifier) -> Version | None:
@@ -95,18 +151,60 @@ class GetAppValidator(Validator):
             return
 
         self._reject_untruthful_metadata(frappe_core)
-        self._require_prebuilt_assets()
         try:
-            self._install_and_check(frappe_core)
+            frappe_branches = frappe_branches_for(frappe_core)
         except AppValidationError as exc:
             self.fail(str(exc))
+            return
+
+        for frappe_branch in frappe_branches:
+            self._get_app(frappe_branch)
+
+    def _get_app(self, frappe_branch: str) -> None:
+        """get-app on a bench on `frappe_branch`; each finding names the branch it came from."""
+        on_branch = f"On Frappe {frappe_branch}: "
+        try:
+            bench = ValidationBench(frappe_branch).get_fresh_bench()
+        except Exception as exc:
+            self.fail(f"{on_branch}could not set up a bench to validate against: {exc}")
+            return
+
+        oom_kills = build_oom_kills()
+        try:
+            app = App.from_repo(bench, self.target["repo"], self.target["branch"])
+            self.validate_listed_release(app)
+            # As pilot's own get-app: a marketplace app brings its dependencies, a bare repo does not.
+            app.install(commit=self.target["commit"], install_dependencies=app.is_marketplace, on_progress=report)
         except BenchError as exc:
-            self.fail(str(exc))
+            self.fail_install(on_branch, exc, was_killed=build_oom_kills() > oom_kills)
         except Exception as exc:
             # Anything else (unexpected pilot API change, filesystem issue,
             # etc.) must still surface as a failed check, not crash the
             # whole CI run for every remaining target.
-            self.fail(f"get-app validation crashed unexpectedly: {exc!r}")
+            self.fail(f"{on_branch}get-app crashed unexpectedly: {exc!r}")
+
+    def validate_listed_release(self, app: App) -> None:
+        """get-app validates only apps the live registry does not list, so a listed
+        app's new release is cloned at its commit and validated here first."""
+        if not app.is_marketplace:
+            return
+        app.clone(report)
+        app.checkout_commit(self.target["commit"])
+        app.validate()
+
+    def fail_install(self, on_branch: str, exc: BenchError, was_killed: bool) -> None:
+        """Pilot's own message, unless the cap killed a build: pilot then reports only a failed
+        command, or advice meant for the bench's operator."""
+        if not was_killed:
+            self.fail(f"{on_branch}{exc}")
+            return
+        self.fail(
+            f"{on_branch}the asset build needed more than {BUILD_MEMORY_LIMIT_MB} MiB. Marketplace requires apps with "
+            "heavy builds to publish prebuilt assets for each release commit, for a faster install "
+            "experience (a GitHub release `assets-<branch>` with `<app>-<commit>.tar.gz` and its `.sha256`)",
+            severity="Major",
+            rule="get-app-memory",
+        )
 
     def _reject_untruthful_metadata(self, frappe_core: str) -> None:
         """The advertised version and frappe_core must match the code at this commit."""
@@ -126,31 +224,6 @@ class GetAppValidator(Validator):
         if in_repo and in_repo != frappe_core:
             self.fail(f"advertised frappe_core {frappe_core!r} but the commit declares {in_repo!r}")
 
-    def _require_prebuilt_assets(self) -> None:
-        """Benches download the assets the app's CI published for the commit and never build them."""
-        try:
-            owner, repository = parse_github_owner_repo(self.target["repo"])
-        except GitProviderError:
-            self.fail("Prebuilt assets are published on GitHub releases, so the repo must be on GitHub")
-            return
-
-        branch, commit = self.target["branch"], self.target["commit"]
-        tag = f"assets-{branch.replace('/', '-')}"
-        url = f"https://github.com/{owner}/{repository}/releases/download/{tag}/{self.target['name']}-{commit}.tar.gz.sha256"
-        try:
-            urllib.request.urlopen(urllib.request.Request(url, method="HEAD"), timeout=30).close()
-        except urllib.error.HTTPError:
-            self.fail(
-                f"No prebuilt assets published for {branch}@{commit[:8]}. Run Pilot's app-assets "
-                f"workflow on pushes to {branch} (setup guide: {ASSETS_SETUP_GUIDE}) and open "
-                "the PR once it has finished"
-            )
-        except urllib.error.URLError as exc:
-            self.fail(f"Could not check the prebuilt assets at {url} ({exc.reason})")
-        # A timeout while waiting for the response is raised as is, not wrapped in URLError.
-        except TimeoutError:
-            self.fail(f"Timed out checking the prebuilt assets at {url}; run /rereview to try again")
-
     def _dynamic_version(self, project_name: str) -> str:
         """__version__ from <module>/__init__.py, for apps using dynamic versioning."""
         init = self.clone_dir / project_name / "__init__.py"
@@ -160,29 +233,3 @@ class GetAppValidator(Validator):
             if line.startswith("__version__"):
                 return line.split("=", 1)[-1].strip().strip("\"'")
         return ""
-
-    def _install_and_check(self, frappe_core: str) -> None:
-        branch = frappe_branch_for(frappe_core)
-        with tempfile.TemporaryDirectory() as tmp:
-            workdir = Path(tmp)
-            # No bench.toml: checks needing one skip themselves.
-            bench = Bench(BenchConfig.default(name="validation"), workdir)
-            bench.apps_path.mkdir(parents=True)
-
-            frappe_app = App(AppConfig(name="frappe", repo=FRAPPE_REPO, branch=branch), bench)
-            try:
-                frappe_app.clone()
-            except BenchError as exc:
-                raise BenchError(f"Could not clone frappe@{branch}: {exc}") from exc
-
-            # The validator builds its throwaway venv on the bench's interpreter.
-            bench.config.python_version = frappe_requires_python(frappe_app.path)
-            PythonEnvManager(bench).create_venv()
-
-            app_name = self.target["name"]
-            (bench.apps_path / app_name).symlink_to(self.clone_dir)
-
-            app = App(
-                AppConfig(name=app_name, repo=self.target["repo"], branch=self.target["branch"]), bench
-            )
-            InstallValidator(app).validate()

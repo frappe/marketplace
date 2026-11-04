@@ -64,14 +64,56 @@ jobs:
         if: steps.diff.outputs.changed == 'true'
         run: uv tool install semgrep
 
+      # Tracks pilot's develop branch, so the get-app here is always the one
+      # benches actually run. The trade is that a pilot change can turn this
+      # job red without anything in this repo changing — check pilot's recent
+      # commits before assuming the app is at fault.
+      - name: Check out pilot
+        if: steps.diff.outputs.changed == 'true'
+        uses: actions/checkout@v4
+        with:
+          repository: frappe/pilot
+          ref: develop
+          path: .pilot
+
+      # What `pilot init` checks the host for: Node 24 and yarn for Frappe's
+      # assets, Redis, and the headers Frappe's Python dependencies build
+      # against. Benches use SQLite, so no database server is needed.
+      - uses: actions/setup-node@v4
+        if: steps.diff.outputs.changed == 'true'
+        with:
+          node-version: "24"
+
+      - name: Install bench system packages
+        if: steps.diff.outputs.changed == 'true'
+        run: |
+          # Runners preconfigure Microsoft apt repos that intermittently 403;
+          # they aren't needed here and otherwise fail the whole apt-get update.
+          sudo rm -f /etc/apt/sources.list.d/microsoft*.list /etc/apt/sources.list.d/azure*.list
+          sudo apt-get update -y
+          sudo apt-get install -y redis-server build-essential pkg-config python3-dev libmariadb-dev rsync
+          npm install -g yarn
+          # Pilot caps asset builds with a `systemd-run --user` scope. Swap
+          # would let a build past the cap, so the runner gets none.
+          sudo loginctl enable-linger "$USER"
+          sudo swapoff -a
+
       - name: Install pilot
         if: steps.diff.outputs.changed == 'true'
-        # Tracks pilot's develop branch, so the get-app validator here is
-        # always the one bench get-app actually runs. The trade is that a
-        # pilot change can turn this job red without anything in this repo
-        # changing — check pilot's recent commits before assuming the app
-        # is at fault. packaging is this repo's own: pilot vendors its copy.
-        run: pip install packaging git+https://github.com/frappe/pilot@develop
+        # Editable, so pilot keeps its registry cache inside .pilot as on a
+        # host install. packaging is this repo's own: pilot vendors its copy.
+        # A checkout without VERSION is a dev build, which clones every app
+        # with its full history (frappe alone took 48s); a release clones
+        # with --depth 1, as benches do.
+        run: |
+          echo "ci-$(git -C .pilot rev-parse --short HEAD)" > .pilot/VERSION
+          pip install packaging -e ./.pilot
+
+      # Pilot builds uncapped, with only a warning, where it cannot cap. The
+      # memory check would then pass every app, so stop here instead.
+      - name: Ensure asset builds can be memory-capped
+        if: steps.diff.outputs.changed == 'true'
+        run: python3 -c "from pilot.managers.systemd_user import can_cap_memory; assert can_cap_memory(), 'systemd-run --user cannot cap memory on this runner'"
 
       # A worktree, not `git show`: the base side is now a directory
       # (apps.json plus apps/<name>.json), so the whole tree is needed.
@@ -79,10 +121,15 @@ jobs:
         if: steps.diff.outputs.changed == 'true'
         run: git worktree add --detach /tmp/base-registry ${{ github.event.pull_request.base.sha }}
 
+      # get-app runs the release's own install and build with no timeout of
+      # its own, so a hanging one would otherwise hold the runner for 6 hours.
       - name: Check changed marketplace releases
         if: steps.diff.outputs.changed == 'true'
+        timeout-minutes: 120
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # One bench per Frappe branch, set up on first use (validation/utils/bench.py).
+          VALIDATION_BENCHES_DIR: ${{ runner.temp }}/benches
         run: |
           python3 validation/check.py /tmp/base-registry . \
             --report /tmp/report.md --commit "${{ github.event.pull_request.head.sha }}" \
