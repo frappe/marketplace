@@ -6,10 +6,10 @@ any app, once the marketplace check has passed.
 Only changes the check validates qualify: the PR touches nothing but
 apps.json and apps/<app>.json, and per app it either adds a new app or adds
 releases to a listed one (or replaces a release with the same version and
-branch, as tools/add_release.py does). A listed app keeps its repo and
-releases path, each new release's commit must be ahead of every release
-already advertised on its branch, and no release is edited in place or
-removed. Everything else waits for a person.
+branch, as tools/add_release.py does). A listed app's apps.json entry is
+unchanged, a new app does not claim the Featured category, each new
+release's commit must be ahead of every release already advertised on its
+branch, and no release is edited in place or removed. Everything else waits for a person.
 
 Reads the two registries as data only; nothing from the PR runs.
 
@@ -37,6 +37,7 @@ from utils.diff import release_identity
 
 REGISTRY_FILE = re.compile(r"apps\.json|apps/([a-z][a-z0-9_]*)\.json")
 FORWARD_ORDERS = ("ahead", "identical")
+FEATURED = "Featured"
 
 # (repo URL, advertised commit, new commit) -> GitHub's compare status: ahead, behind, diverged or identical.
 CommitOrder = Callable[[str, str, str], str]
@@ -58,17 +59,19 @@ def get_merge_blockers(base: Path, head: Path, changed_files: list[str], get_com
 
 
 def get_index_blockers(base_index: dict, head_index: dict, head_entries: list[dict]) -> list[str]:
-    """A listed app keeps its name, repo and releases path; metadata may change."""
+    """A listed app's entry stays as it is, since the check validates none of its fields,
+    and a new app does not feature itself."""
     blockers = [f"apps.json lists {name} more than once" for name, count in count_names(head_entries) if count > 1]
     for name, entry in base_index.items():
         if name not in head_index:
             blockers.append(f"it removes {name} from apps.json")
-            continue
-        blockers += [
-            f"it changes {name}'s {field} from {entry.get(field)!r} to {head_index[name].get(field)!r}"
-            for field in ("repo", "releases")
-            if entry.get(field) != head_index[name].get(field)
-        ]
+        elif changed := get_changed_fields(entry, head_index[name]):
+            blockers.append(f"it changes {name}'s {', '.join(changed)} in apps.json")
+    blockers += [
+        f"new app {name} claims the {FEATURED} category"
+        for name, entry in head_index.items()
+        if name not in base_index and FEATURED in (entry.get("categories") or [])
+    ]
     return blockers
 
 
@@ -139,6 +142,10 @@ def get_github_repo(repo: str) -> str:
     if url.scheme != "https" or url.hostname != "github.com" or len(parts) != 2 or not all(parts):
         return ""
     return "/".join(parts)
+
+
+def get_changed_fields(base: dict, head: dict) -> list[str]:
+    return sorted(key for key in base.keys() | head.keys() if base.get(key) != head.get(key))
 
 
 def describe(release: dict) -> str:

@@ -74,20 +74,41 @@ def test_new_app_merges(registries):
     assert blockers(base, head, ["apps.json", "apps/newapp.json"]) == []
 
 
-def test_metadata_edit_merges(registries):
-    base, head = registries
-    write_index(head, [{**entry, "description": "Learn things"} for entry in read_index(head)])
-    assert blockers(base, head, ["apps.json"]) == []
-
-
-def test_repo_change_needs_a_reviewer(registries):
+@pytest.mark.parametrize(
+    ("field", "value"),
+    [
+        ("description", "Learn things"),
+        ("website", "https://example.com/phish"),
+        ("categories", ["Featured"]),
+        ("stars", 999999),
+        ("repo", "https://github.com/attacker/lms"),
+        ("releases", "apps/other.json"),
+    ],
+)
+def test_change_to_a_listed_apps_entry_needs_a_reviewer(registries, field, value):
+    """The check validates none of an entry's fields, so it passes an edit to any of them."""
     base, head = registries
     index = read_index(head)
-    index[0]["repo"] = "https://github.com/attacker/lms"
+    index[0][field] = value
     write_index(head, index)
-    assert blockers(base, head, ["apps.json", "apps/lms.json"]) == [
-        f"it changes lms's repo from {LMS_REPO!r} to 'https://github.com/attacker/lms'"
-    ]
+    assert blockers(base, head, ["apps.json"]) == [f"it changes lms's {field} in apps.json"]
+
+
+def test_every_changed_field_is_named(registries):
+    base, head = registries
+    index = read_index(head)
+    index[0] = {**index[0], "website": "https://example.com", "title": "LMS"}
+    del index[0]["repo"]
+    write_index(head, index)
+    assert blockers(base, head, ["apps.json"]) == ["it changes lms's repo, title, website in apps.json"]
+
+
+def test_new_app_claiming_featured_needs_a_reviewer(registries):
+    base, head = registries
+    entry = {"name": "newapp", "repo": "https://github.com/x/newapp", "releases": "apps/newapp.json"}
+    write_index(head, [*read_index(head), {**entry, "categories": ["Featured", "Support"]}])
+    (head / "apps" / "newapp.json").write_text(json.dumps({"name": "newapp", "releases": [RELEASE]}))
+    assert blockers(base, head, ["apps.json", "apps/newapp.json"]) == ["new app newapp claims the Featured category"]
 
 
 def test_removed_app_needs_a_reviewer(registries):

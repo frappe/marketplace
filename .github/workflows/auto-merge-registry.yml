@@ -65,7 +65,11 @@ jobs:
           HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
         run: |
           git -C main fetch -q origin "refs/pull/$NUMBER/head"
-          test "$(git -C main rev-parse FETCH_HEAD)" = "$HEAD_SHA"
+          if [ "$(git -C main rev-parse FETCH_HEAD)" != "$HEAD_SHA" ]; then
+            echo "The PR moved on from $HEAD_SHA — its newer commit's check decides."
+            echo "moved=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
           git -C main worktree add -q --detach "$PWD/base" HEAD
           git -C main worktree add -q --detach "$PWD/head" HEAD
           if ! git -C head -c user.name=auto-merge -c user.email=auto-merge@localhost merge -q --no-edit "$HEAD_SHA"; then
@@ -99,9 +103,10 @@ jobs:
           gh pr merge "$NUMBER" --repo "$GITHUB_REPOSITORY" --merge --match-head-commit "$HEAD_SHA"
 
       # Held by the rules, a conflict with main, a failed merge or a crash
-      # above: the reason is in this run's log.
+      # above: the reason is in this run's log. Not when the PR moved on,
+      # since its newer commit is judged on its own.
       - name: Label the PR held for review
-        if: ${{ !cancelled() && steps.pr.outputs.number && steps.merge.outcome != 'success' }}
+        if: ${{ !cancelled() && steps.pr.outputs.number && steps.merged.outputs.moved != 'true' && steps.merge.outcome != 'success' }}
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NUMBER: ${{ steps.pr.outputs.number }}
