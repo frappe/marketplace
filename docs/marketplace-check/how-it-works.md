@@ -8,7 +8,7 @@ Every PR runs the **Marketplace App Check**. When the PR changes `apps.json` or 
 2. **Schema.** Each changed app's entry and releases file must have every required field, and `releases` must be `apps/<name>.json`.
 3. **Clone at the exact commit.** Each new release is cloned at its `commit`. The commit must be reachable from the release's `branch`, so a fork or an unmerged PR commit is rejected.
 4. **Truthful metadata.** `version` and `frappe_core` must match what the commit's `pyproject.toml` declares.
-5. **Semgrep scan.** The code is scanned for security and multi-tenancy problems, such as `eval`, SQL built with f-strings, `shell=True`, or `ignore_permissions=True` in whitelisted methods.
+5. **Semgrep scan.** The code is scanned for security and multi-tenancy problems, such as `eval`, SQL built with f-strings, `shell=True`, or `ignore_permissions=True` in whitelisted methods. A new release on a branch that already has one is checked only for findings the advertised commit did not have.
 6. **Install on a real bench.** Pilot's own `get-app` installs the release, as it would on a user's server. See below.
 
 Every check runs, even when an earlier one fails, so one report shows everything to fix.
