@@ -12,7 +12,7 @@
     {
       "version": "0.0.1",
       "branch": "version-15",
-      "commit": "9885a6e500104f1f160add47d55b370773e67a81",
+      "commit": "2e0d45a2b04805171c370a86d7d7020ed6af7cbf",
       "frappe_core": ">=15.0.0,<16.0.0",
       "dependencies": {},
       "channel": "stable"
