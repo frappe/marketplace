@@ -4,7 +4,7 @@
     {
       "version": "0.0.1",
       "branch": "version-16",
-      "commit": "cca07d9f9392e2ea0e521c5975151db9e4b6c321",
+      "commit": "9e842a473a8f4ec70a9ff06a3e067d10f98d26ed",
       "frappe_core": ">=16.0.0,<17.0.0",
       "dependencies": {},
       "channel": "stable"
