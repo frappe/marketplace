@@ -2,6 +2,16 @@
   "name": "kamra",
   "releases": [
     {
+      "version": "2.6.16",
+      "branch": "main",
+      "commit": "e3341b8f5795795f041e95c31fa98e0603f15db7",
+      "frappe_core": ">=16.0.0-dev,<17.0.0",
+      "dependencies": {
+        "payments": ">=0.0.1,<1.0.0"
+      },
+      "channel": "stable"
+    },
+    {
       "version": "2.6.11",
       "branch": "main",
       "commit": "70fdffded84c2aa53a448875bec76dda4e496919",
