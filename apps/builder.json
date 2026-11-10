@@ -2,6 +2,14 @@
   "name": "builder",
   "releases": [
     {
+      "version": "1.37.7",
+      "branch": "master",
+      "commit": "7b0781fd75a7cc871828498cbd7cf49737184014",
+      "frappe_core": ">=15.121.3,<18.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    },
+    {
       "version": "1.37.6",
       "branch": "master",
       "commit": "0716724ae5de98ff5ed9c022c9359e98e052e20a",
