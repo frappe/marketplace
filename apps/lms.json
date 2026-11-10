@@ -64,7 +64,7 @@
     {
       "version": "2.45.2",
       "branch": "develop",
-      "commit": "c40794797e97c0ac47312bf1e64f0df2ec81a7a4",
+      "commit": "4abd5ac39c2d8447bc951e22af50b9c258376138",
       "frappe_core": ">=17.0.0-dev,<18.0.0",
       "dependencies": {
         "payments": ">=0.0.1,<1.0.0"
