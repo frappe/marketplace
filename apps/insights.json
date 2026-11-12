@@ -2,10 +2,10 @@
   "name": "insights",
   "releases": [
     {
-      "version": "4.0.0-dev",
+      "version": "3.50.0-dev",
       "branch": "develop",
-      "commit": "b0d5d5c13147d176e205e44bb7ae907fa9f2bd2e",
-      "frappe_core": ">=17.0.0-dev,<18.0.0",
+      "commit": "2309dc8327d92054707185e5f91721ec2226462c",
+      "frappe_core": ">=15.0.0,<18.0.0",
       "dependencies": {},
       "channel": "nightly"
     },
