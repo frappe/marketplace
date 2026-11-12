@@ -1,0 +1,13 @@
+{
+  "name": "ekyc_india",
+  "releases": [
+    {
+      "version": "0.0.1",
+      "branch": "develop",
+      "commit": "94f71aa3845720d8beea6247d58185b1a6113597",
+      "frappe_core": ">=16.0.0,<17.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    }
+  ]
+}
