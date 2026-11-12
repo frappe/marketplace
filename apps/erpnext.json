@@ -18,6 +18,14 @@
       "channel": "stable"
     },
     {
+      "version": "15.125.0",
+      "branch": "version-15",
+      "commit": "6ad0ff6362db0c672e3706aa0a0d65119b1a34e2",
+      "frappe_core": ">=15.111.0,<16.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    },
+    {
       "version": "15.121.6",
       "branch": "version-15",
       "commit": "4cea6a7f839286b69dd30b38b0991e6ae234dac5",
