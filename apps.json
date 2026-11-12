@@ -1929,5 +1929,20 @@
     "category": "Applications",
     "stars": 0,
     "releases": "apps/churchit.json"
+  },
+  {
+    "name": "ekyc_india",
+    "title": "eKYC India",
+    "description": "Aadhaar-based eKYC and eSign for any Frappe DocType via Digio",
+    "repo": "https://github.com/frappe/ekyc_india",
+    "logo_url": "https://raw.githubusercontent.com/frappe/ekyc_india/develop/ekyc_india/public/images/ekyc_india.svg",
+    "website": "https://github.com/frappe/ekyc_india",
+    "documentation": "https://github.com/frappe/ekyc_india/blob/develop/README.md",
+    "categories": [
+      "Integrations"
+    ],
+    "category": "Integrations",
+    "stars": 0,
+    "releases": "apps/ekyc_india.json"
   }
 ]
