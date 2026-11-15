@@ -68,9 +68,17 @@ class GitHubClient:
             if error.code == 404:
                 return None
             if error.code in (403, 429):
-                log.append("rate limited — sleeping 60s")
-                time.sleep(60)
-                return self.fetch_raw(url, log, attempt)
+                if attempt >= MAX_RETRIES:
+                    log.append(f"HTTP {error.code}: {url} (retry limit reached)")
+                    return None
+                retry_after = error.headers.get("Retry-After")
+                sleep_seconds = int(retry_after) if retry_after and retry_after.isdigit() else 60
+                log.append(
+                    f"HTTP {error.code}: retrying in {sleep_seconds}s "
+                    f"({attempt}/{MAX_RETRIES - 1})"
+                )
+                time.sleep(sleep_seconds)
+                return self.fetch_raw(url, log, attempt + 1)
             log.append(f"HTTP {error.code}: {url}")
             return None
         except (URLError, OSError) as error:
@@ -149,6 +157,16 @@ def sort_key(release: dict) -> tuple:
         return (Version("0"),)
 
 
+def assign_channels(releases: list[dict]) -> None:
+    """Mark develop releases nightly only when app also cuts non-nightly releases."""
+    cuts_releases = any(
+        release.get("branch") not in NIGHTLY_BRANCHES for release in releases
+    )
+    for release in releases:
+        nightly = cuts_releases and release.get("branch") in NIGHTLY_BRANCHES
+        release["channel"] = "nightly" if nightly else "stable"
+
+
 def get_new_releases(
     app_name: str, repo_url: str, client: GitHubClient, log: Log
 ) -> list[dict]:
@@ -195,7 +213,7 @@ def get_new_releases(
             "commit": commit,
             "frappe_core": frappe_core,
             "dependencies": dependencies,
-            "channel": "nightly" if branch in NIGHTLY_BRANCHES else "stable",
+            "channel": "stable",
         }
 
         new_releases.append(release)
@@ -246,6 +264,7 @@ def update_app_releases(app_name: str, new_releases: list[dict]) -> bool:
         changes_made = True
 
     if changes_made:
+        assign_channels(releases)
         # Sort newest first
         releases.sort(key=sort_key, reverse=True)
         path.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n")
