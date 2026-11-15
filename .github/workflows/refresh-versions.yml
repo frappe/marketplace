@@ -1,0 +1,62 @@
+name: Refresh app versions
+
+on:
+  schedule:
+    # Run every 6 hours
+    - cron: "0 */6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Check out marketplace
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install dependencies
+        run: pip install packaging
+
+      - name: Fetch latest versions
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python3 tools/fetch_latest_versions.py
+
+      - name: Create or update PR if changes detected
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if git diff --quiet apps/; then
+            echo "No changes detected"
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          branch="refresh/versions-$(date +%s)"
+          git checkout -B "$branch"
+          git commit -am "chore: refresh app versions"
+          git push -f origin "$branch"
+
+          # Create or update PR
+          number=$(gh pr list --head "$branch" --base main --state open --json number --jq '.[0].number // empty')
+          if [ -n "$number" ]; then
+            echo "Updating existing PR #$number"
+            gh pr edit "$number" --body "Automated version refresh"
+          else
+            echo "Creating new PR"
+            gh pr create \
+              --title "chore: refresh app versions" \
+              --body "Automated detection of new app releases" \
+              --base main \
+              --head "$branch"
+          fi
