@@ -26,7 +26,7 @@ from urllib.parse import quote, urlparse
 sys.path.insert(0, str(Path(__file__).parent))
 from get_app_check import GetAppValidator
 from schema_check import SchemaValidator
-from semgrep_check import SemgrepValidator
+from semgrep_check import SemgrepValidator, load_skip_list
 from utils.clone import clone_release
 from utils.diff import find_changed_releases, load_registry
 from utils.report import CheckResult, Finding, Report, Section
@@ -45,7 +45,7 @@ def check_app_schema(name: str, app: dict, section: Section) -> bool:
     return passed
 
 
-def check_release(release: dict, section: Section) -> bool:
+def check_release(release: dict, section: Section, semgrep_skip: dict[str, str]) -> bool:
     print(
         f"\n=== Checking {release['name']} "
         f"({release.get('repo')}@{(release.get('commit') or '')[:8]}) ===",
@@ -56,7 +56,7 @@ def check_release(release: dict, section: Section) -> bool:
         clone_dir = Path(tmp) / "app"
         if not _clone(release, clone_dir, section):
             return False
-        return _run_post_clone_checks(release, clone_dir, section)
+        return _run_post_clone_checks(release, clone_dir, section, semgrep_skip.get(release["name"]))
 
 
 def _clone(release: dict, clone_dir: Path, section: Section) -> bool:
@@ -72,11 +72,11 @@ def _clone(release: dict, clone_dir: Path, section: Section) -> bool:
         return False
 
 
-def _run_post_clone_checks(release: dict, clone_dir: Path, section: Section) -> bool:
+def _run_post_clone_checks(release: dict, clone_dir: Path, section: Section, semgrep_skip_reason: str | None) -> bool:
     """Run every clone-dependent check, so one failing never hides another's findings."""
     repo, commit = release["repo"], release["commit"]
     checks = [
-        SemgrepValidator(clone_dir, f"{repo}@{commit[:8]}"),
+        SemgrepValidator(clone_dir, f"{repo}@{commit[:8]}", semgrep_skip_reason),
         GetAppValidator(release, clone_dir),
     ]
     results = []
@@ -147,10 +147,12 @@ def main() -> None:
     # Excluded before find_changed_releases(), not filtered after - it
     # indexes app["repo"] directly and would crash on a schema-broken app.
     valid_new_apps = {name: app for name, app in new_apps.items() if name not in schema_failed}
+    # From the base registry: a PR's own change to the list applies only after it merges.
+    semgrep_skip = load_skip_list(args.old_registry)
     release_results = {}
     for release in find_changed_releases(marketplace, valid_new_apps):
         section = report.section(release_key(release), subtitle=release_link(release))
-        release_results[release_key(release)] = check_release(release, section)
+        release_results[release_key(release)] = check_release(release, section, semgrep_skip)
 
     _write_report(report, args.report)
 
