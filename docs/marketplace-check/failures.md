@@ -38,7 +38,7 @@ Your range starts at a Frappe major that is not released yet. To test against `d
 
 ## A Semgrep finding marked Critical or Major
 
-The scan found risky code, such as `eval`, SQL built from f-strings, `shell=True`, or `ignore_permissions=True` in a whitelisted method. Fix it in your app's repo and publish the new commit. If you believe it is a false positive, explain why in a PR comment so a reviewer can look. A reviewer can add a trusted app to [`semgrep-skip.json`](../../semgrep-skip.json), with the reason, so its releases skip the scan.
+The scan found risky code, such as `eval`, SQL built from f-strings, `shell=True`, or `ignore_permissions=True` in a whitelisted method. Fix it in your app's repo and publish the new commit. If you believe it is a false positive, explain why in a PR comment so a reviewer can look. A reviewer can add a trusted app's name to [`semgrep-skip.txt`](../../semgrep-skip.txt) so its releases skip the scan.
 
 ## "On Frappe version-N: …" install errors
 

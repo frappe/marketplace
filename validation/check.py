@@ -45,7 +45,7 @@ def check_app_schema(name: str, app: dict, section: Section) -> bool:
     return passed
 
 
-def check_release(release: dict, section: Section, semgrep_skip: dict[str, str]) -> bool:
+def check_release(release: dict, section: Section, semgrep_skip: set[str]) -> bool:
     print(
         f"\n=== Checking {release['name']} "
         f"({release.get('repo')}@{(release.get('commit') or '')[:8]}) ===",
@@ -56,7 +56,7 @@ def check_release(release: dict, section: Section, semgrep_skip: dict[str, str])
         clone_dir = Path(tmp) / "app"
         if not _clone(release, clone_dir, section):
             return False
-        return _run_post_clone_checks(release, clone_dir, section, semgrep_skip.get(release["name"]))
+        return _run_post_clone_checks(release, clone_dir, section, release["name"] in semgrep_skip)
 
 
 def _clone(release: dict, clone_dir: Path, section: Section) -> bool:
@@ -72,11 +72,11 @@ def _clone(release: dict, clone_dir: Path, section: Section) -> bool:
         return False
 
 
-def _run_post_clone_checks(release: dict, clone_dir: Path, section: Section, semgrep_skip_reason: str | None) -> bool:
+def _run_post_clone_checks(release: dict, clone_dir: Path, section: Section, is_semgrep_skipped: bool) -> bool:
     """Run every clone-dependent check, so one failing never hides another's findings."""
     repo, commit = release["repo"], release["commit"]
     checks = [
-        SemgrepValidator(clone_dir, f"{repo}@{commit[:8]}", semgrep_skip_reason),
+        SemgrepValidator(clone_dir, f"{repo}@{commit[:8]}", is_semgrep_skipped),
         GetAppValidator(release, clone_dir),
     ]
     results = []
