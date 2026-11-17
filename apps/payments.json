@@ -10,6 +10,14 @@
       "channel": "stable"
     },
     {
+      "version": "15.0.1",
+      "branch": "version-15",
+      "commit": "5e4913f9793bd00928c1a1a962a7b3fd22f5003f",
+      "frappe_core": ">=15.0.0,<16.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    },
+    {
       "version": "0.0.1",
       "branch": "version-16",
       "commit": "9e842a473a8f4ec70a9ff06a3e067d10f98d26ed",
@@ -28,7 +36,7 @@
     {
       "version": "0.0.1",
       "branch": "develop",
-      "commit": "060305baed6bb60159b8d3f1ea3be81b6ed2d8f7",
+      "commit": "d6df15a6ce91e508d58fe34ba53e27f3b63d344e",
       "frappe_core": ">=17.0.0-dev,<18.0.0",
       "dependencies": {},
       "channel": "nightly"

@@ -36,12 +36,13 @@ from pilot.exceptions import AppValidationError, BenchError
 FRAPPE_REPO = "https://github.com/frappe/frappe"
 FRAPPE_VERSION_URL = "https://raw.githubusercontent.com/frappe/frappe/{branch}/frappe/__init__.py"
 LS_REMOTE_NO_MATCH = 2  # `git ls-remote --exit-code` found no matching ref
+MIN_FRAPPE_MAJOR = 16  # Pilot benches run Frappe 16 or later
 
 
 def frappe_branches_for(frappe_core: str) -> list[str]:
-    """Every frappe branch to validate against, one per Frappe major the range admits,
-    e.g. '>=15.0.0,<17.0.0' -> ['version-15', 'version-16']. A range with no lower
-    bound is rejected rather than guessed at."""
+    """Every frappe branch to validate against, one per Frappe major the range admits from
+    MIN_FRAPPE_MAJOR on, e.g. '>=15.0.0,<=17.0.0-dev' -> ['version-16', 'develop']. A range
+    with no lower bound, or none from MIN_FRAPPE_MAJOR on, is rejected rather than guessed at."""
     try:
         specifiers = SpecifierSet(frappe_core, prereleases=True)
     except InvalidSpecifier as exc:
@@ -55,12 +56,21 @@ def frappe_branches_for(frappe_core: str) -> list[str]:
             "Frappe version to validate against — declare one, e.g. '>=15.0.0,<16.0.0'"
         )
     floor_major = max(floors).major
-    branches = [frappe_branch_for_major(floor_major, specifiers)]
+    if floor_major >= MIN_FRAPPE_MAJOR:
+        branches = [frappe_branch_for_major(floor_major, specifiers)]
+    else:
+        # Pilot never runs an older Frappe, so only the majors from MIN_FRAPPE_MAJOR on are checked.
+        branches, floor_major = [], MIN_FRAPPE_MAJOR - 1
     for major in range(floor_major + 1, frappe_develop_version().major + 1):
         branch = f"version-{major}" if frappe_has_branch(f"version-{major}") else "develop"
         # The Frappe a bench on that branch gets today, not the major's first release.
         if branch not in branches and frappe_branch_version(branch) in specifiers:
             branches.append(branch)
+    if not branches:
+        raise AppValidationError(
+            f"frappe_core {frappe_core!r} admits no Frappe {MIN_FRAPPE_MAJOR} or later release, "
+            f"and Pilot benches run Frappe {MIN_FRAPPE_MAJOR} or later"
+        )
     return branches
 
 
@@ -190,6 +200,8 @@ class GetAppValidator(Validator):
             return
         app.clone(report)
         app.checkout_commit(self.target["commit"])
+        # As get-app does before validating: the import check resolves against declared apps.
+        app.install_required_apps(report)
         app.validate()
 
     def fail_install(self, on_branch: str, exc: BenchError, was_killed: bool) -> None:

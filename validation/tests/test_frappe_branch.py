@@ -33,11 +33,13 @@ def frappe(monkeypatch):
 @pytest.mark.parametrize(
     ("frappe_core", "branches"),
     [
-        (">=15.0.0,<16.0.0", ["version-15"]),
-        (">=15.0.0,<17.0.0", ["version-15", "version-16"]),
-        (">=15.0.0,<=17.0.0-dev", ["version-15", "version-16", "develop"]),
+        (">=16.0.0,<17.0.0", ["version-16"]),
         (">=16.0.0-dev", ["version-16", "develop"]),
-        (">=15.121.3,<18.0.0", ["version-15", "version-16", "develop"]),
+        # Pilot benches run Frappe 16 or later, so an older floor starts there.
+        (">=15.0.0,<17.0.0", ["version-16"]),
+        (">=14.101.0,<=17.0.0-dev", ["version-16", "develop"]),
+        (">=15.121.3,<18.0.0", ["version-16", "develop"]),
+        (">=10.0.0", ["version-16", "develop"]),
     ],
 )
 def test_every_major_the_range_admits(frappe, frappe_core, branches):
@@ -45,7 +47,13 @@ def test_every_major_the_range_admits(frappe, frappe_core, branches):
 
 
 def test_major_is_skipped_when_its_branch_has_moved_past_the_range(frappe):
-    assert frappe_branches_for(">=15.0.0,<16.5.0") == ["version-15"]
+    assert frappe_branches_for(">=16.0.0,<17.0.0-dev") == ["version-16"]
+
+
+@pytest.mark.parametrize("frappe_core", [">=15.0.0,<16.0.0", ">=15.0.0,<16.5.0"])
+def test_range_with_no_frappe_16_release_fails(frappe, frappe_core):
+    with pytest.raises(AppValidationError, match="Pilot benches run Frappe 16 or later"):
+        frappe_branches_for(frappe_core)
 
 
 @pytest.mark.parametrize("frappe_core", [">=17.0.0-dev", ">=17.0.0-dev,<18.0.0"])
@@ -57,11 +65,6 @@ def test_dev_floor_uses_develop(frappe, frappe_core):
 def test_range_excluding_the_dev_build_fails(frappe, frappe_core):
     with pytest.raises(AppValidationError, match="declare a dev floor"):
         frappe_branches_for(frappe_core)
-
-
-def test_major_older_than_any_branch_fails(frappe):
-    with pytest.raises(AppValidationError, match=r"no version-10 branch.*check the range"):
-        frappe_branches_for(">=10.0.0")
 
 
 def test_major_beyond_develop_fails(frappe):
@@ -77,9 +80,9 @@ def test_failed_lookup_fails_instead_of_using_develop(frappe):
 
 def test_failed_lookup_of_a_later_major_fails(frappe):
     def lookup(command, **kwargs):
-        code = 0 if command[-1] == "refs/heads/version-15" else 128
+        code = 0 if command[-1] == "refs/heads/version-16" else 128
         return subprocess.CompletedProcess(command, code, "", "fatal: unable to access")
 
     get_app_check.subprocess.run = lookup
     with pytest.raises(AppValidationError, match="/rereview"):
-        frappe_branches_for(">=15.0.0,<17.0.0")
+        frappe_branches_for(">=16.0.0,<18.0.0")
