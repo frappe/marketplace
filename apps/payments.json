@@ -2,6 +2,14 @@
   "name": "payments",
   "releases": [
     {
+      "version": "16.0.1",
+      "branch": "version-16",
+      "commit": "1978965f38b8a1f0ea30c5f5dfd1c37d4888afe3",
+      "frappe_core": ">=16.0.0,<17.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    },
+    {
       "version": "0.0.1",
       "branch": "version-16",
       "commit": "9e842a473a8f4ec70a9ff06a3e067d10f98d26ed",
