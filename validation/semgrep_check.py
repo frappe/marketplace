@@ -5,6 +5,9 @@ Exits non-zero if any finding is blocking, so CI can fail the PR.
 
 Blocking logic: a finding blocks if its rule metadata sets is_blocking: true,
 or its Semgrep severity maps to Critical/Major (ERROR/CRITICAL/HIGH).
+
+Apps named in semgrep-skip.txt skip the scan. The list is read from the base
+registry, so a PR cannot add its own app to it and skip the scan in the same run.
 """
 
 from __future__ import annotations
@@ -19,6 +22,7 @@ from utils.base import Validator
 from utils.report import severity_label
 
 RULES_DIR = Path(__file__).parent / "semgrep-rules"
+SKIP_LIST_FILE = "semgrep-skip.txt"
 
 BLOCKING_AUDIT_SEVERITIES = {"Critical", "Major"}
 
@@ -32,6 +36,15 @@ def scan_target(target_dir: Path) -> list[dict]:
     if result.returncode not in (0, 1):
         raise RuntimeError(f"Semgrep failed: {result.stderr.strip()}")
     return json.loads(result.stdout)["results"]
+
+
+def load_skip_list(registry_dir: Path) -> set[str]:
+    """App names that skip the scan: one per line in the registry's semgrep-skip.txt."""
+    path = registry_dir / SKIP_LIST_FILE
+    if not path.exists():
+        return set()
+    lines = (line.split("#", 1)[0].strip() for line in path.read_text().splitlines())
+    return {line for line in lines if line}
 
 
 def is_blocking(finding: dict) -> bool:
@@ -49,12 +62,16 @@ def rule_name(check_id: str) -> str:
 class SemgrepValidator(Validator):
     name = "semgrep scan"
 
-    def __init__(self, clone_dir: Path, label: str):
+    def __init__(self, clone_dir: Path, label: str, is_skipped: bool = False):
         super().__init__()
         self.clone_dir = clone_dir
         self.label = label
+        self.is_skipped = is_skipped
 
     def validate(self) -> None:
+        if self.is_skipped:
+            self.note(f"Skipped: the app is in {SKIP_LIST_FILE}.")
+            return
         try:
             findings = scan_target(self.clone_dir)
         except (RuntimeError, json.JSONDecodeError, KeyError) as exc:
