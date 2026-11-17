@@ -4,10 +4,18 @@
     {
       "version": "17.0.0-dev",
       "branch": "develop",
-      "commit": "34ba7d9ae2f888ab2dfe3c4bf8ba2d6b31a9eb62",
+      "commit": "f3b1bd12f9a9bc700d8cc8075b20eafd12c4ef4d",
       "frappe_core": ">=17.0.0-dev,<18.0.0",
       "dependencies": {},
       "channel": "nightly"
+    },
+    {
+      "version": "16.60.0",
+      "branch": "version-16",
+      "commit": "886ab6ae187244e7f1b852393384ab6019d56264",
+      "frappe_core": ">=16.60.0,<17.0.0",
+      "dependencies": {},
+      "channel": "stable"
     },
     {
       "version": "16.55.0",

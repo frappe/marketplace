@@ -29,6 +29,9 @@ class FakeApp:
     def checkout_commit(self, commit):
         self.calls.append(f"checkout {commit}")
 
+    def install_required_apps(self, on_progress):
+        self.calls.append("install required apps")
+
     def validate(self):
         self.calls.append("validate")
 
@@ -64,7 +67,13 @@ def test_listed_release_is_validated_before_get_app(get_app):
     app = FakeApp(is_marketplace=True)
     get_app(app)
     commit = RELEASE["commit"]
-    assert app.calls == ["clone", f"checkout {commit}", "validate", f"install {commit} with dependencies"]
+    assert app.calls == [
+        "clone",
+        f"checkout {commit}",
+        "install required apps",
+        "validate",
+        f"install {commit} with dependencies",
+    ]
 
 
 def test_get_app_failure_is_reported(get_app):

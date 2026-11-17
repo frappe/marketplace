@@ -200,6 +200,8 @@ class GetAppValidator(Validator):
             return
         app.clone(report)
         app.checkout_commit(self.target["commit"])
+        # As get-app does before validating: the import check resolves against declared apps.
+        app.install_required_apps(report)
         app.validate()
 
     def fail_install(self, on_branch: str, exc: BenchError, was_killed: bool) -> None:

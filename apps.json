@@ -1944,5 +1944,18 @@
     "category": "Integrations",
     "stars": 0,
     "releases": "apps/ekyc_india.json"
+  },
+  {
+    "name": "pdf_forms",
+    "title": "PDF Forms",
+    "description": "Fill any PDF form from your documents: map its fields once, print from Frappe",
+    "repo": "https://github.com/frappe/pdf_forms",
+    "logo_url": "https://raw.githubusercontent.com/frappe/pdf_forms/develop/pdf_forms/public/images/pdf-forms-logo-large.svg",
+    "website": "https://github.com/frappe/pdf_forms",
+    "documentation": "https://github.com/frappe/pdf_forms/blob/develop/README.md",
+    "categories": ["Utilities"],
+    "category": "Utilities",
+    "stars": 0,
+    "releases": "apps/pdf_forms.json"
   }
 ]
