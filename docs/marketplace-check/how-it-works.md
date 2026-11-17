@@ -17,7 +17,7 @@ Every check runs, even when an earlier one fails, so one report shows everything
 
 A throwaway Pilot bench, built on the CI runner only to test your app.
 
-- **One bench per Frappe version.** The check reads your `frappe_core` and picks every Frappe major it admits. `>=15.0.0,<17.0.0` tests on `version-15` and `version-16`, and `develop` is used when its dev version fits.
+- **One bench per Frappe version.** The check reads your `frappe_core` and picks every Frappe major it admits from 16 on, because Pilot benches run Frappe 16 or later. `>=15.0.0,<=17.0.0-dev` tests on `version-16` and `develop`; a range that admits no Frappe 16 or later release fails.
 - **Set up like a real one.** It runs `pilot init`'s own steps, on SQLite, with no site and no Admin UI, so it costs only what an install needs.
 - **Fresh for every release.** The bench is snapshotted once set up and restored before each release, so one app's install never leaks into the next.
 - **Same limits as a small server.** Asset builds run under a 1 GiB memory cap with no swap, enforced by `systemd-run`. A build that needs more fails here, as it would on a small server.
