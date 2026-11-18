@@ -74,10 +74,10 @@
     {
       "version": "2.45.2",
       "branch": "develop",
-      "commit": "b81dc13e0d625f8f7e52e2fb4add1cf2862784de",
+      "commit": "3eb15e70c67841d220b70cffadeeb37d2ef132ed",
       "frappe_core": ">=17.0.0-dev,<18.0.0",
       "dependencies": {
-        "payments": ">=0.0.1,<1.0.0"
+        "payments": ">=0.0.1,<18.0.0"
       },
       "channel": "nightly"
     }
