@@ -36,11 +36,9 @@
     {
       "version": "2.0.0-dev",
       "branch": "develop",
-      "commit": "6d13c3a2596d45ff457df41812c7d2f8a9f7404d",
+      "commit": "1788f936eb19b24c0f51655bfc34f03fa2d8ecbb",
       "frappe_core": ">=16.0.0-dev,<=17.0.0-dev",
-      "dependencies": {
-        "whatsapp": ">=1.3.0,<2.0.0"
-      },
+      "dependencies": {},
       "channel": "nightly"
     },
     {
