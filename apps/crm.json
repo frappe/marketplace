@@ -2,20 +2,60 @@
   "name": "crm",
   "releases": [
     {
+      "version": "16.0.4",
+      "branch": "version-16",
+      "commit": "9ace234fceb3c5e7bd630b74f44ba1779e831abe",
+      "frappe_core": ">=16.0.0,<17.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    },
+    {
+      "version": "16.0.3",
+      "branch": "version-16",
+      "commit": "e113ab9847de4a5198f1c7e48da328227c37cfc2",
+      "frappe_core": ">=16.0.0,<17.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    },
+    {
+      "version": "16.0.2",
+      "branch": "version-16",
+      "commit": "19786bf033b62c9e686713234ca54d10f612a8af",
+      "frappe_core": ">=16.0.0,<17.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    },
+    {
+      "version": "16.0.1",
+      "branch": "version-16",
+      "commit": "25952cb4823da96bee84deb2f836eb7b88658ec7",
+      "frappe_core": ">=16.0.0,<17.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    },
+    {
       "version": "2.0.0-dev",
       "branch": "develop",
-      "commit": "76903e4409642dd69696e25f1be34e1f5f2efaf3",
+      "commit": "135867649e253ce5ed2853e430f56a446797b29c",
       "frappe_core": ">=16.0.0-dev,<=17.0.0-dev",
       "dependencies": {
-        "whatsapp": ">=1.0.0-dev,<2.0.0"
+        "whatsapp": ">=1.3.0,<2.0.0"
       },
       "channel": "nightly"
     },
     {
-      "version": "1.86.0",
+      "version": "1.90.0",
       "branch": "main",
-      "commit": "deedce73c1eb48577e7f70e95df6bac1dc55c93f",
+      "commit": "36bd8859f2a6345a620477bc708d0546e8c3f08a",
       "frappe_core": ">=15.0.0,<17.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    },
+    {
+      "version": "0.0.1",
+      "branch": "version-16",
+      "commit": "c587a42b654d346630443a1d3ad948063e8f5a30",
+      "frappe_core": ">=16.0.0,<17.0.0",
       "dependencies": {},
       "channel": "stable"
     }

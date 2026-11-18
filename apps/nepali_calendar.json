@@ -1,0 +1,13 @@
+{
+  "name": "nepali_calendar",
+  "releases": [
+    {
+      "version": "0.1.0",
+      "branch": "develop",
+      "commit": "c01cfe2313b15b21bc992c4b915d76e6cc7a7890",
+      "frappe_core": ">=17.0.0-dev,<18.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    }
+  ]
+}

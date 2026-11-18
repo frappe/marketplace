@@ -1,0 +1,30 @@
+name: Refresh stars
+
+on:
+  schedule:
+    - cron: "0 3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  stars:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - run: python tools/fetch_stars.py
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - run: |
+          git diff --quiet apps.json && exit 0
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git commit -am "chore: refresh stars"
+          git push

@@ -1,0 +1,13 @@
+{
+  "name": "pdf_forms",
+  "releases": [
+    {
+      "version": "0.0.1",
+      "branch": "develop",
+      "commit": "81c584ed74f7006f5e3f97828089b987ed3cf915",
+      "frappe_core": ">=16.0.0,<18.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    }
+  ]
+}
