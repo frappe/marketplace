@@ -1,0 +1,15 @@
+{
+  "name": "churchit",
+  "releases": [
+    {
+      "version": "0.8.0",
+      "branch": "version-16",
+      "commit": "0066df72492247f074dfccdbddb9a5df32e6bc36",
+      "frappe_core": ">=16.0.0,<17.0.0",
+      "dependencies": {
+        "payments": ">=0.0.1,<1.0.0"
+      },
+      "channel": "stable"
+    }
+  ]
+}

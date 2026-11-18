@@ -1769,10 +1769,10 @@
     "title": "Payments",
     "description": "Payment gateway integrations for Stripe, Razorpay, PayPal, Braintree, and more.",
     "repo": "https://github.com/frappe/payments",
-    "logo_url": null,
-    "website": null,
-    "documentation": null,
-    "categories": [],
+    "logo_url": "https://avatars.githubusercontent.com/u/836974?v=4",
+    "website": "https://github.com/frappe/payments",
+    "documentation": "https://github.com/frappe/payments/blob/develop/README.md",
+    "categories": ["Integrations"],
     "category": "Extensions",
     "stars": 165,
     "releases": "apps/payments.json"
@@ -1913,6 +1913,63 @@
     "category": "Applications",
     "stars": 0,
     "releases": "apps/kamra.json"
+  },
+  {
+    "name": "churchit",
+    "title": "Churchit",
+    "description": "A free and open-source church management application",
+    "repo": "https://github.com/meichthys/churchit",
+    "logo_url": "https://raw.githubusercontent.com/meichthys/churchit/version-16/churchit/public/icons/pwa/icon-512.png",
+    "website": "https://churchit.app",
+    "documentation": "https://churchit.app",
+    "categories": [
+      "Church",
+      "Non-Profit"
+    ],
+    "category": "Applications",
+    "stars": 0,
+    "releases": "apps/churchit.json"
+  },
+  {
+    "name": "ekyc_india",
+    "title": "eKYC India",
+    "description": "Aadhaar-based eKYC and eSign for any Frappe DocType via Digio",
+    "repo": "https://github.com/frappe/ekyc_india",
+    "logo_url": "https://raw.githubusercontent.com/frappe/ekyc_india/develop/ekyc_india/public/images/ekyc_india.svg",
+    "website": "https://github.com/frappe/ekyc_india",
+    "documentation": "https://github.com/frappe/ekyc_india/blob/develop/README.md",
+    "categories": [
+      "Integrations"
+    ],
+    "category": "Integrations",
+    "stars": 0,
+    "releases": "apps/ekyc_india.json"
+  },
+  {
+    "name": "pdf_forms",
+    "title": "PDF Forms",
+    "description": "Fill any PDF form from your documents: map its fields once, print from Frappe",
+    "repo": "https://github.com/frappe/pdf_forms",
+    "logo_url": "https://raw.githubusercontent.com/frappe/pdf_forms/develop/pdf_forms/public/images/pdf-forms-logo-large.svg",
+    "website": "https://github.com/frappe/pdf_forms",
+    "documentation": "https://github.com/frappe/pdf_forms/blob/develop/README.md",
+    "categories": ["Utilities"],
+    "category": "Utilities",
+    "stars": 0,
+    "releases": "apps/pdf_forms.json"
+  },
+  {
+    "name": "nepali_calendar",
+    "title": "Nepali Calendar",
+    "description": "Bikram Sambat (BS) dates for Frappe and ERPNext: BS date picker, BS dates in forms, lists, reports, calendar, prints and exports",
+    "repo": "https://github.com/photexnp/nepali_calendar",
+    "logo_url": "https://raw.githubusercontent.com/photexnp/nepali_calendar/develop/nepali_calendar/public/images/logo.svg",
+    "website": "https://github.com/photexnp/nepali_calendar",
+    "documentation": "https://github.com/photexnp/nepali_calendar/blob/develop/README.md",
+    "categories": ["Localization", "Utilities"],
+    "category": "Utilities",
+    "stars": 0,
+    "releases": "apps/nepali_calendar.json"
   },
   {
     "name": "erpnext_rd",

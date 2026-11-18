@@ -2,6 +2,142 @@
   "name": "gameplan",
   "releases": [
     {
+      "version": "0.1.34",
+      "branch": "develop",
+      "commit": "f495194661fbfa49a4f3a714866c7992b8cd1228",
+      "frappe_core": ">=16.0.0-dev",
+      "dependencies": {},
+      "channel": "stable"
+    },
+    {
+      "version": "0.1.33",
+      "branch": "develop",
+      "commit": "9d7db7fd51a0c810552384bb8e8d5448963a8b6c",
+      "frappe_core": ">=16.0.0-dev",
+      "dependencies": {},
+      "channel": "stable"
+    },
+    {
+      "version": "0.1.32",
+      "branch": "develop",
+      "commit": "4f523001eb18b473f8c1853f95f55f64498326b4",
+      "frappe_core": ">=16.0.0-dev",
+      "dependencies": {},
+      "channel": "stable"
+    },
+    {
+      "version": "0.1.31",
+      "branch": "develop",
+      "commit": "99ab09bf0632009c38149e0f3963cf68a45ed93f",
+      "frappe_core": ">=16.0.0-dev",
+      "dependencies": {},
+      "channel": "stable"
+    },
+    {
+      "version": "0.1.30",
+      "branch": "develop",
+      "commit": "1e31c13e38cc5981846a39e2e5118ab9ef052566",
+      "frappe_core": ">=16.0.0-dev",
+      "dependencies": {},
+      "channel": "stable"
+    },
+    {
+      "version": "0.1.29",
+      "branch": "develop",
+      "commit": "5ea796377b941e477008a72e2cc265415d3b888b",
+      "frappe_core": ">=16.0.0-dev",
+      "dependencies": {},
+      "channel": "stable"
+    },
+    {
+      "version": "0.1.28",
+      "branch": "develop",
+      "commit": "d7f35700c7be806fa1348804af2caa0c36b4408d",
+      "frappe_core": ">=16.0.0-dev",
+      "dependencies": {},
+      "channel": "stable"
+    },
+    {
+      "version": "0.1.27",
+      "branch": "develop",
+      "commit": "a3d4c547ef9fa07404f733b4f4dc750bf73f8602",
+      "frappe_core": ">=16.0.0-dev",
+      "dependencies": {},
+      "channel": "stable"
+    },
+    {
+      "version": "0.1.26",
+      "branch": "develop",
+      "commit": "721486ff5b71f43bc3b212818be8cd1df2037f40",
+      "frappe_core": ">=16.0.0-dev",
+      "dependencies": {},
+      "channel": "stable"
+    },
+    {
+      "version": "0.1.25",
+      "branch": "develop",
+      "commit": "c59e0cc7086140ca6981305c787d38ab39e4dfb7",
+      "frappe_core": ">=16.0.0-dev",
+      "dependencies": {},
+      "channel": "stable"
+    },
+    {
+      "version": "0.1.24",
+      "branch": "develop",
+      "commit": "a3ea329b8e41d71ab62b698aa8f892e4f09fcb5d",
+      "frappe_core": ">=16.0.0-dev",
+      "dependencies": {},
+      "channel": "stable"
+    },
+    {
+      "version": "0.1.20",
+      "branch": "develop",
+      "commit": "9459e35547f8b5289d9715fe76f0e398dc19b5ce",
+      "frappe_core": ">=16.0.0-dev",
+      "dependencies": {},
+      "channel": "stable"
+    },
+    {
+      "version": "0.1.19",
+      "branch": "develop",
+      "commit": "fcdae4c013c7c4d85960287094fc4c03d1902888",
+      "frappe_core": ">=16.0.0-dev",
+      "dependencies": {},
+      "channel": "stable"
+    },
+    {
+      "version": "0.1.18",
+      "branch": "develop",
+      "commit": "2ab4ca6d1045818ec309472075904323d2990036",
+      "frappe_core": ">=16.0.0-dev",
+      "dependencies": {},
+      "channel": "stable"
+    },
+    {
+      "version": "0.1.17",
+      "branch": "develop",
+      "commit": "20da03930e7d0bbb6e66c797a61bc3344cd110bb",
+      "frappe_core": ">=16.0.0-dev",
+      "dependencies": {},
+      "channel": "stable"
+    },
+    {
+      "version": "0.1.16",
+      "branch": "develop",
+      "commit": "a531e3a9f4331d069c6c35b7d23817e05a2de42f",
+      "frappe_core": ">=16.0.0-dev",
+      "dependencies": {},
+      "channel": "stable"
+    },
+    {
+      "version": "0.1.15",
+      "branch": "develop",
+      "commit": "884b0fb33b7432d45d445d644e68962a94f503de",
+      "frappe_core": ">=16.0.0-dev",
+      "dependencies": {},
+      "channel": "stable"
+    },
+    {
       "version": "0.1.14",
       "branch": "develop",
       "commit": "c643ae8f730e0f25478dad479f92ddf3d0a68cb3",

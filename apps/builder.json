@@ -2,17 +2,89 @@
   "name": "builder",
   "releases": [
     {
-      "version": "1.35.1",
+      "version": "1.39.0",
       "branch": "master",
-      "commit": "37e958bc4f801d06d0438c21b97b42c45c4eaa51",
-      "frappe_core": ">=15.0.0,<18.0.0",
+      "commit": "1d91aa1462d9dedb2d9dbf1bd8ce65be151331f2",
+      "frappe_core": ">=15.121.3,<18.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    },
+    {
+      "version": "1.38.0",
+      "branch": "master",
+      "commit": "4f31cceb7ab5ac91805a294557c278886d0ce384",
+      "frappe_core": ">=15.121.3,<18.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    },
+    {
+      "version": "1.37.7",
+      "branch": "master",
+      "commit": "7b0781fd75a7cc871828498cbd7cf49737184014",
+      "frappe_core": ">=15.121.3,<18.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    },
+    {
+      "version": "1.37.6",
+      "branch": "master",
+      "commit": "0716724ae5de98ff5ed9c022c9359e98e052e20a",
+      "frappe_core": ">=15.121.3,<18.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    },
+    {
+      "version": "1.37.5",
+      "branch": "master",
+      "commit": "aa2f0f25de0e86aa015e838919ab686acb1d6fee",
+      "frappe_core": ">=15.121.3,<18.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    },
+    {
+      "version": "1.37.4",
+      "branch": "master",
+      "commit": "1016067b45e786da07e639e7f627369855d9408b",
+      "frappe_core": ">=15.121.3,<18.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    },
+    {
+      "version": "1.37.3",
+      "branch": "master",
+      "commit": "413d330be8cff60f4ea3705eb08dcf38218d88d4",
+      "frappe_core": ">=15.121.3,<18.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    },
+    {
+      "version": "1.37.2",
+      "branch": "master",
+      "commit": "015250e8849d77ed632238b2a65b6bb47ce9b2fd",
+      "frappe_core": ">=15.121.3,<18.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    },
+    {
+      "version": "1.37.1",
+      "branch": "master",
+      "commit": "9d750b7bcd6e0dd37c1e3c48f2770be0819bc362",
+      "frappe_core": ">=15.121.3,<18.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    },
+    {
+      "version": "1.36.5",
+      "branch": "master",
+      "commit": "a2918ac9556425523f1f8981f18583ae4cb6ca05",
+      "frappe_core": ">=15.121.3,<18.0.0",
       "dependencies": {},
       "channel": "stable"
     },
     {
       "version": "1.0.0-dev",
       "branch": "develop",
-      "commit": "1eaf347b0a6662dfa1601e2ac806c90b4e8e8a67",
+      "commit": "6fd5fd4f92bf738f34ca88701623d8809cd56237",
       "frappe_core": ">=15.0.0,<18.0.0",
       "dependencies": {},
       "channel": "nightly"
