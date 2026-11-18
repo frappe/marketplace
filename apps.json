@@ -1988,5 +1988,22 @@
     "category": "Compliance",
     "stars": 0,
     "releases": "apps/erpnext_rd.json"
+  },
+  {
+    "name": "login_studio",
+    "title": "Login Studio",
+    "description": "Professional, configurable and pluggable login page layouts for Frappe / ERPNext",
+    "repo": "https://github.com/thinkspedia/login_studio",
+    "logo_url": "https://raw.githubusercontent.com/thinkspedia/login_studio/version-16/login_studio/public/images/login-studio-logo.svg",
+    "website": "https://thinkspedia.id",
+    "documentation": "https://github.com/thinkspedia/login_studio#readme",
+    "categories": [
+      "Extension",
+      "Themes",
+      "Website"
+    ],
+    "category": "Extensions",
+    "stars": 0,
+    "releases": "apps/login_studio.json"
   }
 ]
