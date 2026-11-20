@@ -2,6 +2,14 @@
   "name": "login_studio",
   "releases": [
     {
+      "version": "0.1.2",
+      "branch": "version-16",
+      "commit": "0aae1d82fee21ec9cb7732c571f25d696d1f5b5d",
+      "frappe_core": ">=15.0.0,<17.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    },
+    {
       "version": "0.1.1",
       "branch": "version-16",
       "commit": "edf6cc1fa4ee4166ae363d2e7ede2b58aeb62196",
