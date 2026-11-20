@@ -2,6 +2,14 @@
   "name": "frappe_assistant_core",
   "releases": [
     {
+      "version": "3.4.0",
+      "branch": "main",
+      "commit": "1a19dc3bb0d8ed96a86dd224db9eb664940c0a7d",
+      "frappe_core": ">=15.0.0,<17.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    },
+    {
       "version": "3.3.0",
       "branch": "main",
       "commit": "4ae9194cad35064c22a919b47013986f0e641ed5",
