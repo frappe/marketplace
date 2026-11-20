@@ -12,6 +12,16 @@
       "channel": "nightly"
     },
     {
+      "version": "16.2.1",
+      "branch": "version-16",
+      "commit": "5c1eb7c0cbd948fa6df9c55cc6ad390bce70161f",
+      "frappe_core": ">=16.0.0,<17.0.0",
+      "dependencies": {
+        "telephony": ">=0.0.1,<1.0.0"
+      },
+      "channel": "stable"
+    },
+    {
       "version": "16.2.0",
       "branch": "version-16",
       "commit": "2106a63e0dc8aeaeb1e49a7bb60aebf366d1ca4f",
