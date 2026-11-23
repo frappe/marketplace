@@ -4,7 +4,7 @@
     {
       "version": "17.0.0-dev",
       "branch": "develop",
-      "commit": "7efa4bf2e21a3c217c9b4085035d82d42760bbe1",
+      "commit": "d76958835869b02accc9bba5f11f60ff0322ab64",
       "frappe_core": ">=17.0.0-dev,<18.0.0",
       "dependencies": {
         "telephony": ">=0.0.1,<1.0.0"
