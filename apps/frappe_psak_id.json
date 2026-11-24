@@ -2,6 +2,16 @@
   "name": "frappe_psak_id",
   "releases": [
     {
+      "version": "1.0.3",
+      "branch": "version-16",
+      "commit": "c27549f6266a9adb234f09b75450e5586360af14",
+      "frappe_core": ">=15.0.0,<17.0.0",
+      "dependencies": {
+        "erpnext": ">=15.0.0,<17.0.0"
+      },
+      "channel": "stable"
+    },
+    {
       "version": "1.0.0",
       "branch": "version-16",
       "commit": "1b9f2ab5869376e034fcdf28453ff0faa6d8e5a6",
