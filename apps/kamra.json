@@ -7,7 +7,7 @@
       "commit": "28402b89979b85097cbacec24496aaf68ffb32c4",
       "frappe_core": ">=16.0.0-dev,<17.0.0",
       "dependencies": {
-        "payments": ">=0.0.1,<1.0.0"
+        "payments": ">=16.0.0,<17.0.0"
       },
       "channel": "stable"
     },
