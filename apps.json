@@ -2005,5 +2005,18 @@
     "category": "Extensions",
     "stars": 0,
     "releases": "apps/login_studio.json"
+  },
+  {
+    "name": "frappe_psak_id",
+    "title": "PSAK ID",
+    "description": "Indonesian PSAK 118 (IFRS 18) statement of profit or loss from the ERPNext ledger, with account mapping, review and approval",
+    "repo": "https://github.com/thinkspedia/frappe_psak_id",
+    "logo_url": "https://raw.githubusercontent.com/thinkspedia/frappe_psak_id/version-16/frappe_psak_id/public/images/psak-id-marketplace.svg",
+    "website": "https://thinkspedia.id",
+    "documentation": "https://github.com/thinkspedia/frappe_psak_id#readme",
+    "categories": ["Accounting", "Localization", "Compliance"],
+    "category": "Compliance",
+    "stars": 0,
+    "releases": "apps/frappe_psak_id.json"
   }
 ]
