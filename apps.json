@@ -2033,5 +2033,21 @@
     "category": "Developer Tools",
     "stars": 0,
     "releases": "apps/frappe_config_pack.json"
+  },
+  {
+    "name": "closeout",
+    "title": "Closeout",
+    "description": "Pre-close checklist for ERPNext v16: unposted depreciation, stale exchange rates, drafts and open jobs",
+    "repo": "https://github.com/s1dharthpv/closeout",
+    "logo_url": "https://raw.githubusercontent.com/s1dharthpv/closeout/main/closeout/public/images/logo.png",
+    "website": "https://github.com/s1dharthpv/closeout",
+    "documentation": "https://github.com/s1dharthpv/closeout#readme",
+    "categories": [
+      "Accounting",
+      "Extension"
+    ],
+    "category": "Extensions",
+    "stars": 0,
+    "releases": "apps/closeout.json"
   }
 ]
