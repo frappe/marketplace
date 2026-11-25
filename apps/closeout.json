@@ -2,9 +2,9 @@
   "name": "closeout",
   "releases": [
     {
-      "version": "0.2.0",
+      "version": "0.2.1",
       "branch": "main",
-      "commit": "22f5dc9aed53376d8883dc950d385a4779f8ec53",
+      "commit": "9885b6e4b9aeef6069a0c06f47d2b113571b477d",
       "frappe_core": ">=16.0.0,<17.0.0",
       "dependencies": {
         "erpnext": ">=16.0.0,<17.0.0"
