@@ -1,0 +1,13 @@
+{
+  "name": "frappe_config_pack",
+  "releases": [
+    {
+      "version": "1.0.1",
+      "branch": "main",
+      "commit": "58552edbebbbb4fb0cf97b7b50a269c2a3f26c8f",
+      "frappe_core": ">=15.0.0,<17.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    }
+  ]
+}
