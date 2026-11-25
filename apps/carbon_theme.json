@@ -1,0 +1,13 @@
+{
+  "name": "carbon_theme",
+  "releases": [
+    {
+      "version": "16.4.0",
+      "branch": "version-16",
+      "commit": "c53b99b81808e951f91bc845ee6a52b9f9066788",
+      "frappe_core": ">=16.0.0,<17.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    }
+  ]
+}
