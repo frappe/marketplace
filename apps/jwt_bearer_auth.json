@@ -1,0 +1,13 @@
+{
+  "name": "jwt_bearer_auth",
+  "releases": [
+    {
+      "version": "16.1.0",
+      "branch": "version-16",
+      "commit": "2b1b78155201bce2c6eda6f5471599d22e29fb60",
+      "frappe_core": ">=16.0.0,<17.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    }
+  ]
+}
