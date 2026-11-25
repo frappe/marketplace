@@ -34,6 +34,14 @@
       "channel": "stable"
     },
     {
+      "version": "15.127.0",
+      "branch": "version-15",
+      "commit": "9bab8ce692fe3e63094e61a65f9ea0fefd0c0095",
+      "frappe_core": ">=15.111.0,<16.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    },
+    {
       "version": "15.121.6",
       "branch": "version-15",
       "commit": "4cea6a7f839286b69dd30b38b0991e6ae234dac5",
