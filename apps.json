@@ -2018,5 +2018,20 @@
     "category": "Compliance",
     "stars": 0,
     "releases": "apps/frappe_psak_id.json"
+  },
+  {
+    "name": "frappe_config_pack",
+    "title": "Frappe Config Pack",
+    "description": "Safely package, review, and deploy Frappe configuration changes.",
+    "repo": "https://github.com/abdo-host/frappe_config_pack",
+    "logo_url": "https://raw.githubusercontent.com/abdo-host/frappe_config_pack/58552edbebbbb4fb0cf97b7b50a269c2a3f26c8f/frappe_config_pack/public/images/marketplace-logo.png",
+    "website": "https://github.com/abdo-host/frappe_config_pack",
+    "documentation": "https://github.com/abdo-host/frappe_config_pack#readme",
+    "categories": [
+      "Developer"
+    ],
+    "category": "Developer Tools",
+    "stars": 0,
+    "releases": "apps/frappe_config_pack.json"
   }
 ]
