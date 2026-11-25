@@ -1772,7 +1772,9 @@
     "logo_url": "https://avatars.githubusercontent.com/u/836974?v=4",
     "website": "https://github.com/frappe/payments",
     "documentation": "https://github.com/frappe/payments/blob/develop/README.md",
-    "categories": ["Integrations"],
+    "categories": [
+      "Integrations"
+    ],
     "category": "Extensions",
     "stars": 165,
     "releases": "apps/payments.json"
@@ -1953,7 +1955,9 @@
     "logo_url": "https://raw.githubusercontent.com/frappe/pdf_forms/develop/pdf_forms/public/images/pdf-forms-logo-large.svg",
     "website": "https://github.com/frappe/pdf_forms",
     "documentation": "https://github.com/frappe/pdf_forms/blob/develop/README.md",
-    "categories": ["Utilities"],
+    "categories": [
+      "Utilities"
+    ],
     "category": "Utilities",
     "stars": 0,
     "releases": "apps/pdf_forms.json"
@@ -1966,7 +1970,10 @@
     "logo_url": "https://raw.githubusercontent.com/photexnp/nepali_calendar/develop/nepali_calendar/public/images/logo.svg",
     "website": "https://github.com/photexnp/nepali_calendar",
     "documentation": "https://github.com/photexnp/nepali_calendar/blob/develop/README.md",
-    "categories": ["Localization", "Utilities"],
+    "categories": [
+      "Localization",
+      "Utilities"
+    ],
     "category": "Utilities",
     "stars": 0,
     "releases": "apps/nepali_calendar.json"
@@ -2014,9 +2021,29 @@
     "logo_url": "https://raw.githubusercontent.com/thinkspedia/frappe_psak_id/version-16/frappe_psak_id/public/images/psak-id-marketplace.svg",
     "website": "https://thinkspedia.id",
     "documentation": "https://github.com/thinkspedia/frappe_psak_id#readme",
-    "categories": ["Accounting", "Localization", "Compliance"],
+    "categories": [
+      "Accounting",
+      "Localization",
+      "Compliance"
+    ],
     "category": "Compliance",
     "stars": 0,
     "releases": "apps/frappe_psak_id.json"
+  },
+  {
+    "name": "carbon_theme",
+    "title": "Carbon Theme for Frappe",
+    "description": "IBM Carbon Design System theme for the Frappe desk, website, login and email",
+    "repo": "https://github.com/Avunu/carbon_theme",
+    "logo_url": "https://raw.githubusercontent.com/Avunu/carbon_theme/version-16/carbon_theme/public/images/carbon_theme-logo.svg",
+    "website": "https://avunu.net/open-source/carbon_theme/",
+    "documentation": "https://docs.avunu.net/carbon-theme/",
+    "category": "Extensions",
+    "categories": [
+      "Themes",
+      "User Interface"
+    ],
+    "stars": 0,
+    "releases": "apps/carbon_theme.json"
   }
 ]
