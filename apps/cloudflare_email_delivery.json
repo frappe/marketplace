@@ -1,0 +1,13 @@
+{
+  "name": "cloudflare_email_delivery",
+  "releases": [
+    {
+      "version": "16.1.0",
+      "branch": "version-16",
+      "commit": "80f93c80689397d112e95d7f4eea88f57dd6ea3b",
+      "frappe_core": ">=16.0.0,<17.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    }
+  ]
+}
