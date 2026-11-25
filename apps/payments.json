@@ -36,7 +36,7 @@
     {
       "version": "0.0.1",
       "branch": "develop",
-      "commit": "d6df15a6ce91e508d58fe34ba53e27f3b63d344e",
+      "commit": "2a647fc6c1a1cf115b0d5950eafbf971a26a6f2e",
       "frappe_core": ">=17.0.0-dev,<18.0.0",
       "dependencies": {},
       "channel": "nightly"
