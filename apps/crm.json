@@ -2,6 +2,14 @@
   "name": "crm",
   "releases": [
     {
+      "version": "16.5.0",
+      "branch": "version-16",
+      "commit": "5c94d58af7a769bcb05fcb5ca72899ecd76592f9",
+      "frappe_core": ">=16.0.0,<17.0.0",
+      "dependencies": {},
+      "channel": "stable"
+    },
+    {
       "version": "16.4.0",
       "branch": "version-16",
       "commit": "638879275238bbd60777f60a68625de75d0558fb",
