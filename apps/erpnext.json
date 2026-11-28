@@ -4,7 +4,7 @@
     {
       "version": "17.0.0-dev",
       "branch": "develop",
-      "commit": "fd61f84f6e02d252c79659a948d9b30fe5f3b875",
+      "commit": "a1a4d160068be05d4ebeb1ba34f8acb68f28589f",
       "frappe_core": ">=17.0.0-dev,<18.0.0",
       "dependencies": {},
       "channel": "nightly"
